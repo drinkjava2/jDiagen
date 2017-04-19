@@ -42,7 +42,7 @@ import test.TestBase;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class PaginationCodeGenerator extends TestBase {
+public class TestPaginationCodeGenerator extends TestBase {
 	private static final String SKIP_ROWS = "$SKIP_ROWS";
 	private static final String PAGESIZE = "$PAGESIZE";
 	private static final String TOTAL_ROWS = "$TOTAL_ROWS";
@@ -333,22 +333,22 @@ public class PaginationCodeGenerator extends TestBase {
 		// Now generate Java source code to console
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("// Initialize paginSQLTemplate\n");
-		sb.append("private void initializePaginSqlTemplate() {// NOSONAR\n");
-		sb.append("switch (this.toString()) {// NOSONAR\n");
+		sb.append("/**\n");
+		sb.append("* Return sql template\n");
+		sb.append(" */\n");
+		sb.append("private String initializePaginSQLTemplate() { // NOSONAR\n");
+		sb.append("switch (this) {// NOSONAR\n");
 		l = Dao.queryForEntityList(TB_pagination.class, select(), tp.all(), from(), tp.table(), " order by sortorder");
 		for (TB_pagination t : l) {
-			sb.append("case \"").append(t.getDialect()).append("\":");
+			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPagination())) {
-				sb.append("paginSQLTemplate=  ").append(
+				sb.append("return ").append(
 						"NOT_SUPPORT".equals(t.getPagination()) ? "NOT_SUPPORT" : "\"" + t.getPagination() + "\"")
 						.append(";\n");
-				sb.append("break;");
 			}
-			sb.append("\n");
 		}
 		sb.append("default:  \n");
-		sb.append("	paginSQLTemplate = NOT_SUPPORT;\n");
+		sb.append("	return NOT_SUPPORT;\n");
 		sb.append("}\n");
 		sb.append("}\n");
 
@@ -380,21 +380,21 @@ public class PaginationCodeGenerator extends TestBase {
 		// Now generate Java source code to console
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("//initialize paginFirstOnlySqlTemplate\n");
-		sb.append("private void initializePaginFirstOnlySqlTemplate() {// NOSONAR\n");
-		sb.append("switch (this.toString()) {// NOSONAR\n");
+		sb.append("/**\n");
+		sb.append("* return top limit sql template\n");
+		sb.append(" */\n");
+		sb.append("private String initializeTopLimitSqlTemplate() {// NOSONAR\n");
+		sb.append("switch (this) {// NOSONAR\n");
 		l = Dao.queryForEntityList(TB_pagination.class, select(), tp.all(), from(), tp.table(), " order by sortorder2");
 		for (TB_pagination t : l) {
-			sb.append("case \"").append(t.getDialect()).append("\":");
+			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPaginationFirstOnly())) {
-				sb.append("paginFirstOnlyTemplate=  ").append("NOT_SUPPORT".equals(t.getPaginationFirstOnly())
-						? "NOT_SUPPORT" : "\"" + t.getPaginationFirstOnly() + "\"").append(";\n");
-				sb.append("break;");
+				sb.append("return ").append("NOT_SUPPORT".equals(t.getPaginationFirstOnly()) ? "NOT_SUPPORT"
+						: "\"" + t.getPaginationFirstOnly() + "\"").append(";\n");
 			}
-			sb.append("\n");
 		}
 		sb.append("default:  \n");
-		sb.append("	paginFirstOnlyTemplate = NOT_SUPPORT;\n");
+		sb.append("	return NOT_SUPPORT;\n");
 		sb.append("}\n");
 		sb.append("}\n");
 

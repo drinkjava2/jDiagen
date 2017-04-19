@@ -53,7 +53,7 @@ import util.StrUtily;
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
-public class FunctionMappingGenerator extends TestBase {
+public class TestFunctionMappingGenerator extends TestBase {
 
 	private static Dialect buildDialectByName(Class<?> dialect) {
 		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()

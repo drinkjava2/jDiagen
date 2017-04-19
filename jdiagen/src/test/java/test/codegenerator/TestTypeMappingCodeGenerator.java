@@ -46,7 +46,7 @@ import util.StrUtily;
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
-public class TypeMappingCodeGenerator {
+public class TestTypeMappingCodeGenerator {
 	@Before
 	public void setup() {
 		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();
@@ -154,12 +154,11 @@ public class TypeMappingCodeGenerator {
 		// ============now start generate source code=======
 		StringBuilder sb = new StringBuilder();
 		sb.append("private void initializeTypeMappings() {").append("\n");
-		sb.append("switch (this.toString()) { ").append("\n");
-
+		sb.append("switch (this) {\n");
 		List<Map<String, Object>> lst = Dao.queryForList("select * from tb_typeNames");
 		for (Map<String, Object> map : lst) {
 			String dialect = (String) map.get("dialect");
-			sb.append("case \"").append(dialect).append("\": {\n");
+			sb.append("case " + dialect + ": {\n");
 
 			for (Entry<String, Object> entry : map.entrySet()) {
 				String key = entry.getKey();
@@ -173,11 +172,9 @@ public class TypeMappingCodeGenerator {
 			if (StrUtily.containsIgnoreCase(dialect, "innoDB"))
 				sb.append("typeMappings.put(Type.ENGINE, \"engine=innoDB\");\n");
 			if (StrUtily.containsIgnoreCase(dialect, "MyISAM"))
-				sb.append("typeMappings.put(Type.ENGINE, \"engine=MyISAM\");\n");
-
+				sb.append("typeMappings.put(Type.ENGINE, \"engine=MyISAM\");\n"); 
 			sb.append("}\n");
-			sb.append("break;\n");
-
+			sb.append("break;\n"); 
 		}
 		sb.append("default:\n");
 		sb.append("}\n");
