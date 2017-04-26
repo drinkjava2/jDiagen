@@ -9,7 +9,8 @@ package test.config.po;
 import com.github.drinkjava2.jsqlbox.Entity;
 
 /**
- * Entity class is not a POJO, need extends from EntityBase or implements EntityInterface interface<br/>
+ * Entity class is not a POJO, need extends from EntityBase or implements
+ * EntityInterface interface<br/>
  * 
  * @author Yong Zhu
  *

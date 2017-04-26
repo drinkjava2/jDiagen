@@ -9,7 +9,7 @@ package test.codegenerator;
 import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
 import static com.github.drinkjava2.jsqlbox.SqlHelper.from;
 import static com.github.drinkjava2.jsqlbox.SqlHelper.select;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.valuesAndQuestions;
+import static com.github.drinkjava2.jsqlbox.SqlHelper.questions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -190,7 +190,7 @@ public class TestPaginationCodeGenerator extends TestBase {
 						, "firstRowValue ," + empty(l2.convertToFirstRowValue(0))//
 						, "limits ," + empty(limits)//
 						, "pagination )" + empty(pagination)//
-						, valuesAndQuestions());
+						, "values", questions());
 			else
 				Dao.executeInsert("insert into tb_pagination (" //
 						, "dialect ," + empty(dialect)//
@@ -198,7 +198,7 @@ public class TestPaginationCodeGenerator extends TestBase {
 						, "supportLimitOffset ," + empty(l.supportsLimitOffset())//
 						, "limits ," + empty(limits)//
 						, "pagination )" + empty(pagination)//
-						, valuesAndQuestions());
+						, "values", questions());
 		}
 	}
 

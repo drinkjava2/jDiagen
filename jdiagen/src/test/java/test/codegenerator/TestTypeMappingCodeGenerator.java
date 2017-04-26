@@ -7,7 +7,7 @@
 package test.codegenerator;
 
 import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.valuesAndQuestions;
+import static com.github.drinkjava2.jsqlbox.SqlHelper.questions;
 
 import java.lang.reflect.Field;
 import java.sql.Types;
@@ -147,7 +147,7 @@ public class TestTypeMappingCodeGenerator {
 					+ "t_VARBINARY," + empty(getTypeNameDefString(t, (Types.VARBINARY)))//
 					+ "t_VARCHAR" + empty(getTypeNameDefString(t, (Types.VARCHAR)))//
 					+ ")" //
-					+ valuesAndQuestions();
+					+ "values" + questions();
 			Dao.executeInsert(insertSQL);
 		}
 
@@ -172,9 +172,9 @@ public class TestTypeMappingCodeGenerator {
 			if (StrUtily.containsIgnoreCase(dialect, "innoDB"))
 				sb.append("typeMappings.put(Type.ENGINE, \"engine=innoDB\");\n");
 			if (StrUtily.containsIgnoreCase(dialect, "MyISAM"))
-				sb.append("typeMappings.put(Type.ENGINE, \"engine=MyISAM\");\n"); 
+				sb.append("typeMappings.put(Type.ENGINE, \"engine=MyISAM\");\n");
 			sb.append("}\n");
-			sb.append("break;\n"); 
+			sb.append("break;\n");
 		}
 		sb.append("default:\n");
 		sb.append("}\n");

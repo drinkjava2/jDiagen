@@ -39,7 +39,7 @@ public class HibernateStudy {
 
 	private static void createTablesByjSqlBox() {
 		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();
-		String innoDB = Dao.getDefaultDatabaseType().isMySql() ? "ENGINE=InnoDB DEFAULT CHARSET=utf8;" : "";
+		String innoDB = Dao.getDialect().isMySqlFamily()  ? "ENGINE=InnoDB DEFAULT CHARSET=utf8;" : "";
 		Dao.executeQuiet("drop table customertable");
 		Dao.execute(Customer.CREATE_SQL + innoDB);
 	}
