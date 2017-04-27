@@ -57,7 +57,7 @@ public class TestTypeMappingCodeGenerator {
 		PrepareTestContext.closeDatasource_closeDefaultSqlBoxConetxt();
 	}
 
-	private static Dialect buildDialectByName(Class<?> dialect) {
+	public static Dialect buildDialectByName(Class<?> dialect) {
 		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
 				.applyClassLoader(HibernateDialectsList.class.getClassLoader()).build();
 		StandardServiceRegistry registry = new StandardServiceRegistryBuilder(bootReg).build();
