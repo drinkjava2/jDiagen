@@ -88,10 +88,10 @@ import dialects_collection.TextDialect;
 import dialects_collection.XMLDialect;
 
 /**
- * Collect all Hibernate's and other web site found dialects
- * 
- * @author Yong Zhu
- * @version 1.0.0
+ * This is not a unit test class, it's a code generator tool to create source
+ * code for jDialects
+ *
+ * @author Yong Zhu 
  * @since 1.0.0
  */
 @SuppressWarnings("deprecation")

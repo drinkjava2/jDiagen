@@ -35,11 +35,10 @@ import com.github.drinkjava2.jsqlbox.Entity;
 import test.TestBase;
 
 /**
- * This is not a unit test class, it's a code generator tool to create
- * pagination source code for Dialect.java
+ * This is not a unit test class, it's a code generator tool to create source
+ * code for jDialects
  *
- * @author Yong Zhu
- * @version 1.0.0
+ * @author Yong Zhu 
  * @since 1.0.0
  */
 public class TestPaginationCodeGenerator extends TestBase {
@@ -182,7 +181,7 @@ public class TestPaginationCodeGenerator extends TestBase {
 						, "dialect ," + empty(dialect)//
 						, "supportsLimit ," + empty(l.supportsLimit())//
 						, "supportLimitOffset ," + empty(l.supportsLimitOffset())//
-						, "supportsVariableLimit ," + empty(l2.supportsLimit())//
+						, "supportsVariableLimit ," + empty(l2.supportsVariableLimit())//
 						, "bindLimitParametersInReverseOrder ," + empty(l2.bindLimitParametersInReverseOrder())//
 						, "bindLimitParametersFirst ," + empty(l2.bindLimitParametersFirst())//
 						, "useMaxForLimit ," + empty(l2.useMaxForLimit())//

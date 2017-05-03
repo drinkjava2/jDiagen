@@ -31,11 +31,9 @@ import java.util.Calendar;
 
 /**
  * This is not a unit test class, it's a code generator tool to create source
- * code in Dialect.java
+ * code for jDialects
  *
- * @author Yong Zhu
- *
- * @version 1.0.0
+ * @author Yong Zhu 
  * @since 1.0.0
  */
 public class FakePrepareStatement implements PreparedStatement {

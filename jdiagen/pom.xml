@@ -68,7 +68,7 @@
  <dependencies>   
    
     <!-- ======================================================================= -->
-    <!-- Below dependencies scope be set to "test"                                                         --> 
+    <!-- Below dependencies scope be set to "test", but doesn't matter           --> 
     <!-- ======================================================================= --> 
 	<dependency>
     	<groupId>commons-lang</groupId>
@@ -76,7 +76,7 @@
     	<version>2.6</version>
 		<scope>test</scope>
 	</dependency>
-
+	
 	<!-- jdiagen depends on jSqlBox to access database -->
 	<dependency>
       <groupId>com.github.drinkjava2</groupId>
@@ -93,14 +93,14 @@
         <scope>test</scope>
     </dependency> 
 	
-    <!-- Hibernate is the main collection of jdiagen project -->   
+    <!-- Hibernate is the main collection to build source code for jDialects -->   
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>5.2.9.Final</version>
       <scope>test</scope>
-    </dependency>
-	 
+    </dependency> 
+	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

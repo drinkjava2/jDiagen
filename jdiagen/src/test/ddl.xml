@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database xmlns="http://db.apache.org/ddlutils/schema/1.1" name="testdb" defaultIdMethod="none">
+  <table name="author">
+    <column name="author_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false"></column>
+    <column name="name" primaryKey="false" required="true" type="VARCHAR" size="50" autoIncrement="false"></column>
+    <column name="organisation" primaryKey="false" required="false" type="VARCHAR" size="50" autoIncrement="false"></column>
+  </table>
+  <table name="book">
+    <column name="book_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="true"></column>
+    <column name="isbn" primaryKey="false" required="true" type="VARCHAR" size="15" autoIncrement="false"></column>
+    <column name="author_id" primaryKey="false" required="true" type="INTEGER" autoIncrement="false"></column>
+    <column name="title" primaryKey="false" required="true" type="VARCHAR" size="255" autoIncrement="false"></column>
+    <foreign-key foreignTable="author">
+      <reference local="author_id" foreign="author_id"></reference>
+    </foreign-key>
+    <index name="book_isbn">
+      <index-column name="isbn"></index-column>
+    </index>
+  </table>
+</database>
