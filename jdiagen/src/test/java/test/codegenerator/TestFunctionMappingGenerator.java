@@ -8,8 +8,8 @@ package test.codegenerator;
 
 import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
 import static com.github.drinkjava2.jsqlbox.SqlHelper.q;
+import static test.codegenerator.RefUtils.findFieldObject;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,6 @@ import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.junit.Test;
 
-import com.github.drinkjava2.jbeanbox.springsrc.ReflectionUtils;
 import com.github.drinkjava2.jsqlbox.Dao;
 
 import test.TestBase;
@@ -64,16 +63,7 @@ public class TestFunctionMappingGenerator extends TestBase {
 		return dialectFactory.buildDialect(configValues, null);
 	}
 
-	private static Object findFieldObject(Object obj, String fieldname) {
-		try {
-			Field field = ReflectionUtils.findField(obj.getClass(), fieldname);
-			field.setAccessible(true);
-			Object o = field.get(obj);
-			return o;
-		} catch (Exception e) {
-			return null;
-		}
-	}
+ 
 
 	@Test
 	public void transferFunctions() {
@@ -97,7 +87,7 @@ public class TestFunctionMappingGenerator extends TestBase {
 			Dao.execute("alter table tb_functions add  " + diaName + " varchar(200)");
 			Dao.executeQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", empty(diaName),
 					empty("FUNCTIONS"));
-			Map<String, SQLFunction> sqlFunctions = (Map<String, SQLFunction>) findFieldObject(dia, "sqlFunctions");
+			Map<String, SQLFunction> sqlFunctions = (Map<String, SQLFunction>)  findFieldObject(dia, "sqlFunctions");
 
 			for (Entry<String, SQLFunction> entry : sqlFunctions.entrySet()) {
 				String fn_name = entry.getKey();

@@ -6,8 +6,14 @@
  */
 package util;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.drinkjava2.jdialects.DialectException;
 
 /**
  * String Utility
@@ -43,8 +49,7 @@ public class StrUtily {
 	 * StrUtils.hasLength("Hello") = true
 	 * </pre>
 	 * 
-	 * @param str
-	 *            the CharSequence to check (may be {@code null})
+	 * @param str the CharSequence to check (may be {@code null})
 	 * @return {@code true} if the CharSequence is not null and has length
 	 * @see #hasText(String)
 	 */
@@ -57,8 +62,7 @@ public class StrUtily {
 	 * Note: Will return {@code true} for a String that purely consists of
 	 * whitespace.
 	 * 
-	 * @param str
-	 *            the String to check (may be {@code null})
+	 * @param str the String to check (may be {@code null})
 	 * @return {@code true} if the String is not null and has length
 	 * @see #hasLength(CharSequence)
 	 */
@@ -69,8 +73,7 @@ public class StrUtily {
 	/**
 	 * Check whether the given CharSequence contains any whitespace characters.
 	 * 
-	 * @param str
-	 *            the CharSequence to check (may be {@code null})
+	 * @param str the CharSequence to check (may be {@code null})
 	 * @return {@code true} if the CharSequence is not empty and contains at
 	 *         least 1 whitespace character
 	 * @see Character#isWhitespace
@@ -91,8 +94,7 @@ public class StrUtily {
 	/**
 	 * Check whether the given String contains any whitespace characters.
 	 * 
-	 * @param str
-	 *            the String to check (may be {@code null})
+	 * @param str the String to check (may be {@code null})
 	 * @return {@code true} if the String is not empty and contains at least 1
 	 *         whitespace character
 	 * @see #containsWhitespace(CharSequence)
@@ -104,8 +106,7 @@ public class StrUtily {
 	/**
 	 * Trim leading and trailing whitespace from the given String.
 	 * 
-	 * @param str
-	 *            the String to check
+	 * @param str the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
@@ -127,8 +128,7 @@ public class StrUtily {
 	 * Trim <i>all</i> whitespace from the given String: leading, trailing, and
 	 * in between characters.
 	 * 
-	 * @param str
-	 *            the String to check
+	 * @param str the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
@@ -151,8 +151,7 @@ public class StrUtily {
 	/**
 	 * Trim leading whitespace from the given String.
 	 * 
-	 * @param str
-	 *            the String to check
+	 * @param str the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
@@ -170,8 +169,7 @@ public class StrUtily {
 	/**
 	 * Trim trailing whitespace from the given String.
 	 * 
-	 * @param str
-	 *            the String to check
+	 * @param str the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
@@ -190,10 +188,8 @@ public class StrUtily {
 	 * Trim all occurrences of the supplied leading character from the given
 	 * String.
 	 * 
-	 * @param str
-	 *            the String to check
-	 * @param leadingCharacter
-	 *            the leading character to be trimmed
+	 * @param str the String to check
+	 * @param leadingCharacter the leading character to be trimmed
 	 * @return the trimmed String
 	 */
 	public static String trimLeadingCharacter(String str, char leadingCharacter) {
@@ -211,10 +207,8 @@ public class StrUtily {
 	 * Trim all occurrences of the supplied trailing character from the given
 	 * String.
 	 * 
-	 * @param str
-	 *            the String to check
-	 * @param trailingCharacter
-	 *            the trailing character to be trimmed
+	 * @param str the String to check
+	 * @param trailingCharacter the trailing character to be trimmed
 	 * @return the trimmed String
 	 */
 	public static String trimTrailingCharacter(String str, char trailingCharacter) {
@@ -232,10 +226,8 @@ public class StrUtily {
 	 * Test if the given String starts with the specified prefix, ignoring
 	 * upper/lower case.
 	 * 
-	 * @param str
-	 *            the String to check
-	 * @param prefix
-	 *            the prefix to look for
+	 * @param str the String to check
+	 * @param prefix the prefix to look for
 	 * @see java.lang.String#startsWith
 	 */
 	public static boolean startsWithIgnoreCase(String str, String prefix) {
@@ -273,12 +265,9 @@ public class StrUtily {
 	 * Replace all occurrences of a substring within a string with another
 	 * string.
 	 * 
-	 * @param inString
-	 *            String to examine
-	 * @param oldPattern
-	 *            String to replace
-	 * @param newPattern
-	 *            String to insert
+	 * @param inString String to examine
+	 * @param oldPattern String to replace
+	 * @param newPattern String to insert
 	 * @return a String with the replacements
 	 */
 	public static String replace(String inString, String oldPattern, String newPattern) {
@@ -407,12 +396,9 @@ public class StrUtily {
 	 * StringUtils.substringBetween("yabczyabcz", "y", "z")   = "abc"
 	 * </pre>
 	 *
-	 * @param str
-	 *            the String containing the substring, may be null
-	 * @param open
-	 *            the String before the substring, may be null
-	 * @param close
-	 *            the String after the substring, may be null
+	 * @param str the String containing the substring, may be null
+	 * @param open the String before the substring, may be null
+	 * @param close the String after the substring, may be null
 	 * @return the substring, <code>null</code> if no match
 	 * @since 2.0
 	 */
@@ -448,10 +434,8 @@ public class StrUtily {
 	 * StringUtils.countMatches("abba", 'x') = 0
 	 * </pre>
 	 *
-	 * @param str
-	 *            the CharSequence to check, may be null
-	 * @param ch
-	 *            the char to count
+	 * @param str the CharSequence to check, may be null
+	 * @param ch the char to count
 	 * @return the number of occurrences, 0 if the CharSequence is {@code null}
 	 * @since 3.4
 	 */
@@ -468,5 +452,47 @@ public class StrUtily {
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Transfer a String to a InputStream
+	 */
+	public static InputStream getStringInputStream(String s) {
+		if (s != null && !s.equals("")) {
+			try {
+				ByteArrayInputStream stringInputStream = new ByteArrayInputStream(s.getBytes());
+				return stringInputStream;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Append file with text
+	 */
+	public static void appendFileWithText(String fileName, String text) {
+		int tried = 0;
+		try {
+			FileWriter writer = null;
+			while (writer == null && tried < 20) {
+				try {
+					tried++;
+					writer = new FileWriter(fileName, true);
+				} catch (Exception e) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			DialectException.assureNotNull(writer);
+			writer.write(text);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

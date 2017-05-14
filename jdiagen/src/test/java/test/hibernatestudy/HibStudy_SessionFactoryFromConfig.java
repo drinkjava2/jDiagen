@@ -35,7 +35,7 @@ import test.config.po.Customer;
  * @since 1.0.0
  */
 @SuppressWarnings({ "unused", "deprecation", "rawtypes" })
-public class HibernateStudy {
+public class HibStudy_SessionFactoryFromConfig {
 
 	private static void createTablesByjSqlBox() {
 		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();
@@ -85,7 +85,7 @@ public class HibernateStudy {
 
 	private static void nativeQuery() {
 		Configuration c = buildConfig(MySQL55Dialect.class.getName());
-		SessionFactory sf = c.buildSessionFactory();
+		SessionFactory sf = c.buildSessionFactory();//old style
 
 		Session session = sf.openSession();
 		Query query = session
@@ -108,8 +108,7 @@ public class HibernateStudy {
 	public static void main(String[] args) {
 		createTablesByjSqlBox();
 		insertDataByHibernate();
-		nativeQuery();
-
+		nativeQuery(); 
 	}
 
 }

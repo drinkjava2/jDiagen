@@ -26,8 +26,7 @@ import test.config.PrepareTestContext;
 
 /**
  * This is to collect Hibernate's Dialect.class features, but seems miss some
- * properties for DDL, will switch to extract Apache DdlUtils although that one
- * is older, see TestDdlUtilsGenerator.java
+ * properties for DDL
  *
  * @author Yong Zhu
  * @since 1.0.0
@@ -57,7 +56,7 @@ public class DdlFeaturesGenerator {
 		Dao.execute(createSQL);
 		Dao.refreshMetaData();
 		exportOtherFeatures();
-		generateInitDdlFeaturesSourceCode();		
+		generateInitDdlFeaturesSourceCode();
 	}
 
 	public void generateInitDdlFeaturesSourceCode() {
@@ -150,7 +149,12 @@ public class DdlFeaturesGenerator {
 		       try{dealOneFeature(d,"hasDataTypeInIdentityColumn", ""+ics.hasDataTypeInIdentityColumn());}catch(Exception e){dealOneFeature(d,"hasDataTypeInIdentityColumn", NOT_SUPPORT);}
 		       try{dealOneFeature(d,"supportsIdentityColumns", ""+ics.supportsIdentityColumns());}catch(Exception e){dealOneFeature(d,"supportsIdentityColumns", NOT_SUPPORT);}
 		       try{dealOneFeature(d,"supportsInsertSelectIdentity", ""+ics.supportsInsertSelectIdentity());}catch(Exception e){dealOneFeature(d,"supportsInsertSelectIdentity", NOT_SUPPORT);}
-		   			   			       
+		       try{dealOneFeature(d,"getUniqueDelegate", ""+d.getUniqueDelegate());}catch(Exception e){dealOneFeature(d,"getUniqueDelegate", e.getMessage());}                                                                                                                
+
+		       
+//		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
+//	           try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
+				   			   			       
    
 		       
 //below seems not important to DDL		
@@ -210,7 +214,6 @@ public class DdlFeaturesGenerator {
 //		       try{dealOneFeature(d,"getSequenceExporter", ""+d.getSequenceExporter());}catch(Exception e){dealOneFeature(d,"getSequenceExporter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getTableExporter", ""+d.getTableExporter());}catch(Exception e){dealOneFeature(d,"getTableExporter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getTableTypeString", ""+d.getTableTypeString());}catch(Exception e){dealOneFeature(d,"getTableTypeString", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getUniqueDelegate", ""+d.getUniqueDelegate());}catch(Exception e){dealOneFeature(d,"getUniqueDelegate", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getUniqueKeyExporter", ""+d.getUniqueKeyExporter());}catch(Exception e){dealOneFeature(d,"getUniqueKeyExporter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getViolatedConstraintNameExtracter", ""+d.getViolatedConstraintNameExtracter());}catch(Exception e){dealOneFeature(d,"getViolatedConstraintNameExtracter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"isCurrentTimestampSelectStringCallable", ""+d.isCurrentTimestampSelectStringCallable());}catch(Exception e){dealOneFeature(d,"isCurrentTimestampSelectStringCallable", e.getMessage());}                                                                                                                
@@ -309,15 +312,13 @@ public class DdlFeaturesGenerator {
 //	       try{dealOneFeature(d,"useFollowOnLocking(QueryParameters)", ""+d.useFollowOnLocking(QueryParameters));}catch(Exception e){dealOneFeature(d,"useFollowOnLocking(QueryParameters)", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"getNotExpression(String)", ""+d.getNotExpression(String));}catch(Exception e){dealOneFeature(d,"getNotExpression(String)", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"supportsUnique", ""+d.supportsUnique());}catch(Exception e){dealOneFeature(d,"supportsUnique", e.getMessage());}                                                                                                                		
-//	       try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"supportsNotNullUnique", ""+d.supportsNotNullUnique());}catch(Exception e){dealOneFeature(d,"supportsNotNullUnique", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"getQueryHintString(String, List<String>)", ""+d.getQueryHintString(String, List<String>));}catch(Exception e){dealOneFeature(d,"getQueryHintString(String, List<String>)", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"augmentRecognizedTableTypes(List<String>)", ""+d.augmentRecognizedTableTypes(List<String>));}catch(Exception e){dealOneFeature(d,"augmentRecognizedTableTypes(List<String>)", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"supportsNamedParameters(DatabaseMetaData)", ""+d.supportsNamedParameters(DatabaseMetaData));}catch(Exception e){dealOneFeature(d,"supportsNamedParameters(DatabaseMetaData)", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"getLimitString", ""+d.getLimitString("sql", 1, 1));}catch(Exception e){dealOneFeature(d,"getLimitString(String, int, int)", e.getMessage());}                                                                                                                		
 //	       try{dealOneFeature(d,"renderOrderByElement(String, String, String, NullPrecedence)", ""+d.renderOrderByElement(String, String, String, NullPrecedence));}catch(Exception e){dealOneFeature(d,"renderOrderByElement(String, String, String, NullPrecedence)", e.getMessage());}                                                                                                                		
-//	       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
-	 
+  
 		
 		}
 			

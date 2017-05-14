@@ -15,56 +15,49 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
 //import org.hibernate.dialect.DB2Dialect;
 import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.SQLServer2012Dialect;
 import org.hibernate.id.enhanced.TableGenerator;
 import org.hibernate.mapping.Table;
 import org.hibernate.type.IntegerType;
 import org.junit.Assert;
- 
 
 /**
  * This is for study Hibernate, not related to this project, but just keep here,
  * some day may need this
  *
- * @author Yong Zhu 
+ * @author Yong Zhu
  * @since 1.0.0
- */ 
-public class HibernateTableExportStudy { 
-	private static void assertContains(String subStr, String str) {
-		if ( !str.contains( subStr ) ) {
-			Assert.fail( "String [" + str + "] did not contain expected substring [" + subStr + "]" );
-		}
-	}
-	
+ */
+public class HibStudy_TableGenerator {
+
 	public static void main(String[] args) {
 		StandardServiceRegistry ssr = new StandardServiceRegistryBuilder()
-				.applySetting( AvailableSettings.DIALECT, MySQLDialect.class.getName() )
-				.build();
+				.applySetting(AvailableSettings.DIALECT, SQLServer2012Dialect.class.getName()).build();
 
 		try {
-			Metadata metadata = new MetadataSources( ssr )
-					.buildMetadata();
+			Metadata metadata = new MetadataSources(ssr).buildMetadata();
 
-			Assert.assertEquals( 0, metadata.getDatabase().getDefaultNamespace().getTables().size() );
+			Assert.assertEquals(0, metadata.getDatabase().getDefaultNamespace().getTables().size());
 
 			TableGenerator generator = new TableGenerator();
 
 			Properties properties = new Properties();
-			generator.configure( IntegerType.INSTANCE, properties, ssr );
+			generator.configure(IntegerType.INSTANCE, properties, ssr);
 
-			generator.registerExportables( metadata.getDatabase() );
+			generator.registerExportables(metadata.getDatabase());
 
-			Assert.assertEquals( 1, metadata.getDatabase().getDefaultNamespace().getTables().size() );
+			Assert.assertEquals(1, metadata.getDatabase().getDefaultNamespace().getTables().size());
 
 			final Table table = metadata.getDatabase().getDefaultNamespace().getTables().iterator().next();
 			System.out.println(table.getName());
-			final String[] createCommands = new MySQLDialect().getTableExporter().getSqlCreateStrings( table, metadata );
+			final String[] createCommands = new MySQLDialect().getTableExporter().getSqlCreateStrings(table, metadata);
 			for (String string : createCommands) {
 				System.out.println(string);
 			}
-			//assertContains( "sequence_name varchar(255) not null", createCommands[0] );
-		}
-		finally {
-			StandardServiceRegistryBuilder.destroy( ssr );
+			// assertContains( "sequence_name varchar(255) not null",
+			// createCommands[0] );
+		} finally {
+			StandardServiceRegistryBuilder.destroy(ssr);
 		}
 	}
 }

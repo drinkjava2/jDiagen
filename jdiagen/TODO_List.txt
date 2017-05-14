@@ -10,8 +10,8 @@ sql=d.dropTable("xxx");
    
    
 autoIncrease()=Identity() + Sequence()  
-IdentityOnly
-SequenceOnly
+Identity
+Sequence
   
 
 sql=d.addColumn("table1","colname", d.Type).notNull().autoINC().isPkey("").default().description().toString();  
