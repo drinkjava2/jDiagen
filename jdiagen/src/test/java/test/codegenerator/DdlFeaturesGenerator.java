@@ -48,11 +48,11 @@ public class DdlFeaturesGenerator {
 
 	@Test
 	public void collectDDLFeatures() {
-		String createSQL = "create table tb_others ("//
+		String createSQL = "create table tb_hibdll ("//
 				+ "feature varchar(100)  " //
 				+ ", constraint const_other_feature primary key (feature)" //
 				+ ")";
-		Dao.executeQuiet("drop table tb_others");
+		Dao.executeQuiet("drop table tb_hibdll");
 		Dao.execute(createSQL);
 		Dao.refreshMetaData();
 		exportOtherFeatures();
@@ -69,7 +69,7 @@ public class DdlFeaturesGenerator {
 			String diaName = d.getClass().getSimpleName();
 			sb.append("case " + diaName + ": {");
 			List<Map<String, Object>> result = Dao
-					.queryForList("select feature, " + diaName + " from tb_others order by feature");
+					.queryForList("select feature, " + diaName + " from tb_hibdll order by feature");
 			for (Map<String, Object> map : result) {
 				String value = (String) map.get(diaName);
 				sb.append("ddl.").append(map.get("feature")).append("=");
@@ -88,7 +88,7 @@ public class DdlFeaturesGenerator {
 	}
 
 	public void dealOneFeature(Dialect d, String feature, String... featureValue) {
-		Dao.executeQuiet("insert into tb_others (feature) values(?)", empty(feature));
+		Dao.executeQuiet("insert into tb_hibdll (feature) values(?)", empty(feature));
 
 		StringBuilder sb = new StringBuilder();
 		for (String str : featureValue) {
@@ -100,7 +100,7 @@ public class DdlFeaturesGenerator {
 			writeValue = writeValue.substring(0, 500);
 		if ("null".equalsIgnoreCase(writeValue))
 			writeValue = "";
-		Dao.execute("update tb_Others set "//
+		Dao.execute("update tb_hibdll set "//
 				, d.getClass().getSimpleName(), "=", q(writeValue), " where feature=", q(feature));
 	}
 
@@ -110,7 +110,7 @@ public class DdlFeaturesGenerator {
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = TestTypeMappingCodeGenerator.buildDialectByName(hibDialectClass); 
-			Dao.execute("alter table tb_others add  " + d.getClass().getSimpleName() + " varchar(500)");
+			Dao.execute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
 
 		       String[] _FKS={"_FK1","_FK2"};                                                                                                                		
 		       String[] _REFS={"_REF1","_REF2"}; 
@@ -149,7 +149,8 @@ public class DdlFeaturesGenerator {
 		       try{dealOneFeature(d,"hasDataTypeInIdentityColumn", ""+ics.hasDataTypeInIdentityColumn());}catch(Exception e){dealOneFeature(d,"hasDataTypeInIdentityColumn", NOT_SUPPORT);}
 		       try{dealOneFeature(d,"supportsIdentityColumns", ""+ics.supportsIdentityColumns());}catch(Exception e){dealOneFeature(d,"supportsIdentityColumns", NOT_SUPPORT);}
 		       try{dealOneFeature(d,"supportsInsertSelectIdentity", ""+ics.supportsInsertSelectIdentity());}catch(Exception e){dealOneFeature(d,"supportsInsertSelectIdentity", NOT_SUPPORT);}
-		       try{dealOneFeature(d,"getUniqueDelegate", ""+d.getUniqueDelegate());}catch(Exception e){dealOneFeature(d,"getUniqueDelegate", e.getMessage());}                                                                                                                
+//		       try{dealOneFeature(d,"getUniqueDelegate", ""+d.getUniqueDelegate());}catch(Exception e){dealOneFeature(d,"getUniqueDelegate", e.getMessage());}                                                                                                                
+ 		       try{dealOneFeature(d,"tableTypeString", ""+d.getTableTypeString());}catch(Exception e){dealOneFeature(d,"tableTypeString", e.getMessage());}                                                                                                                
 
 		       
 //		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
@@ -213,7 +214,6 @@ public class DdlFeaturesGenerator {
 //		       try{dealOneFeature(d,"getSelectGUIDString", ""+d.getSelectGUIDString());}catch(Exception e){dealOneFeature(d,"getSelectGUIDString", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getSequenceExporter", ""+d.getSequenceExporter());}catch(Exception e){dealOneFeature(d,"getSequenceExporter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getTableExporter", ""+d.getTableExporter());}catch(Exception e){dealOneFeature(d,"getTableExporter", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getTableTypeString", ""+d.getTableTypeString());}catch(Exception e){dealOneFeature(d,"getTableTypeString", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getUniqueKeyExporter", ""+d.getUniqueKeyExporter());}catch(Exception e){dealOneFeature(d,"getUniqueKeyExporter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getViolatedConstraintNameExtracter", ""+d.getViolatedConstraintNameExtracter());}catch(Exception e){dealOneFeature(d,"getViolatedConstraintNameExtracter", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"isCurrentTimestampSelectStringCallable", ""+d.isCurrentTimestampSelectStringCallable());}catch(Exception e){dealOneFeature(d,"isCurrentTimestampSelectStringCallable", e.getMessage());}                                                                                                                

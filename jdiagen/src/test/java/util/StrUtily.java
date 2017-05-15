@@ -472,7 +472,7 @@ public class StrUtily {
 	/**
 	 * Append file with text
 	 */
-	public static void appendFileWithText(String fileName, String text) {
+	public static void appendFileWithText(String fileName, String text) { 
 		int tried = 0;
 		try {
 			FileWriter writer = null;
