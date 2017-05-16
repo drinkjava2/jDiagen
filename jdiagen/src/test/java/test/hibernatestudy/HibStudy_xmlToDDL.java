@@ -32,7 +32,7 @@ import util.TextSupport;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class HibernateCreateTableStudy {
+public class HibStudy_xmlToDDL {
 	private static String fileName = "f:/export.sql";
 
 	private static void ddlExport(Class<?> dialect, String oneTableHbmXml) {
@@ -80,8 +80,7 @@ public class HibernateCreateTableStudy {
 /*<?xml version="1.0" encoding="utf-8"?>
 		<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
 		 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
-*/
-	}
+*/}
 	
 	public static class CompondPKey extends TextSupport {
 /*
@@ -93,8 +92,7 @@ public class HibernateCreateTableStudy {
 	    </composite-id>
 	</class> 
 </hibernate-mapping>
-*/
-	}
+*/}
     
     
     
@@ -111,9 +109,7 @@ public class HibernateCreateTableStudy {
 		  </property>
 	</class> 
 </hibernate-mapping>
-*/
-	}
-	
- 	public static class EndTag{}
+*/}
+	 
 
 }

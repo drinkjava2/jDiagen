@@ -35,7 +35,8 @@ import org.apache.commons.lang.StringUtils;
 public class TextSupport {
 
 	public String getJavaSrcFolder() {
-		return "F:/gproj/jdiagen/jDiagen/jdiagen/src/test/java/";
+		return "";
+		//return "F:/gproj/jdiagen/jDiagen/jdiagen/src/test/java/";
 	}
 
 	/*
@@ -48,17 +49,17 @@ public class TextSupport {
 			templateText = getTextFromResourceFile();
 		else
 			templateText = getTextFromJavaFile();
-		return extractSqlInComments(templateText);
+		return extractTextFromComments(templateText);
 	}
 
-	public String extractSqlInComments(String templateText) {
+	public String extractTextFromComments(String templateText) {
 		String thisPublicStaticClassName = this.getClass().getSimpleName();
 		String classText = StringUtils.substringBetween(templateText,
-				"public static class " + thisPublicStaticClassName, "public static class");
+				"public static class " + thisPublicStaticClassName, "*/}");
 		if (StringUtils.isEmpty(classText))
-			throw new RuntimeException(
-					"Can not find text template class started with: public static class " + thisPublicStaticClassName);
-		String[] comments = StringUtils.substringsBetween(classText, "/*", "*/");
+			throw new RuntimeException("Can not find text template class between \"public static class "
+					+ thisPublicStaticClassName + " and \"*/}\"");
+		String[] comments = StringUtils.substringsBetween(classText + "*/", "/*", "*/");
 		StringBuilder sb = new StringBuilder();
 		for (String str : comments)
 			sb.append(str);
@@ -81,23 +82,20 @@ public class TextSupport {
 
 	public String getTextFromResourceFile() {
 		String className = this.getClass().getName(); // xxx.xxxxx.TextSupport$DemoString
-		String classPath = StringUtils.substringBefore(className, ".");// xxx.xxxxx.
-		classPath = StringUtils.replace(classPath, ".", "/");// xxx/xxxxx
 		className = StringUtils.substringAfterLast(className, ".");// TextSupport$DemoString
 		String templateFile = StringUtils.substringBefore(className, "$");// TextSupport
-
 		String srcFileName = templateFile + ".txt";
 		String str;
 		InputStream input = null;
-		try {// NOSONAR
+		try {
 			input = ClassLoader.getSystemResourceAsStream(srcFileName);
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			byte[] data = new byte[4096];
-			int count = -1;// NOSONAR
+			int count = -1;
 			while ((count = input.read(data, 0, 4096)) != -1)
 				outStream.write(data, 0, count);
-			data = null;// NOSONAR
-			str = new String(outStream.toByteArray(), "ISO-8859-1");
+			data = null;
+			str = new String(outStream.toByteArray(), "UTF-8");
 		} catch (Exception e) {
 			throw new RuntimeException("Can not read resource file:" + srcFileName + "\r\n" + e.getMessage());
 		} finally {
@@ -112,16 +110,13 @@ public class TextSupport {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Text=" + new DemoString() + "=======");
+		System.out.println("Text=" + new DemoString());
 	}
 
 	//@formatter:off
 	public static class DemoString extends TextSupport{   
-		/*
-		 Hello,
-		 this is multiple String demo
-		 */
-	} 
-
-	//public static class EndTag
+	 /*   
+	  Hello,
+	  This is multiple String demo
+     */}  
 }
