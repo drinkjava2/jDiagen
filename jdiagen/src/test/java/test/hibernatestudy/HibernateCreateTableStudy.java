@@ -9,24 +9,23 @@ package test.hibernatestudy;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.HANAColumnStoreDialect;
+import org.hibernate.dialect.MySQL55Dialect;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
 
-import test.codegenerator.HibernateDialectsList;
 import util.StrUtily;
 import util.TextSupport;
 
 /**
- * This is for study Hibernate, not related to this project, but just keep here
+ * This is for study Hibernate how to build create table ddl
  *
  * @author Yong Zhu
  *
@@ -57,12 +56,23 @@ public class HibernateCreateTableStudy {
 	}
 
 	public static void main(String[] args) throws IOException {
-		FileUtils.writeStringToFile(new File(fileName), "");
-		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-		for (Class<? extends Dialect> diaClass : dialects) {
-			ddlExport(diaClass, "" + new DTDString() + new CompondPKey());
-		}
-		System.exit(0);
+		 FileUtils.writeStringToFile(new File(fileName), "");
+		 ddlExport(HANAColumnStoreDialect.class, "" + new DTDString() + new
+		 CustomerXML()); 
+		
+		 FileUtils.writeStringToFile(new File(fileName), "");
+		 ddlExport(MySQL55Dialect.class, "" + new DTDString() + new
+		 CustomerXML());
+		 System.exit(0);
+		
+		
+
+//		FileUtils.writeStringToFile(new File(fileName), "");
+//		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+//		for (Class<? extends Dialect> diaClass : dialects) {
+//			ddlExport(diaClass, "" + new DTDString() + new CustomerXML());
+//		}
+//		System.exit(0);
 	}
 
 	//@formatter:off
@@ -76,11 +86,11 @@ public class HibernateCreateTableStudy {
 	public static class CompondPKey extends TextSupport {
 /*
  <hibernate-mapping> 
-		    <class name="test.config.po.Customer" table="customertable" catalog="test">
-    <composite-id>
-        <key-property name="name" column="name"  type="java.lang.String"/>
-        <key-property name="phone" column="phone" type="java.lang.String"/>
-    </composite-id>
+	<class name="test.config.po.Customer" table="customertable" catalog="test">
+	    <composite-id>
+	        <key-property name="name" column="name"  type="java.lang.String"/>
+	        <key-property name="phone" column="phone" type="java.lang.String"/>
+	    </composite-id>
 	</class> 
 </hibernate-mapping>
 */
@@ -104,5 +114,6 @@ public class HibernateCreateTableStudy {
 */
 	}
 	
- 	//public static class EndTag
+ 	public static class EndTag{}
+
 }
