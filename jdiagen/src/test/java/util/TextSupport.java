@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,82 +32,53 @@ import org.apache.commons.lang.StringUtils;
  * @author Yong Zhu (Yong9981@gmail.com)
  * @since 1.0.0
  */
-
 public class TextSupport {
 
 	public String getJavaSrcFolder() {
-		return "";
-		//return "F:/gproj/jdiagen/jDiagen/jdiagen/src/test/java/";
+		return "F:/gproj/jdiagen/jDiagen/jdiagen/src/test/java/";
 	}
 
 	/*
 	 * Get the multiple line String from java source code or resource
 	 */
-	@Override
 	public String toString() {
-		String templateText;
-		if (StringUtils.isEmpty(getJavaSrcFolder()))
-			templateText = getTextFromResourceFile();
-		else
-			templateText = getTextFromJavaFile();
-		return extractTextFromComments(templateText);
+		try {
+			if (StringUtils.isEmpty(getJavaSrcFolder()))
+				return extractTextFromComments(getTextFromResourceFile());
+			else
+				return extractTextFromComments(getTextFromJavaFile());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public String extractTextFromComments(String templateText) {
+	private String extractTextFromComments(String templateText) {
 		String thisPublicStaticClassName = this.getClass().getSimpleName();
 		String classText = StringUtils.substringBetween(templateText,
 				"public static class " + thisPublicStaticClassName, "*/}");
 		if (StringUtils.isEmpty(classText))
-			throw new RuntimeException("Can not find text template class between \"public static class "
-					+ thisPublicStaticClassName + " and \"*/}\"");
-		String[] comments = StringUtils.substringsBetween(classText + "*/", "/*", "*/");
+			throw new RuntimeException("Can not find text between \"public static class " + thisPublicStaticClassName
+					+ " and end tag \"*/}\"");
 		StringBuilder sb = new StringBuilder();
-		for (String str : comments)
+		for (String str : StringUtils.substringsBetween(classText + "*/", "/*", "*/"))
 			sb.append(str);
 		return sb.toString();
 	}
 
-	public String getTextFromJavaFile() {
-		String className = this.getClass().getName(); // aaa.bbb.TextSupport$DemoString
-		String classPath = StringUtils.substringBeforeLast(className, ".");
-		classPath = StringUtils.replace(classPath, ".", "/");// aaa/bbb
-		className = StringUtils.substringAfterLast(className, ".");// TextSupport$DemoString
-		String templateFile = StringUtils.substringBefore(className, "$");// TextSupport
-		String javaFileName = getJavaSrcFolder() + classPath + "/" + templateFile + ".java";
-		try {
-			return FileUtils.readFileToString(new File(javaFileName));
-		} catch (Exception e) {
-			throw new RuntimeException("Can not read java file:" + javaFileName + "\r\n" + e.getMessage());
-		}
+	private String getTextFromJavaFile() throws IOException {
+		String className = this.getClass().getName(); // aaa.bbb.CCC$DDD
+		String fileName = getJavaSrcFolder()
+				+ StringUtils.replace(StringUtils.substringBeforeLast(className, "$"), ".", "/") + ".java";
+		return FileUtils.readFileToString(new File(fileName));
 	}
 
-	public String getTextFromResourceFile() {
-		String className = this.getClass().getName(); // xxx.xxxxx.TextSupport$DemoString
-		className = StringUtils.substringAfterLast(className, ".");// TextSupport$DemoString
-		String templateFile = StringUtils.substringBefore(className, "$");// TextSupport
-		String srcFileName = templateFile + ".txt";
-		String str;
-		InputStream input = null;
-		try {
-			input = ClassLoader.getSystemResourceAsStream(srcFileName);
-			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-			byte[] data = new byte[4096];
-			int count = -1;
-			while ((count = input.read(data, 0, 4096)) != -1)
-				outStream.write(data, 0, count);
-			data = null;
-			str = new String(outStream.toByteArray(), "UTF-8");
-		} catch (Exception e) {
-			throw new RuntimeException("Can not read resource file:" + srcFileName + "\r\n" + e.getMessage());
-		} finally {
-			try {
-				if (input != null)
-					input.close();
-			} catch (Exception e) {
-				throw new RuntimeException("Can not close input stream for file: " + srcFileName);
-			}
-		}
-		return str;
+	private String getTextFromResourceFile() throws IOException {
+		String className = StringUtils.substringAfterLast("." + this.getClass().getName(), ".");// CCC$DDD
+		String resFile = StringUtils.substringBefore(className, "$") + ".txt";// CCC.txt
+		URL url = this.getClass().getResource("/" + resFile);
+		if (url == null)
+			throw new RuntimeException("Can not find resource file \"" + resFile + "\"");
+		return FileUtils.readFileToString(new File(url.getFile()));
 	}
 
 	public static void main(String[] args) {
@@ -117,6 +89,6 @@ public class TextSupport {
 	public static class DemoString extends TextSupport{   
 	 /*   
 	  Hello,
-	  This is multiple String demo
-     */}  
+	  This is multiple line strings demo
+     */} 	
 }

@@ -9,18 +9,22 @@ package test.hibernatestudy;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.hibernate.dialect.MySQL55Dialect;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
+import org.junit.Test;
 
+import test.codegenerator.HibernateDialectsList;
 import util.StrUtily;
 import util.TextSupport;
 
@@ -32,6 +36,7 @@ import util.TextSupport;
  * @version 1.0.0
  * @since 1.0.0
  */
+//@formatter:off
 public class HibStudy_xmlToDDL {
 	private static String fileName = "f:/export.sql";
 
@@ -54,62 +59,116 @@ public class HibStudy_xmlToDDL {
 			e.printStackTrace();
 		}
 	}
-
-	public static void main(String[] args) throws IOException {
-		 FileUtils.writeStringToFile(new File(fileName), "");
-		 ddlExport(HANAColumnStoreDialect.class, "" + new DTDString() + new
-		 CustomerXML()); 
-		
-		 FileUtils.writeStringToFile(new File(fileName), "");
-		 ddlExport(MySQL55Dialect.class, "" + new DTDString() + new
-		 CustomerXML());
-		 System.exit(0);
-		
-		
-
-//		FileUtils.writeStringToFile(new File(fileName), "");
-//		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-//		for (Class<? extends Dialect> diaClass : dialects) {
-//			ddlExport(diaClass, "" + new DTDString() + new CustomerXML());
-//		}
-//		System.exit(0);
-	}
-
-	//@formatter:off
-	public static class DTDString extends TextSupport {
+	
+	public static class XmlHead extends TextSupport {
 /*<?xml version="1.0" encoding="utf-8"?>
 		<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
-		 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+		 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping> 
+    <class name="test.config.po.Customer" table="customertable">		  
 */}
 	
-	public static class CompondPKey extends TextSupport {
-/*
- <hibernate-mapping> 
-	<class name="test.config.po.Customer" table="customertable" catalog="test">
-	    <composite-id>
-	        <key-property name="name" column="name"  type="java.lang.String"/>
-	        <key-property name="phone" column="phone" type="java.lang.String"/>
-	    </composite-id>
-	</class> 
+	public static class XmlEnd extends TextSupport {
+/*	</class> 
 </hibernate-mapping>
 */}
-    
-    
-    
+	
 	public static class CustomerXML extends TextSupport {
-/*
-<hibernate-mapping> 
-    <class name="test.config.po.Customer" table="customertable">
-		  <id name="id" type="java.lang.String">
+/*		  <id name="id" type="java.lang.String">
 		  	  <column name="id" length="32" />
 			  <generator class="uuid2"/> 
 		  </id>
 		  <property name="customerName" type="java.lang.String">
 			  <column name="customer_name" length="30" />
 		  </property>
-	</class> 
-</hibernate-mapping>
 */}
+
+	public static String getConfigXML( TextSupport t){
+		return "" + new XmlHead() + t+ new XmlEnd();
+	}
+	
+	@Test
+	public void testCustomerXML() throws IOException {
+		 FileUtils.writeStringToFile(new File(fileName), "");
+		 ddlExport(HANAColumnStoreDialect.class, getConfigXML(new CustomerXML()));
+		 ddlExport(MySQL55Dialect.class, getConfigXML(new CustomerXML()));
+		 System.exit(0);
+	} 
+	
+	public static class CompondPKey extends TextSupport {
+/*<composite-id>
+	        <key-property name="name" column="name"  type="java.lang.String"/>
+	        <key-property name="phone" column="phone" type="java.lang.String"/>
+	    </composite-id>
+*/}
+	
+	@Test
+	public void testCompondPKey() throws IOException { 
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new CompondPKey()));
+		}
+		System.exit(0);
+	}
+    
+	public static class NotNullString extends TextSupport {
+/*	 <id name="id" type="java.lang.String">
+	  	  <column name="id" length="32" not-null="false" />
+		  <generator class="uuid2"/> 
+	  </id>
+            <property name="name" column="NAME" type="string" length="25" not-null="true" />  
+            <property name="email" column="EMAIL" type="string" not-null="true" />  
+            <property name="password" column="PASSWORD" type="string" not-null="true" />  
+            <property name="phone" column="PHONE" type="int"  not-null="true" />  
+            <property name="address" column="ADDRESS" type="string"  not-null="true" />  
+            <property name="sex" column="SEX" type="character"  not-null="true"  />  
+            <property name="married" column="IS_MARRIED" type="boolean"  not-null="true" />  
+            <property name="description" column="DESCRIPTION" type="text"  not-null="true" />  
+            <property name="image" column="IMAGE" type="binary"  not-null="true" />  
+            <property name="birthday" column="BIRTHDAY" type="date"  not-null="true" />  
+            <property name="registeredTime" column="REGISTERED_TIME" type="timestamp" not-null="true"  /> 
+*/}
+	
+	@Test
+	public void testNotNull() throws IOException { 
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new NotNullString()));
+		}
+		System.exit(0);
+	}
+    
+	public static class UniqueString extends TextSupport {
+/*	 <id name="id" type="java.lang.String">
+	  	  <column name="id" length="32" not-null="false"  unique="true" />
+		  <generator class="uuid2"/> 
+	  </id>
+            <property name="name" column="NAME" type="string" length="25" not-null="true" unique="true" />  
+            <!--property name="email" column="EMAIL" type="string" not-null="true"  unique="true" />  
+            <property name="password" column="PASSWORD" type="string" not-null="true"  unique="true" />  
+            <property name="phone" column="PHONE" type="int"  not-null="true"  unique="true" />  
+            <property name="address" column="ADDRESS" type="string"  not-null="true"  unique="true" />  
+            <property name="sex" column="SEX" type="character"  not-null="true"   unique="true" />  
+            <property name="married" column="IS_MARRIED" type="boolean"  not-null="true"  unique="true" />  
+            <property name="description" column="DESCRIPTION" type="text"  not-null="true"  unique="true" />  
+            <property name="image" column="IMAGE" type="binary"  not-null="true"  unique="true" />  
+            <property name="birthday" column="BIRTHDAY" type="date"  not-null="true"  unique="true" />  
+            <property name="registeredTime" column="REGISTERED_TIME" type="timestamp" not-null="true" unique="true" /--> 
+*/}
+	
+	@Test
+	public void testUnique() throws IOException { 
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new UniqueString()));
+		}
+		System.exit(0);
+	}
+    
+ 
 	 
 
 }

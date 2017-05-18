@@ -152,7 +152,8 @@ public class DdlFeaturesGenerator {
 //		       try{dealOneFeature(d,"getUniqueDelegate", ""+d.getUniqueDelegate());}catch(Exception e){dealOneFeature(d,"getUniqueDelegate", e.getMessage());}                                                                                                                
  		       try{dealOneFeature(d,"tableTypeString", ""+d.getTableTypeString());}catch(Exception e){dealOneFeature(d,"tableTypeString", e.getMessage());}                                                                                                                
  		       try{dealOneFeature(d,"createMultisetTableString", ""+d.getCreateMultisetTableString());}catch(Exception e){dealOneFeature(d,"createMultisetTableString", e.getMessage());}
-		       
+		       try{dealOneFeature(d,"nullColumnString", ""+d.getNullColumnString());}catch(Exception e){dealOneFeature(d,"nullColumnString", e.getMessage());}
+ 		       
 //		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
 //	           try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
 				   			   			       
@@ -167,7 +168,7 @@ public class DdlFeaturesGenerator {
                                                                                                                 
 //		       try{dealOneFeature(d,"getIdentityColumnSupport", ""+d.getIdentityColumnSupport());}catch(Exception e){dealOneFeature(d,"getIdentityColumnSupport", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getNoColumnsInsertString", ""+d.getNoColumnsInsertString());}catch(Exception e){dealOneFeature(d,"getNoColumnsInsertString", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getNullColumnString", ""+d.getNullColumnString());}catch(Exception e){dealOneFeature(d,"getNullColumnString", e.getMessage());}                                                                                                                
+                                                                                                                
 //		       try{dealOneFeature(d,"getQuerySequencesString", ""+d.getQuerySequencesString());}catch(Exception e){dealOneFeature(d,"getQuerySequencesString", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getSelectSequenceNextValString", ""+d.getSelectSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"getSelectSequenceNextValString", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getSequenceInformationExtractor", ""+d.getSequenceInformationExtractor());}catch(Exception e){dealOneFeature(d,"getSequenceInformationExtractor", e.getMessage());}                                                                                                                
