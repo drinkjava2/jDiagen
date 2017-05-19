@@ -145,17 +145,8 @@ public class HibStudy_xmlToDDL {
 	  	  <column name="id" length="32" not-null="false"  unique="true" />
 		  <generator class="uuid2"/> 
 	  </id>
-            <property name="name" column="NAME" type="string" length="25" not-null="true" unique="true" />  
-            <!--property name="email" column="EMAIL" type="string" not-null="true"  unique="true" />  
-            <property name="password" column="PASSWORD" type="string" not-null="true"  unique="true" />  
-            <property name="phone" column="PHONE" type="int"  not-null="true"  unique="true" />  
-            <property name="address" column="ADDRESS" type="string"  not-null="true"  unique="true" />  
-            <property name="sex" column="SEX" type="character"  not-null="true"   unique="true" />  
-            <property name="married" column="IS_MARRIED" type="boolean"  not-null="true"  unique="true" />  
-            <property name="description" column="DESCRIPTION" type="text"  not-null="true"  unique="true" />  
-            <property name="image" column="IMAGE" type="binary"  not-null="true"  unique="true" />  
-            <property name="birthday" column="BIRTHDAY" type="date"  not-null="true"  unique="true" />  
-            <property name="registeredTime" column="REGISTERED_TIME" type="timestamp" not-null="true" unique="true" /--> 
+            <property name="name1" column="NAME1" type="string" length="25" not-null="true" unique="true" />   
+            <property name="name2" column="NAME2" type="string" length="25" not-null="false" unique="true" />   
 */}
 	
 	@Test
