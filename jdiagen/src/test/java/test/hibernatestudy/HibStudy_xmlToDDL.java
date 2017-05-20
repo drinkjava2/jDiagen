@@ -19,6 +19,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.hibernate.dialect.MySQL55Dialect;
+import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
@@ -56,7 +57,9 @@ public class HibStudy_xmlToDDL {
 			export.setOutputFile(fileName);
 			export.execute(targetTypes, SchemaExport.Action.CREATE, metadata);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Not support");
+			StrUtily.appendFileWithText(fileName,"No support");
+			//e.printStackTrace();
 		}
 	}
 	
@@ -159,7 +162,111 @@ public class HibStudy_xmlToDDL {
 		System.exit(0);
 	}
     
+    
+	public static class CheckString extends TextSupport {
+/*	 <id name="id" type="java.lang.String">
+	  	  <column name="id" length="32" not-null="false"  unique="true" />
+		  <generator class="uuid2"/> 
+	  </id>
+<property name="foo" type="integer">
+    <column name="foo" check="foo> 10"/>
+</property> 
+*/}
+	
+	@Test
+	public void testCheck() throws IOException { 
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new CheckString()));
+		}
+		System.exit(0);
+	}
+	
+	public static class CheckString2 extends TextSupport {
+/*<?xml version="1.0" encoding="utf-8"?>
+		<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+		 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping> 
+    <class name="test.config.po.Customer" table="customertable" check="foo> 10">		  
+<id name="id" type="java.lang.String">
+	  	  <column name="id" length="32" not-null="false"  unique="true" />
+		  <generator class="uuid2"/> 
+	  </id>
+<property name="foo" type="integer">
+    <column name="foo"  />
+</property>
+   
+*/}
+	
+	@Test
+	public void testCheck2() throws IOException { 
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass,  ""+new CheckString2()+new XmlEnd());
+		}
+		System.exit(0);
+	}
+	
+	
+	
+	public static class sequenceString extends TextSupport {
+/*	   <id name="id" column="id">
+	     <generator class="sequence">
+	     <param name="seq1"/>
+	     </generator>
+	    </id>
+*/}
+	
+	@Test
+	public void testSequence() throws IOException { 
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new sequenceString()));
+		}
+		System.exit(0);
+	}    
+	
+	
+	public static class identityString extends TextSupport {
+/*	   <id name="id" column="id" type="long" >
+       <generator class="identity"/>
+       </id>        
+*/}
+	
+	@Test
+	public void testIdentity() throws IOException {  
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new identityString()));
+		}
+		System.exit(0);
+	} 
+	
+	
+	public static class identityString2 extends TextSupport {
+/*	 <id name="id" type="java.lang.String">
+	  	  <column name="id" length="32" not-null="true"  unique="true" />
+		  <generator class="identity"/>
+	  </id>
+<property name="foo" type="integer">
+  <column name="foo" check="foo> 10"/>
+</property> 
+*/}
+	
+	@Test
+	public void testIdentity2() throws IOException {  
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new identityString2()));
+		}
+		System.exit(0);
+	} 
  
-	 
 
+	    
 }
