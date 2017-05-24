@@ -16,10 +16,13 @@ import org.apache.commons.io.FileUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.dialect.DB2Dialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HANAColumnStoreDialect;
+import org.hibernate.dialect.MariaDBDialect;
 import org.hibernate.dialect.MySQL55Dialect;
-import org.hibernate.dialect.PostgreSQL82Dialect;
+import org.hibernate.dialect.SQLServer2012Dialect;
+import org.hibernate.dialect.SybaseASE15Dialect;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
@@ -59,7 +62,7 @@ public class HibStudy_xmlToDDL {
 		} catch (Exception e) {
 			System.out.println("Not support");
 			StrUtily.appendFileWithText(fileName,"No support");
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -266,7 +269,49 @@ public class HibStudy_xmlToDDL {
 		}
 		System.exit(0);
 	} 
+	
+	@Test
+	public void testIdentity3() throws IOException {  
+		FileUtils.writeStringToFile(new File(fileName), ""); 
+		ddlExport(SybaseASE15Dialect.class, getConfigXML(new identityString2())); 
+		System.exit(0);
+	} 
  
+	public static class CommentString extends TextSupport {
+/*		  <id name="id" type="java.lang.String">
+		  	  <column name="id" length="32" />
+			  <generator class="uuid2"/> 
+		  </id>
+        <property name="usName" type="java.lang.String">  
+            <column name="us_name" length="128">  
+              <comment>this is user name</comment>
+            </column>  
+        </property>  
+        <property name="usPwd" type="java.lang.String">  
+            <column name="us_pwd" length="128">  
+                <comment>this is password</comment>  
+            </column>  
+        </property>  
+*/}	
+	 
+	@Test
+	public void testComments() throws IOException {  
+		FileUtils.writeStringToFile(new File(fileName), "");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> diaClass : dialects) {
+			ddlExport(diaClass, getConfigXML(new CommentString()));
+		}
+		System.exit(0);
+	} 
+	
+	@Test
+	public void testComments2() throws IOException {  
+		FileUtils.writeStringToFile(new File(fileName), ""); 
+		ddlExport(DB2Dialect.class, getConfigXML(new CommentString())); 
+		ddlExport(MariaDBDialect.class, getConfigXML(new CommentString()));
+		ddlExport(SQLServer2012Dialect.class, getConfigXML(new CommentString())); 
+		System.exit(0);
+	} 
 
 	    
 }

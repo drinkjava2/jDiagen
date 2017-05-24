@@ -157,7 +157,8 @@ public class DdlFeaturesGenerator {
 		       try{dealOneFeature(d,"nullColumnString", ""+d.getNullColumnString());}catch(Exception e){dealOneFeature(d,"nullColumnString", e.getMessage());}
 		       try{dealOneFeature(d,"supportsColumnCheck", ""+d.supportsColumnCheck());}catch(Exception e){dealOneFeature(d,"supportsColumnCheck", e.getMessage());}
  		       try{dealOneFeature(d,"supportsTableCheck", ""+d.supportsTableCheck());}catch(Exception e){dealOneFeature(d,"supportsTableCheck", e.getMessage());}		       
-		       
+		       try{dealOneFeature(d,"columnComment", ""+d.getColumnComment("_COMMENT"));}catch(Exception e){dealOneFeature(d,"columnComment", e.getMessage());}
+ 		       
 //		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
 //	           try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
 				   			   			       
@@ -168,7 +169,7 @@ public class DdlFeaturesGenerator {
 //		       try{dealOneFeature(d,"canCreateSchema", ""+d.canCreateSchema());}catch(Exception e){dealOneFeature(d,"canCreateSchema", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getAddForeignKeyConstraintString(String, String)", ""+d.getAddForeignKeyConstraintString("CONSNM", "FKEYNAME"));}catch(Exception e){dealOneFeature(d,"getAddForeignKeyConstraintString(String, String)", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getAddForeignKeyConstraintString_false", ""+d.getAddForeignKeyConstraintString("_FKEYNAME", _FKS, "_REFTABLE", _REFS, false));}catch(Exception e){dealOneFeature(d,"getAddForeignKeyConstraintString(String, String[], String, String[], false)", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getColumnComment", ""+d.getColumnComment("_COLUMNCOMMENT"));}catch(Exception e){dealOneFeature(d,"getColumnComment(String)", e.getMessage());}                                                                                                                
+                                                                                                                
                                                                                                                 
 //		       try{dealOneFeature(d,"getIdentityColumnSupport", ""+d.getIdentityColumnSupport());}catch(Exception e){dealOneFeature(d,"getIdentityColumnSupport", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getNoColumnsInsertString", ""+d.getNoColumnsInsertString());}catch(Exception e){dealOneFeature(d,"getNoColumnsInsertString", e.getMessage());}                                                                                                                
