@@ -312,6 +312,30 @@ public class HibStudy_xmlToDDL {
 		ddlExport(SQLServer2012Dialect.class, getConfigXML(new CommentString())); 
 		System.exit(0);
 	} 
+	
+	 
+		public static class SequencyString extends TextSupport {
+	/* <id name="userId" type="java.lang.Long">
+            <column name="USER_ID" precision="9" scale="0" />
+            <generator class="sequence">
+            <param name="sequence">PUB_ID_SEQ</param>
+            </generator>
+        </id>    
+	        <property name="foo" type="java.lang.String">  
+	            <column name="us_pwd" length="128"/>
+	        </property>  
+	*/}	
+		 
+		@Test
+		public void testSequency() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, getConfigXML(new SequencyString()));
+			}
+			System.exit(0);
+		} 
+		
 
 	    
 }
