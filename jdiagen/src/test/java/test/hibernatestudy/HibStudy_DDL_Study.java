@@ -12,15 +12,25 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.apache.commons.io.FileUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.dialect.DB2Dialect;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.FirebirdDialect;
 import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.hibernate.dialect.MariaDBDialect;
 import org.hibernate.dialect.MySQL55Dialect;
+import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.SQLServer2012Dialect;
 import org.hibernate.dialect.SybaseASE15Dialect;
 import org.hibernate.service.ServiceRegistry;
@@ -41,7 +51,7 @@ import util.TextSupport;
  * @since 1.0.0
  */
 //@formatter:off
-public class HibStudy_xmlToDDL {
+public class HibStudy_DDL_Study {
 	private static String fileName = "f:/export.sql";
 
 	private static void ddlExport(Class<?> dialect, String oneTableHbmXml) {
@@ -49,7 +59,28 @@ public class HibStudy_xmlToDDL {
 		p.setProperty("hibernate.dialect", dialect.getName());
 		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(p).build();
 		Metadata metadata = new MetadataSources(sr).addInputStream(StrUtily.getStringInputStream(oneTableHbmXml))
-				.buildMetadata();
+				.buildMetadata(); 
+		System.out.println("=======dialect=" + metadata.getDatabase().getDialect() + "\n");
+		StrUtily.appendFileWithText(fileName, "=======dialect=" + metadata.getDatabase().getDialect() + "\n");
+		try {
+			EnumSet<TargetType> targetTypes = EnumSet.of(TargetType.SCRIPT, TargetType.STDOUT);
+			SchemaExport export = new SchemaExport();
+			export.setDelimiter(";");
+			export.setFormat(true);
+			export.setOutputFile(fileName);
+			export.execute(targetTypes, SchemaExport.Action.CREATE, metadata);
+		} catch (Exception e) {
+			System.out.println("Not support");
+			StrUtily.appendFileWithText(fileName,"No support");
+			e.printStackTrace();
+		}
+	}
+	
+	private static void ddlExport(Class<?> dialect, Class<?> annotatedEntityClass) {
+		Properties p = new Properties();
+		p.setProperty("hibernate.dialect", dialect.getName());
+		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(p).build();
+		Metadata metadata = new MetadataSources(sr).addAnnotatedClass(annotatedEntityClass).buildMetadata(); 
 		System.out.println("=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		StrUtily.appendFileWithText(fileName, "=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		try {
@@ -333,6 +364,37 @@ public class HibStudy_xmlToDDL {
 			for (Class<? extends Dialect> diaClass : dialects) {
 				ddlExport(diaClass, getConfigXML(new SequencyString()));
 			}
+			System.exit(0);
+		} 
+		
+		@Entity 
+		@Table(name="SequencySampleTable",catalog="",schema="")
+		public static class EntitySequencySample{
+			@Id
+			@Column(name = "EMAIL_ID")
+			@GeneratedValue(strategy = GenerationType.SEQUENCE)
+			//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
+			//@SequenceGenerator(initialValue = 1, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=30)
+			private Integer id;
+
+			@Column(name = "name")
+			private String name;
+			
+//			public Integer getId() {return id;}			
+//			public void setId(Integer id) {this.id = id;}			
+//			public String getName() {return name;}
+//			public void setName(String name) {this.name = name;}			
+		}
+		
+		@Test
+		public void testSequency2() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+//			for (Class<? extends Dialect> diaClass : dialects) {
+//				ddlExport(diaClass, EntitySequencySample.class);
+//			}
+			ddlExport(MySQL5Dialect.class, EntitySequencySample.class);
+			ddlExport(FirebirdDialect.class, EntitySequencySample.class);
 			System.exit(0);
 		} 
 		
