@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.dialect.DB2390Dialect;
 import org.hibernate.dialect.DB2Dialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.FirebirdDialect;
@@ -31,6 +32,8 @@ import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.hibernate.dialect.MariaDBDialect;
 import org.hibernate.dialect.MySQL55Dialect;
 import org.hibernate.dialect.MySQL5Dialect;
+import org.hibernate.dialect.Oracle12cDialect;
+import org.hibernate.dialect.RDMSOS2200Dialect;
 import org.hibernate.dialect.SQLServer2012Dialect;
 import org.hibernate.dialect.SybaseASE15Dialect;
 import org.hibernate.service.ServiceRegistry;
@@ -83,12 +86,27 @@ public class HibStudy_DDL_Study {
 		Metadata metadata = new MetadataSources(sr).addAnnotatedClass(annotatedEntityClass).buildMetadata(); 
 		System.out.println("=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		StrUtily.appendFileWithText(fileName, "=======dialect=" + metadata.getDatabase().getDialect() + "\n");
+		
+//		System.out.println("YZ=================");
+//		Database database= metadata.getDatabase(); 
+//		for ( Namespace namespace : database.getNamespaces() ) { 
+//			System.out.println("aa");
+//			// sequences
+//			System.out.println("bb="+namespace.getSequences());
+//			for ( Sequence sequence : namespace.getSequences() ) {
+//				System.out.println("cc"); 
+//				} 
+//		}
+//		System.out.println("YZ=================");
+		
+		
 		try {
 			EnumSet<TargetType> targetTypes = EnumSet.of(TargetType.SCRIPT, TargetType.STDOUT);
 			SchemaExport export = new SchemaExport();
 			export.setDelimiter(";");
 			export.setFormat(true);
 			export.setOutputFile(fileName);
+			
 			export.execute(targetTypes, SchemaExport.Action.CREATE, metadata);
 		} catch (Exception e) {
 			System.out.println("Not support");
@@ -372,29 +390,27 @@ public class HibStudy_DDL_Study {
 		public static class EntitySequencySample{
 			@Id
 			@Column(name = "EMAIL_ID")
-			@GeneratedValue(strategy = GenerationType.SEQUENCE)
-			//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
-			//@SequenceGenerator(initialValue = 1, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=30)
+			//@GeneratedValue(strategy = GenerationType.SEQUENCE)
+			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
+			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private Integer id;
 
 			@Column(name = "name")
 			private String name;
-			
-//			public Integer getId() {return id;}			
-//			public void setId(Integer id) {this.id = id;}			
-//			public String getName() {return name;}
-//			public void setName(String name) {this.name = name;}			
 		}
-		
+  
 		@Test
 		public void testSequency2() throws IOException {  
 			FileUtils.writeStringToFile(new File(fileName), "");
 			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-//			for (Class<? extends Dialect> diaClass : dialects) {
-//				ddlExport(diaClass, EntitySequencySample.class);
-//			}
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, EntitySequencySample.class); 
+			}
 			ddlExport(MySQL5Dialect.class, EntitySequencySample.class);
 			ddlExport(FirebirdDialect.class, EntitySequencySample.class);
+			ddlExport(DB2390Dialect.class, EntitySequencySample.class);
+			ddlExport(Oracle12cDialect.class, EntitySequencySample.class);
+			ddlExport(RDMSOS2200Dialect.class, EntitySequencySample.class); 
 			System.exit(0);
 		} 
 		

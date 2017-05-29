@@ -99,7 +99,10 @@ public class DdlFeaturesGenerator {
 		if (!StringUtils.isEmpty(writeValue) && writeValue.length() > 500)
 			writeValue = writeValue.substring(0, 500);
 		if ("null".equalsIgnoreCase(writeValue))
-			writeValue = "";
+			writeValue = NOT_SUPPORT;
+		if (StringUtils.containsIgnoreCase(writeValue, "not support"))
+			writeValue = NOT_SUPPORT;
+
 		Dao.execute("update tb_hibdll set "//
 				, d.getClass().getSimpleName(), "=", q(writeValue), " where feature=", q(feature));
 	}
@@ -120,7 +123,7 @@ public class DdlFeaturesGenerator {
 		       try{dealOneFeature(d,"addForeignKeyConstraintString", ""+d.getAddForeignKeyConstraintString("_FKEYNAME", _FKS, "_REFTABLE", _REFS, true));}catch(Exception e){dealOneFeature(d,"addForeignKeyConstraintString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"addPrimaryKeyConstraintString", ""+d.getAddPrimaryKeyConstraintString("_PKEYNAME"));}catch(Exception e){dealOneFeature(d,"addPrimaryKeyConstraintString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"createCatalogCommand",  d.getCreateCatalogCommand("_CATALOGNAME"));}catch(Exception e){dealOneFeature(d,"createCatalogCommand", NOT_SUPPORT);}                                                                                                                
-		       try{dealOneFeature(d,"createPooledSequenceStrings", d.getCreateSequenceStrings("_SEQNAME", 11, 33));}catch(Exception e){dealOneFeature(d,"createPooledSequenceStrings", NOT_SUPPORT);}                                                                                                                
+		       try{dealOneFeature(d,"createPooledSequenceStrings", d.getCreateSequenceStrings("_SEQ", 11, 33));}catch(Exception e){dealOneFeature(d,"createPooledSequenceStrings", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"createSchemaCommand",  d.getCreateSchemaCommand("_SCHEMANAME"));}catch(Exception e){dealOneFeature(d,"createSchemaCommand", NOT_SUPPORT);}                                                                                                                
  		       try{dealOneFeature(d,"createSequenceStrings",  d.getCreateSequenceStrings("_SEQ"));}catch(Exception e){dealOneFeature(d,"createSequenceStrings", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"createTableString", ""+d.getCreateTableString());}catch(Exception e){dealOneFeature(d,"createTableString", NOT_SUPPORT);}                                                                                                                
@@ -158,7 +161,10 @@ public class DdlFeaturesGenerator {
 		       try{dealOneFeature(d,"supportsColumnCheck", ""+d.supportsColumnCheck());}catch(Exception e){dealOneFeature(d,"supportsColumnCheck", e.getMessage());}
  		       try{dealOneFeature(d,"supportsTableCheck", ""+d.supportsTableCheck());}catch(Exception e){dealOneFeature(d,"supportsTableCheck", e.getMessage());}		       
 		       try{dealOneFeature(d,"columnComment", ""+d.getColumnComment("_COMMENT"));}catch(Exception e){dealOneFeature(d,"columnComment", e.getMessage());}
- 		       
+ 		       try{dealOneFeature(d,"selectSequenceNextValString", ""+d.getSelectSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"selectSequenceNextValString", e.getMessage());}                                                                                                                
+ 		       try{dealOneFeature(d,"sequenceNextValString", ""+d.getSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"sequenceNextValString", e.getMessage());}                                                                                                                
+ 		  
+		       
 //		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
 //	           try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
 				   			   			       
@@ -175,10 +181,8 @@ public class DdlFeaturesGenerator {
 //		       try{dealOneFeature(d,"getNoColumnsInsertString", ""+d.getNoColumnsInsertString());}catch(Exception e){dealOneFeature(d,"getNoColumnsInsertString", e.getMessage());}                                                                                                                
                                                                                                                 
 //		       try{dealOneFeature(d,"getQuerySequencesString", ""+d.getQuerySequencesString());}catch(Exception e){dealOneFeature(d,"getQuerySequencesString", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getSelectSequenceNextValString", ""+d.getSelectSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"getSelectSequenceNextValString", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"getSequenceInformationExtractor", ""+d.getSequenceInformationExtractor());}catch(Exception e){dealOneFeature(d,"getSequenceInformationExtractor", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getSequenceNextValString", ""+d.getSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"getSequenceNextValString", e.getMessage());}                                                                                                                
-//		       try{dealOneFeature(d,"getTableComment", ""+d.getTableComment("_TABLECOMMENT"));}catch(Exception e){dealOneFeature(d,"getTableComment", e.getMessage());}                                                                                                                
+ //		       try{dealOneFeature(d,"getTableComment", ""+d.getTableComment("_TABLECOMMENT"));}catch(Exception e){dealOneFeature(d,"getTableComment", e.getMessage());}                                                                                                                
 //		       try{dealOneFeature(d,"hasSelfReferentialForeignKeyBug", ""+d.hasSelfReferentialForeignKeyBug());}catch(Exception e){dealOneFeature(d,"hasSelfReferentialForeignKeyBug", e.getMessage());}                                                                                                                
 
 //		       try{dealOneFeature(d,"areStringComparisonsCaseInsensitive", ""+d.areStringComparisonsCaseInsensitive());}catch(Exception e){dealOneFeature(d,"areStringComparisonsCaseInsensitive", e.getMessage());}                                                                                                                
