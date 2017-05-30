@@ -1,13 +1,13 @@
-package dialects_collection;
+package dialects_collection.hxtt_dialects;
 
 import java.sql.Types;
 
 /**
- * An SQL dialect for HXTT XML.
+ * An SQL dialect for HXTT Excel.
  */
-public class XMLDialect extends HxttDialect {
+public class ExcelDialect extends HxttDialect {
 
-    public XMLDialect() {
+    public ExcelDialect() {
         super();
         //complete map
         registerColumnType( Types.BIT, "boolean" );
@@ -18,11 +18,11 @@ public class XMLDialect extends HxttDialect {
         registerColumnType(Types.NUMERIC, "numeric($p,$s)");
         registerColumnType(Types.BOOLEAN, "boolean");
         registerColumnType( Types.BIGINT, "bigint" );
-        registerColumnType( Types.SMALLINT, "numeric(5,0)" ); // HXTT XML DON'T SUPPORT SMALLINT
-        registerColumnType( Types.TINYINT, "numeric(3,0)" );   // HXTT XML DON'T SUPPORT TINYINT
+        registerColumnType( Types.SMALLINT, "numeric(5,0)" ); // HXTT Excel DON'T SUPPORT SMALLINT
+        registerColumnType( Types.TINYINT, "numeric(3,0)" );   // HXTT Excel DON'T SUPPORT TINYINT
         registerColumnType(Types.INTEGER, "integer");
         registerColumnType(Types.REAL, "real");
-        registerColumnType( Types.FLOAT, "float" );           // HXTT XML DON'T SUPPORT FLOAT ,it will be a double type
+        registerColumnType( Types.FLOAT, "float" );           // HXTT Excel DON'T SUPPORT FLOAT ,it will be a double type
         registerColumnType(Types.DOUBLE, "double");
         registerColumnType( Types.BINARY, "binary" );
         registerColumnType(Types.VARBINARY, "varbinary");

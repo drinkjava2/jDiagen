@@ -1,4 +1,4 @@
-package dialects_collection;
+package dialects_collection.hxtt_dialects;
 
 import java.sql.Types;
 

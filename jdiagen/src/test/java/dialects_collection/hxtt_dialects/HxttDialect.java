@@ -1,14 +1,15 @@
-package dialects_collection;
+package dialects_collection.hxtt_dialects;
 
-import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.MappingException;
+import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.function.NoArgSQLFunction;
+import org.hibernate.dialect.function.StandardSQLFunction;
 //@author Gavin King, David Channon steve.ebersole@jboss.com
 //http://viewvc.jboss.org/cgi-bin/viewvc.cgi/hibernate/core/trunk/core/src/main/java/org/hibernate/dialect/
 //http://viewvc.jboss.org/cgi-bin/viewvc.cgi/hibernate/core/trunk/core/src/main/java/org/hibernate/dialect/Dialect.java?view=markup
 import org.hibernate.dialect.function.VarArgsSQLFunction;
-import org.hibernate.cfg.Environment;
-import org.hibernate.dialect.function.NoArgSQLFunction;
-import org.hibernate.dialect.function.StandardSQLFunction;
+import org.hibernate.type.StandardBasicTypes;
 
 /**
  * An common SQL  dialect for HXTT JDBC drivers.
@@ -213,7 +214,7 @@ public abstract class HxttDialect extends Dialect {
      * @return True if sequences supported; false otherwise.
      */
     public final boolean supportsSequences() {
-        return true;//false;
+        return false;
     }
     
     /**
@@ -225,7 +226,7 @@ public abstract class HxttDialect extends Dialect {
      * @see #getCreateSequenceString(String, int, int)
      */
     public boolean supportsPooledSequences() {
-        return true;//false;
+        return false;
     }
     
     /**
@@ -375,141 +376,7 @@ public abstract class HxttDialect extends Dialect {
 
     
     // IDENTITY support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    /**
-     * Does this dialect support identity column key generation?
-     *
-     * @return True if IDENTITY columns are supported; false otherwise.
-     */
-    public boolean supportsIdentityColumns() {
-            return true;//false;
-    }
-
-    /**
-     * Whether this dialect have an Identity clause added to the data type or a
-     * completely seperate identity data type
-     *
-     * @return boolean
-     */
-/*    public boolean hasDataTypeInIdentityColumn() {
-            return true;//false;//true;
-    }*/
-
-
-    
-    /**
-     * Get the select command to use to retrieve the last generated IDENTITY
-     * value for a particuar table
-     *
-     * @param table The table into which the insert was done
-     * @param column The PK column.
-     * @param type The {@link java.sql.Types} type code.
-     * @return The appropriate select command
-     * @throws MappingException If IDENTITY generation is not supported.
-     */
-    public final String getIdentitySelectString(String table, String column, int type){
-        //return getIdentitySelectString();
-        return new StringBuffer().append("select currval('")
-			.append(table)
-			.append("','")
-			.append(column)
-			.append("')")
-			.toString();
-/*		return new StringBuffer().append("select currval('")
-			.append(table)
-			.append('_')
-			.append(column)
-			.append("_seq')")
-			.toString();
- 		return type==Type.BIGINT ?
-			"select dbinfo('serial8') from systables where tabid=1" :
-			"select dbinfo('sqlca.sqlerrd1') from systables where tabid=1";
-
- */
-            
-    }
-
- /*   public String getLimitString(String querySelect, int offset, int limit) {
-        int lastIndexOfOrderBy = querySelect.toLowerCase().lastIndexOf("order by ");
-        if (lastIndexOfOrderBy < 0 || querySelect.endsWith(")") || offset == 0) {
-            return super.getLimitString(querySelect, 0, limit);
-        } else {
-            String orderby = querySelect.substring(lastIndexOfOrderBy, querySelect.length());
-            int indexOfFrom = querySelect.toLowerCase().indexOf("from");
-            String selectFld = querySelect.substring(0, indexOfFrom);
-            String selectFromTableAndWhere = querySelect.substring(indexOfFrom, lastIndexOfOrderBy);
-            StringBuffer sql = new StringBuffer(querySelect.length() + 100);
-            sql.append("select * from (")
-                    .append(selectFld)
-                    .append(",recno() as _page_row_num_hb ")
-                    .append(selectFromTableAndWhere).append(" ) temp ")
-                    .append(" where  _page_row_num_hb BETWEEN  ")
-                    .append(offset + 1).append(" and ").append(limit);
-            return sql.toString();
-        }
-    }    */
-    
-    /**
-     * Get the select command to use to retrieve the last generated IDENTITY
-     * value.
-     *
-     * @return The appropriate select command
-     * @throws MappingException If IDENTITY generation is not supported.
-     */
-/*    public String getIdentitySelectString() {
-        //return "select last_insert_id()";
-        return "select @@identity";
-        //"select identity_val_local() from sysibm.sysdummy1"
-        //call identity()"
-        //"SELECT LAST_IDENTITY() FROM %TSQL_sys.snf";
-    }*/
-
-    /**
-     * The syntax used during DDL to define a column as being an IDENTITY of
-     * a particular type.
-     *
-     * @param type The {@link java.sql.Types} type code.
-     * @return The appropriate DDL fragment.
-     * @throws MappingException If IDENTITY generation is not supported.
-     */
-/*    public String getIdentityColumnString(int type) {
-            return getIdentityColumnString();
-/*		return type==Type.BIGINT ?
-			"bigserial not null" :
-			"serial not null";
- 		return type==Type.BIGINT ?
-			"serial8 not null" :
-			"serial not null";
-
- * /
-            
-    }*/
-
-    /**
-     * The syntax used during DDL to define a column as being an IDENTITY.
-     *
-     * @return The appropriate DDL fragment.
-     * @throws MappingException If IDENTITY generation is not supported.
-     */
-    public final String getIdentityColumnString() {
-         return "auto_increment not null"; //starts with 1, implicitly
-         //return "identity not null"; //starts with 1, implicitly
-         //"autoincrement";
-         //identity";
-         //return "generated by default as identity (start with 1)"; //not null is implicit
-    }
-
-
-    /**
-     * The keyword used to insert a generated value into an identity column (or null).
-     * Need if the dialect does not support inserts that specify no column values.
-     *
-     * @return The appropriate keyword.
-     */
-    public final String getIdentityInsertString() {
-        //return null;
-        return "null";
-    }
+    //I deleted old identity methods
     
     // lock acquisition support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -653,8 +520,7 @@ public abstract class HxttDialect extends Dialect {
         return " primary key ";
         //return " add constraint " + constraintName + " primary key ";
     }
-    
-    
+     
     /**
      * The keyword used to specify a nullable column.
      *

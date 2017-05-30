@@ -78,14 +78,14 @@ import org.hibernate.dialect.Teradata14Dialect;
 import org.hibernate.dialect.TeradataDialect;
 import org.hibernate.dialect.TimesTenDialect;
 
-import dialects_collection.AccessDialect;
-import dialects_collection.CobolDialect;
-import dialects_collection.DbfDialect;
-import dialects_collection.ExcelDialect;
-import dialects_collection.ParadoxDialect;
 import dialects_collection.SQLiteDialect;
-import dialects_collection.TextDialect;
-import dialects_collection.XMLDialect;
+import dialects_collection.hxtt_dialects.AccessDialect;
+import dialects_collection.hxtt_dialects.CobolDialect;
+import dialects_collection.hxtt_dialects.DbfDialect;
+import dialects_collection.hxtt_dialects.ExcelDialect;
+import dialects_collection.hxtt_dialects.ParadoxDialect;
+import dialects_collection.hxtt_dialects.TextDialect;
+import dialects_collection.hxtt_dialects.XMLDialect;
 
 /**
  * This is not a unit test class, it's a code generator tool to create source

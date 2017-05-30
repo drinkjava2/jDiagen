@@ -83,7 +83,7 @@ public class HibStudy_DDL_Study {
 		Properties p = new Properties();
 		p.setProperty("hibernate.dialect", dialect.getName());
 		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(p).build();
-		Metadata metadata = new MetadataSources(sr).addAnnotatedClass(annotatedEntityClass).buildMetadata(); 
+		Metadata metadata = new MetadataSources(sr).addAnnotatedClass(annotatedEntityClass).addAnnotatedClass(EntitySequencySample2.class).buildMetadata(); 
 		System.out.println("=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		StrUtily.appendFileWithText(fileName, "=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		
@@ -395,7 +395,27 @@ public class HibStudy_DDL_Study {
 			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private Integer id;
 
+			@Id
 			@Column(name = "name")
+			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
+			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
+			private String name;
+		}
+		
+		@Entity 
+		@Table(name="SequencySampleTable2",catalog="",schema="")
+		public static class EntitySequencySample2{
+			@Id
+			@Column(name = "EMAIL_ID")
+			//@GeneratedValue(strategy = GenerationType.SEQUENCE)
+			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
+			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
+			private Integer id;
+
+			@Id
+			@Column(name = "name")
+			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
+			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private String name;
 		}
   
@@ -403,9 +423,9 @@ public class HibStudy_DDL_Study {
 		public void testSequency2() throws IOException {  
 			FileUtils.writeStringToFile(new File(fileName), "");
 			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-			for (Class<? extends Dialect> diaClass : dialects) {
-				ddlExport(diaClass, EntitySequencySample.class); 
-			}
+//			for (Class<? extends Dialect> diaClass : dialects) {
+//				ddlExport(diaClass, EntitySequencySample.class); 
+//			}
 			ddlExport(MySQL5Dialect.class, EntitySequencySample.class);
 			ddlExport(FirebirdDialect.class, EntitySequencySample.class);
 			ddlExport(DB2390Dialect.class, EntitySequencySample.class);

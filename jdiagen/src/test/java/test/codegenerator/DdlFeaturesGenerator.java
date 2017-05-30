@@ -56,6 +56,11 @@ public class DdlFeaturesGenerator {
 		Dao.execute(createSQL);
 		Dao.refreshMetaData();
 		exportOtherFeatures();
+		// a quick bug fix of RDMSOS2200Dialect
+		Dao.execute("update tb_hibdll set RDMSOS2200Dialect=?", empty(NOT_SUPPORT), " where feature=?",
+				empty("createSequenceStrings"));
+		Dao.execute("update tb_hibdll set RDMSOS2200Dialect=?", empty("false"), " where feature=?",
+				empty("supportsSequences"));
 		generateInitDdlFeaturesSourceCode();
 	}
 
@@ -114,10 +119,8 @@ public class DdlFeaturesGenerator {
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = TestTypeMappingCodeGenerator.buildDialectByName(hibDialectClass); 
 			Dao.execute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
-
 		       String[] _FKS={"_FK1","_FK2"};                                                                                                                		
 		       String[] _REFS={"_REF1","_REF2"}; 
-		       
 		       try{dealOneFeature(d,"addColumnString", ""+d.getAddColumnString());}catch(Exception e){dealOneFeature(d,"addColumnString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"addColumnSuffixString", ""+d.getAddColumnSuffixString());}catch(Exception e){dealOneFeature(d,"addColumnSuffixString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"addForeignKeyConstraintString", ""+d.getAddForeignKeyConstraintString("_FKEYNAME", _FKS, "_REFTABLE", _REFS, true));}catch(Exception e){dealOneFeature(d,"addForeignKeyConstraintString", NOT_SUPPORT);}                                                                                                                
