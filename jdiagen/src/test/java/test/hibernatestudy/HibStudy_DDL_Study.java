@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -76,7 +77,7 @@ public class HibStudy_DDL_Study {
 			export.setDelimiter(";");
 			export.setFormat(true);
 			export.setOutputFile(fileName);
-			export.execute(targetTypes, SchemaExport.Action.CREATE, metadata);
+			export.execute(targetTypes, SchemaExport.Action.BOTH, metadata);
 		} catch (Exception e) {
 			System.out.println("Not support");
 			StrUtily.appendFileWithText(fileName,"No support");
@@ -116,7 +117,7 @@ public class HibStudy_DDL_Study {
 			export.setFormat(true);
 			export.setOutputFile(fileName);
 			
-			export.execute(targetTypes, SchemaExport.Action.CREATE, metadata);
+			export.execute(targetTypes, SchemaExport.Action.BOTH, metadata);
 		} catch (Exception e) {
 			System.out.println("Not support");
 			StrUtily.appendFileWithText(fileName,"No support");
@@ -526,15 +527,22 @@ public class HibStudy_DDL_Study {
  
 		@Entity 
 		@Table(name="SequencySampleTable",catalog="",schema="")
-		public static class TableGeneratorSample{
+		public static class TableGeneratorSample{ 
 			@Id
-			@Column(name = "EMAIL_ID")
-			@GeneratedValue(strategy = GenerationType.TABLE,generator="tb1")
-			@TableGenerator(name="tb1",initialValue=1)
-			private Integer id;
-
-			@Column(name = "name")
-			private String name;
+			@Column(name = "ID1")
+			@GeneratedValue(strategy = GenerationType.TABLE,generator="gentable")
+			@TableGenerator(name="gentable",initialValue=1,pkColumnName="pkcol",allocationSize=25,pkColumnValue="pkcolvalue1",table="tb1",valueColumnName="valCol1" )
+ 			private Integer id; 
+		}
+		
+		@Entity 
+		@Table(name="SequencySampleTable2",catalog="",schema="")
+		public static class TableGeneratorSample2{ 
+			@Id
+			@Column(name = "ID1")
+			@GeneratedValue(strategy = GenerationType.TABLE,generator="gentable")
+			@TableGenerator(name="gentable",initialValue=1,pkColumnName="pkcol2",allocationSize=25,pkColumnValue="pkcolvalue2",table="tb1",valueColumnName="valCol2" )
+ 			private Integer id; 
 		}
 		
 		
@@ -543,10 +551,9 @@ public class HibStudy_DDL_Study {
 			FileUtils.writeStringToFile(new File(fileName), "");
 			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 			for (Class<? extends Dialect> diaClass : dialects) {
-				ddlExport(diaClass, TableGeneratorSample.class); 
+				ddlExport(diaClass, TableGeneratorSample.class,TableGeneratorSample2.class); 
 			}
 			System.exit(0);
 		}
 
-	    
 }
