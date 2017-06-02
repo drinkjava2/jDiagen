@@ -19,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 
 import org.apache.commons.io.FileUtils;
 import org.hibernate.boot.Metadata;
@@ -57,12 +58,16 @@ import util.TextSupport;
 public class HibStudy_DDL_Study {
 	private static String fileName = "f:/export.sql";
 
-	private static void ddlExport(Class<?> dialect, String oneTableHbmXml) {
+	private static void ddlExport(Class<?> dialect, String... oneTableHbmXml) {
 		Properties p = new Properties();
 		p.setProperty("hibernate.dialect", dialect.getName());
+		p.setProperty("hibernate.id.new_generator_mappings", "true"); 
 		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(p).build();
-		Metadata metadata = new MetadataSources(sr).addInputStream(StrUtily.getStringInputStream(oneTableHbmXml))
-				.buildMetadata(); 
+		MetadataSources mes= new MetadataSources(sr);
+		for (String oneStr : oneTableHbmXml) {
+			mes.addInputStream(StrUtily.getStringInputStream(oneStr));
+		}
+		Metadata  metadata=mes.buildMetadata();
 		System.out.println("=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		StrUtily.appendFileWithText(fileName, "=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		try {
@@ -79,11 +84,15 @@ public class HibStudy_DDL_Study {
 		}
 	}
 	
-	private static void ddlExport(Class<?> dialect, Class<?> annotatedEntityClass) {
+	private static void ddlExport(Class<?> dialect, Class<?>... annotatedEntityClass) {
 		Properties p = new Properties();
 		p.setProperty("hibernate.dialect", dialect.getName());
 		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(p).build();
-		Metadata metadata = new MetadataSources(sr).addAnnotatedClass(annotatedEntityClass).addAnnotatedClass(EntitySequencySample2.class).buildMetadata(); 
+		MetadataSources mes= new MetadataSources(sr);
+		for (Class<?> clazz : annotatedEntityClass) {
+			mes.addAnnotatedClass(clazz);
+		}
+		Metadata  metadata=mes.buildMetadata();
 		System.out.println("=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		StrUtily.appendFileWithText(fileName, "=======dialect=" + metadata.getDatabase().getDialect() + "\n");
 		
@@ -392,13 +401,13 @@ public class HibStudy_DDL_Study {
 			@Column(name = "EMAIL_ID")
 			//@GeneratedValue(strategy = GenerationType.SEQUENCE)
 			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
-			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
+			@SequenceGenerator(initialValue = 0, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private Integer id;
 
 			@Id
 			@Column(name = "name")
 			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
-			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
+			@SequenceGenerator(initialValue = 0, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private String name;
 		}
 		
@@ -406,16 +415,13 @@ public class HibStudy_DDL_Study {
 		@Table(name="SequencySampleTable2",catalog="",schema="")
 		public static class EntitySequencySample2{
 			@Id
-			@Column(name = "EMAIL_ID")
+			@Column(name = "EMAIL_ID2")
 			//@GeneratedValue(strategy = GenerationType.SEQUENCE)
-			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
-			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
+			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq2")
+			@SequenceGenerator(initialValue = 0, name = "emailSeq2", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private Integer id;
 
-			@Id
 			@Column(name = "name")
-			@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailSeq")
-			@SequenceGenerator(initialValue = 3, name = "emailSeq", sequenceName = "EMAIL_SEQUENCE",allocationSize=20)
 			private String name;
 		}
   
@@ -423,9 +429,9 @@ public class HibStudy_DDL_Study {
 		public void testSequency2() throws IOException {  
 			FileUtils.writeStringToFile(new File(fileName), "");
 			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-//			for (Class<? extends Dialect> diaClass : dialects) {
-//				ddlExport(diaClass, EntitySequencySample.class); 
-//			}
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, EntitySequencySample.class, EntitySequencySample2.class ); 
+			}
 			ddlExport(MySQL5Dialect.class, EntitySequencySample.class);
 			ddlExport(FirebirdDialect.class, EntitySequencySample.class);
 			ddlExport(DB2390Dialect.class, EntitySequencySample.class);
@@ -434,6 +440,113 @@ public class HibStudy_DDL_Study {
 			System.exit(0);
 		} 
 		
+
+		@Entity 
+		@Table(name="SequencySampleTable",catalog="",schema="")
+		public static class AutoGeneratorSample{
+			@Id
+			@Column(name = "EMAIL_ID")
+			@GeneratedValue(strategy = GenerationType.AUTO)
+			private Integer id;
+
+			@Column(name = "name")
+			private String name;
+		}
+		
+		
+		@Test
+		public void testAutoGeneratorSample() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, AutoGeneratorSample.class); 
+			}
+			System.exit(0);
+		}
+		
+		
+		@Test
+		public void testAnnotatedUnionKey() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, Students.class, IdCard.class, IdCardPK.class); 
+			}
+			System.exit(0);
+		} 
+		
+		
+		
+		
+		public static class UnionKeyString extends TextSupport {
+/*<?xml version="1.0" encoding="utf-8"?>
+		<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+		 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping> 
+   <class name="test.hibernatestudy.IdCard" table="idcard">
+   <composite-id name="pk" class="test.hibernatestudy.IdCardPK">
+      <key-property name="pid" column="pid" type="string"/>
+      <key-property name="bloodType" type="string"/>
+      <generator class="assigned"/>
+   </composite-id>
+   <property name="province" column="province" type="string"/>
+  </class>
+</hibernate-mapping>*/}	
+		 
+		public static class UnionKeyString2 extends TextSupport {
+/*<?xml version="1.0" encoding="utf-8"?>
+		<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+		 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping> 
+  <class name="test.hibernatestudy.Students" table="students">
+    <id name="sid" column="sid" type="int">
+      <generator class="assigned"/>
+    </id>
+    <property name="sname" column="sname" type="string"/>
+
+    <many-to-one name="cardId">
+      <column name="pid" unique="true"/>
+      <column name="bloodid"/>
+    </many-to-one>
+  </class>
+</hibernate-mapping>
+*/}	
+		
+		
+		@Test
+		public void testUnionKey() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, ""+new UnionKeyString(),""+new UnionKeyString2());
+			}
+			System.exit(0);
+		} 		
+		
+ 
+		@Entity 
+		@Table(name="SequencySampleTable",catalog="",schema="")
+		public static class TableGeneratorSample{
+			@Id
+			@Column(name = "EMAIL_ID")
+			@GeneratedValue(strategy = GenerationType.TABLE,generator="tb1")
+			@TableGenerator(name="tb1",initialValue=1)
+			private Integer id;
+
+			@Column(name = "name")
+			private String name;
+		}
+		
+		
+		@Test
+		public void testTableGeneratorSample() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, TableGeneratorSample.class); 
+			}
+			System.exit(0);
+		}
 
 	    
 }
