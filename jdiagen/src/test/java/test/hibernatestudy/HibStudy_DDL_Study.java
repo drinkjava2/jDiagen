@@ -17,7 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -507,7 +506,7 @@ public class HibStudy_DDL_Study {
 
     <many-to-one name="cardId">
       <column name="pid" unique="true"/>
-      <column name="bloodid"/>
+      <column name="bloodType"/>
     </many-to-one>
   </class>
 </hibernate-mapping>
