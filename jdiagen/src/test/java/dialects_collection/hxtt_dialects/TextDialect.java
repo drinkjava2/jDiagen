@@ -65,4 +65,9 @@ public class TextDialect extends HxttDialect {
     public boolean hasDataTypeInIdentityColumn() {
             return false;
     }
+    
+	public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKey, String referencedTable,
+			String[] primaryKey, boolean referencesPrimaryKey) {
+		throw new UnsupportedOperationException("No add foreign key syntax supported");
+	}
 }
