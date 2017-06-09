@@ -34,6 +34,7 @@ import org.hibernate.dialect.MariaDBDialect;
 import org.hibernate.dialect.MySQL55Dialect;
 import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.Oracle12cDialect;
+import org.hibernate.dialect.PostgresPlusDialect;
 import org.hibernate.dialect.RDMSOS2200Dialect;
 import org.hibernate.dialect.SQLServer2012Dialect;
 import org.hibernate.dialect.SybaseASE15Dialect;
@@ -517,10 +518,13 @@ public class HibStudy_DDL_Study {
 		public void testUnionKey() throws IOException {  
 			FileUtils.writeStringToFile(new File(fileName), "");
 			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-			for (Class<? extends Dialect> diaClass : dialects) {
-				ddlExport(diaClass, ""+new UnionKeyString(),""+new UnionKeyString2());
-			}
+//			for (Class<? extends Dialect> diaClass : dialects) {
+//				ddlExport(diaClass, ""+new UnionKeyString(),""+new UnionKeyString2());
+//			}
+			ddlExport(PostgresPlusDialect.class, ""+new UnionKeyString(),""+new UnionKeyString2());
 			System.exit(0);
+			
+			
 		} 		
 		
  
