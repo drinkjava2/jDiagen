@@ -543,8 +543,8 @@ public class HibStudy_DDL_Study {
 		public static class TableGeneratorSample2{ 
 			@Id
 			@Column(name = "ID1")
-			@GeneratedValue(strategy = GenerationType.TABLE,generator="gentable")
-			@TableGenerator(name="gentable",initialValue=1,pkColumnName="pkcol2",allocationSize=25,pkColumnValue="pkcolvalue2",table="tb1",valueColumnName="valCol2" )
+			@GeneratedValue(strategy = GenerationType.TABLE,generator="gentable2")
+			@TableGenerator(name="gentable2",initialValue=1,pkColumnName="pkcol",allocationSize=25,pkColumnValue="pkcolvalue2",table="tb1",valueColumnName="valCol2" )
  			private Integer id; 
 		}
 		
