@@ -25,8 +25,8 @@ import com.github.drinkjava2.jsqlbox.Dao;
 import test.config.PrepareTestContext;
 
 /**
- * This is to collect Hibernate's Dialect.class features, but seems miss some
- * properties for DDL
+ * This is to collect Hibernate's Dialect.class features, only collect what I
+ * understand DDL features
  *
  * @author Yong Zhu
  * @since 1.0.0
@@ -142,9 +142,9 @@ public class DdlFeaturesGenerator {
 		       try{dealOneFeature(d,"needDropConstraintsBeforeDropTable", ""+d.dropConstraints());}catch(Exception e){dealOneFeature(d,"needDropConstraintsBeforeDropTable", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"supportsCommentOn", ""+d.supportsCommentOn());}catch(Exception e){dealOneFeature(d,"supportsCommentOn", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"supportsIfExistsAfterConstraintName", ""+d.supportsIfExistsAfterConstraintName());}catch(Exception e){dealOneFeature(d,"supportsIfExistsAfterConstraintName", NOT_SUPPORT);}                                                                                                                
-		       try{dealOneFeature(d,"supportsIfExistsAfterTableName", ""+d.supportsIfExistsAfterTableName());}catch(Exception e){dealOneFeature(d,"supportsIfExistsAfterTableName", NOT_SUPPORT);}                                                                                                                
+		       //try{dealOneFeature(d,"supportsIfExistsAfterTableName", ""+d.supportsIfExistsAfterTableName());}catch(Exception e){dealOneFeature(d,"supportsIfExistsAfterTableName", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"supportsIfExistsBeforeConstraintName", ""+d.supportsIfExistsBeforeConstraintName());}catch(Exception e){dealOneFeature(d,"supportsIfExistsBeforeConstraintName", NOT_SUPPORT);}                                                                                                                
-		       try{dealOneFeature(d,"supportsIfExistsBeforeTableName", ""+d.supportsIfExistsBeforeTableName());}catch(Exception e){dealOneFeature(d,"supportsIfExistsBeforeTableName", NOT_SUPPORT);}                                                                                                                
+		      // try{dealOneFeature(d,"supportsIfExistsBeforeTableName", ""+d.supportsIfExistsBeforeTableName());}catch(Exception e){dealOneFeature(d,"supportsIfExistsBeforeTableName", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"supportsPooledSequences", ""+d.supportsPooledSequences());}catch(Exception e){dealOneFeature(d,"supportsPooledSequences", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"supportsSequences", ""+d.supportsSequences());}catch(Exception e){dealOneFeature(d,"supportsSequences", NOT_SUPPORT);}   
 		      
