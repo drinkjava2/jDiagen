@@ -48,8 +48,7 @@ public class HibStudy_SessionFactoryFromConfig {
 		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
 		SqlStatementLogger log = serv.getSqlStatementLogger();
 		org.apache.log4j.Logger.getLogger("org.hibernate").setLevel(Level.TRACE);
-		log.setLogToStdout(true);
-
+		log.setLogToStdout(true); 
 	}
 
 	private static void insertDataByHibernate() {
@@ -79,7 +78,8 @@ public class HibStudy_SessionFactoryFromConfig {
 		c.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
 		c.setProperty("hibernate.connection.username", "root");
 		c.setProperty("hibernate.connection.password", "root888");
-		c.addResource("Customer.hbm.xml");
+		//c.addResource("Customer.hbm.xml");
+		//c.addAnnotatedClass(annotatedClass)
 		return c;
 	}
 
