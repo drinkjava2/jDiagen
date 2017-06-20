@@ -10,31 +10,24 @@ import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
 import static com.github.drinkjava2.jsqlbox.SqlHelper.q;
 import static test.codegenerator.RefUtils.findFieldObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.function.AnsiTrimEmulationFunction;
-import org.hibernate.dialect.function.AnsiTrimFunction;
 import org.hibernate.dialect.function.CastFunction;
-import org.hibernate.dialect.function.CharIndexFunction;
-import org.hibernate.dialect.function.ConvertFunction;
-import org.hibernate.dialect.function.DerbyConcatFunction;
-import org.hibernate.dialect.function.NoArgSQLFunction;
-import org.hibernate.dialect.function.NvlFunction;
-import org.hibernate.dialect.function.PositionSubstringFunction;
 import org.hibernate.dialect.function.SQLFunction;
-import org.hibernate.dialect.function.StaticPrecisionFspTimestampFunction;
-import org.hibernate.dialect.function.VarArgsSQLFunction;
 import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
+import org.hibernate.type.IntegerType;
 import org.junit.Test;
 
 import com.github.drinkjava2.jsqlbox.Dao;
@@ -46,7 +39,7 @@ import util.StrUtily;
  * This is not a unit test class, it's a code generator tool to create source
  * code for jDialects
  *
- * @author Yong Zhu 
+ * @author Yong Zhu
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
@@ -63,31 +56,60 @@ public class TestFunctionMappingGenerator extends TestBase {
 		return dialectFactory.buildDialect(configValues, null);
 	}
 
- 
-
 	@Test
 	public void transferFunctions() {
-		String createSQL = "create table tb_functions ("//
-				+ "fn_name varchar(200)  " //
-				+ ",percentage double" //
-				+ ", constraint const_fn_name primary key (fn_name)" //
-				+ ")";
-		Dao.executeQuiet("drop table tb_functions");
-		Dao.execute(createSQL);
-		exportDialectFunctions();
-		countFunctionPercent();
+//		String createSQL = "create table tb_functions ("//
+//				+ "fn_name varchar(500) default ''  " //
+//				+ ",percentage int" //
+//				+ ", constraint const_fn_name primary key (fn_name)" //
+//				+ ")";
+//		Dao.executeQuiet("drop table tb_functions");
+//		Dao.execute(createSQL);
+//		exportDialectFunctionsToDatabase();
+//		countFunctionPercent();
+		generateFunctionsSourceCode();
 	}
 
-	public void exportDialectFunctions() {
+	private static List<String> getL(int count) {
+		List<String> l = new ArrayList<>();
+		for (int i = 0; i < count; i++) {
+			l.add("" + (i + 1) * 1111);
+		}
+		return l;
+	}
+
+	private static String getTryValue(SQLFunction fun, int paraCount) {
+		String returnResult = "";
+		String realValue = "";
+		try {
+			// only try IntegerType because firstArgumentType not used
+			realValue = fun.render(IntegerType.INSTANCE, getL(paraCount), null);
+			if (paraCount == 6)
+				returnResult = realValue;
+			else
+				returnResult += paraCount + "=" + realValue;
+		} catch (Exception e1) {
+		}
+		if (paraCount == 0) {
+			// to mo pi gu for hibernate if used wrong parameters
+			if (realValue.length() <= 1 || realValue.startsWith(")") || realValue.startsWith("as ")
+					|| realValue.startsWith(" as "))
+				returnResult = "";
+		}
+		return returnResult;
+	}
+
+	public void exportDialectFunctionsToDatabase() {
 		System.out.println("exportDialectFunctions========================");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> class1 : dialects) {
+			System.out.println("Analyze dialect " + class1 + "...");
 			Dialect dia = buildDialectByName(class1);
 			String diaName = dia.getClass().getSimpleName();
 			Dao.execute("alter table tb_functions add  " + diaName + " varchar(200)");
 			Dao.executeQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", empty(diaName),
 					empty("FUNCTIONS"));
-			Map<String, SQLFunction> sqlFunctions = (Map<String, SQLFunction>)  findFieldObject(dia, "sqlFunctions");
+			Map<String, SQLFunction> sqlFunctions = (Map<String, SQLFunction>) findFieldObject(dia, "sqlFunctions");
 
 			for (Entry<String, SQLFunction> entry : sqlFunctions.entrySet()) {
 				String fn_name = entry.getKey();
@@ -95,38 +117,59 @@ public class TestFunctionMappingGenerator extends TestBase {
 						empty(fn_name));
 
 				SQLFunction fun = entry.getValue();
-				@SuppressWarnings("rawtypes")
-				Class funClass = fun.getClass();
-				String sqlName = fun.toString();
 
-				if (VarArgsSQLFunction.class.equals(funClass)) {
-					sqlName = "" + findFieldObject(fun, "begin") + findFieldObject(fun, "sep")
-							+ findFieldObject(fun, "end");
-				} else if (NoArgSQLFunction.class.equals(funClass)) {
-					sqlName = "" + findFieldObject(fun, "name");
-					if ((Boolean) findFieldObject(fun, "hasParenthesesIfNoArguments"))
-						sqlName += "()";
-				} else if (ConvertFunction.class.equals(funClass)) {
-					sqlName = "*convert";
-				} else if (CastFunction.class.equals(funClass)) {
-					sqlName = "*cast";
-				} else if (NvlFunction.class.equals(funClass)) {
-					sqlName = "*nul";
-				} else if (AnsiTrimFunction.class.equals(funClass)) {
-					sqlName = "*trim";
-				} else if (DerbyConcatFunction.class.equals(funClass)) {
-					sqlName = "*||";
-				} else if (StaticPrecisionFspTimestampFunction.class.equals(funClass)) {
-					sqlName = "*||";
-				} else if (PositionSubstringFunction.class.equals(funClass)) {
-					sqlName = "*position/substring";
-				} else if (AnsiTrimEmulationFunction.class.equals(funClass)) {
-					sqlName = "*TrimEmulation";
-				} else if (CharIndexFunction.class.equals(funClass)) {
-					sqlName = "*charindex";
+				String tryValue = getTryValue(fun, 6);
+				// check if used all parameters
+				if (tryValue.indexOf("1111") < 0 || tryValue.indexOf("2222") < 0 || tryValue.indexOf("3333") < 0
+						|| tryValue.indexOf("4444") < 0 || tryValue.indexOf("5555") < 0
+						|| tryValue.indexOf("6666") < 0) {
+					tryValue = getTryValue(fun, 0);
+					for (int i = 1; i <= 5; i++) {
+						String val = getTryValue(fun, i);
+						if (!StringUtils.isEmpty(val) && val.indexOf("" + i * 11) >= 0) {
+							if (StringUtils.isEmpty(tryValue))
+								tryValue = val;
+							else
+								tryValue += "|" + val;
+						}
+					}
 				}
-				Dao.execute("update tb_functions set " + diaName + "=? where fn_name=?", empty(sqlName),
-						empty(fn_name));
+
+				if (CastFunction.class.equals(fun.getClass())) {
+					try {
+						tryValue = "2=cast($P1, $P2)";
+					} catch (Exception e5) {
+						tryValue = "Exception";
+					}
+				} else {
+					// change result to templates
+					tryValue = StrUtily.replace(tryValue, "1111, 2222, 3333, 4444, 5555, 6666", "$Params");
+					tryValue = StrUtily.replace(tryValue, "1111,2222,3333,4444,5555,6666", "$Compact_Params");
+					tryValue = StrUtily.replace(tryValue, "1111||2222||3333||4444||5555||6666", "$Lined_Params");
+					tryValue = StrUtily.replace(tryValue, "1111+2222+3333+4444+5555+6666", "$Add_Params");
+					tryValue = StrUtily.replace(tryValue, "1111 in 2222 in 3333 in 4444 in 5555 in 6666", "$IN_Params");
+					tryValue = StrUtily.replace(tryValue,
+							"1111%pattern2222%pattern3333%pattern4444%pattern5555%pattern6666", "$Pattern_Params");
+					tryValue = StrUtily.replace(tryValue,
+							"11%startswith2222%startswith3333%startswith4444%startswith5555%startswith6666",
+							"$Startswith_Params");
+					tryValue = StrUtily.replace(tryValue, "nvl(1111, nvl(2222, nvl(3333, nvl(4444, nvl(5555, 6666)))))",
+							"$NVL_Params");
+					tryValue = StrUtily.replace(tryValue, "1111", "$P1");
+					tryValue = StrUtily.replace(tryValue, "2222", "$P2");
+					tryValue = StrUtily.replace(tryValue, "3333", "$P3");
+					tryValue = StrUtily.replace(tryValue, "4444", "$P4");
+					tryValue = StrUtily.replace(tryValue, "5555", "$P5");
+					tryValue = StrUtily.replace(tryValue, "|5=cast($P1 as varchar(255))", "");
+					if (StringUtils.isEmpty(tryValue)) {
+						System.out.println("diaName=" + diaName);
+						System.out.println("class=" + fun.getClass());
+						tryValue = "*ERROR";
+					}
+				}
+				String templateValue = tryValue;
+				Dao.execute("update tb_functions set " + diaName + "=? where fn_name=?",
+						empty(fun.getClass().getSimpleName() + ">" + templateValue), empty(fn_name));
 			}
 		}
 	}
@@ -143,9 +186,34 @@ public class TestFunctionMappingGenerator extends TestBase {
 					percentage++;
 				}
 			}
-			Dao.execute("update tb_functions set percentage="
-					+ q(String.format("%.2f", percentage * 100.0 / total).toString()) + " where fn_name=" + q(fn_name));
+			Dao.execute("update tb_functions set percentage=" + q("" + Math.rint(1.0 * percentage * 100.0 / total))
+					+ " where fn_name=" + q(fn_name));
 		}
 	}
 
+	public void generateFunctionsSourceCode() {//TODO here
+		StringBuilder sb = new StringBuilder();
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		for (Class<? extends Dialect> hibDialectClass : dialects) {
+			Dialect d = TestTypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
+			String diaName = d.getClass().getSimpleName();
+
+			sb.append("case " + diaName + ": {");
+			List<Map<String, Object>> result = Dao.queryForList(
+					"select fn_name, percentage, " + diaName + " from tb_functions order by percentage desc, fn_name");
+			for (Map<String, Object> map : result) {
+				String fn_name = (String) map.get("fn_name");
+				String template = (String) map.get(diaName);
+				String percentage = "" + map.get("percentage");
+				if (StringUtils.isEmpty(template))
+					template = "";
+				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ").append(percentage)
+						.append("% dialects support it */").append("\n");
+				sb.append("public String fun_").append(fn_name)
+						.append("abs(Object... args){return FunctionUtils.render(\"").append(template)
+						.append("\", args);}\n");
+			}
+		}
+		System.out.println(sb.toString());
+	}
 }

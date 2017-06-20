@@ -32,16 +32,16 @@ import util.TextSupport;
 public class HibStudy_HQL_Study {
 	private static String fileName = "f:/export.sql";
 
-	private static void openHibernateLog(SessionFactory sf) {
+	public static void openHibernateLog(SessionFactory sf) {
 		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
 		SqlStatementLogger log = serv.getSqlStatementLogger();
 		org.apache.log4j.Logger.getLogger("org.hibernate").setLevel(Level.TRACE);
 		org.apache.log4j.Logger.getLogger("log4j.logger.org.hibernate.SQL").setLevel(Level.DEBUG);
-		org.apache.log4j.Logger.getLogger("log4j.logger.org.hibernate.hql").setLevel(Level.DEBUG); 
+		org.apache.log4j.Logger.getLogger("log4j.logger.org.hibernate.hql").setLevel(Level.DEBUG);
 		log.setLogToStdout(true);
 	}
 
-	private static SessionFactory buildMySqlSessionFactory() {
+	public static SessionFactory buildMySqlSessionFactory() {
 		Configuration c = new Configuration().configure();
 		c.setProperty("hibernate.dialect", MySQL55Dialect.class.getName());
 		c.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/test?autoReconnect=true&useSSL=false");
@@ -57,8 +57,8 @@ public class HibStudy_HQL_Study {
 		SessionFactory sf = buildMySqlSessionFactory();
 		openHibernateLog(sf);
 		Session session = sf.openSession();
-		List list = session.createQuery("select current_time(),c.customerName from Customer c ").list();
- 
+		List list = session.createQuery("select second(current_date()),c.customerName from Customer c ").list();
+
 		for (Object objects : list) {
 			Object[] objs = (Object[]) objects;
 			for (Object object : objs) {

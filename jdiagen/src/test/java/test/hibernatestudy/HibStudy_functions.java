@@ -9,11 +9,15 @@ package test.hibernatestudy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
+import org.hibernate.dialect.function.StandardSQLFunction;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.hql.internal.ast.SqlGenerator;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.StringType;
+import org.junit.Test;
 
 /**
  * This is for study Hibernate's function
@@ -23,14 +27,30 @@ import org.hibernate.type.StringType;
  */
 public class HibStudy_functions {
 
-	public static void main(String[] args) {
+	@Test
+	public void test1() {
+		SessionFactory sf = HibStudy_HQL_Study.buildMySqlSessionFactory();
+		SqlGenerator gen = new SqlGenerator((SessionFactoryImplementor) sf);
+		String sql = gen.getSQL();
+		System.out.println(sql);
+	}
+
+	@Test
+	public void test2() {
 		SessionFactoryImplementor si = null;
-		SQLFunction fun = new SQLFunctionTemplate( StandardBasicTypes.STRING, "trim(?1 ?2 ?3 ?4)" );
 		List<String> l = new ArrayList<>();
-		l.add("Abc1");
-		l.add("Abc2");
-		l.add("Abc3"); 	l.add("Abc4"); 	l.add("Abc5"); 
+		l.add("p1");
+		l.add("p2");
+		l.add("p3");
+		l.add("p4");
+		l.add("p5");
+
+		SQLFunction fun = new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?1 ?2 ?3 ?4)");
 		String result = fun.render(StringType.INSTANCE, l, si);
+		System.out.println(result);
+
+		SQLFunction fun2 = new StandardSQLFunction("abs");
+		result = fun2.render(StringType.INSTANCE, l, si);
 		System.out.println(result);
 	}
 }

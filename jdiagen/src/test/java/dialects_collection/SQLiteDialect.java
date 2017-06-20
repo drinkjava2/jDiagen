@@ -51,6 +51,36 @@ import org.hibernate.type.StandardBasicTypes;
 public class SQLiteDialect extends Dialect {
 	private final UniqueDelegate uniqueDelegate;
 
+	public static class SQLiteTrimFunction extends AbstractAnsiTrimEmulationFunction{
+		protected SQLFunction resolveBothSpaceTrimFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?1)");
+		}
+
+		protected SQLFunction resolveBothSpaceTrimFromFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?2)");
+		}
+
+		protected SQLFunction resolveLeadingSpaceTrimFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "ltrim(?1)");
+		}
+
+		protected SQLFunction resolveTrailingSpaceTrimFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "rtrim(?1)");
+		}
+
+		protected SQLFunction resolveBothTrimFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?1, ?2)");
+		}
+
+		protected SQLFunction resolveLeadingTrimFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "ltrim(?1, ?2)");
+		}
+
+		protected SQLFunction resolveTrailingTrimFunction() {
+			return new SQLFunctionTemplate(StandardBasicTypes.STRING, "rtrim(?1, ?2)");
+		}
+	}
+	
 	public SQLiteDialect() {
 		registerColumnType(Types.BIT, "boolean");
 		// registerColumnType(Type.FLOAT, "float");
@@ -69,35 +99,7 @@ public class SQLiteDialect extends Dialect {
 		registerFunction("random", new NoArgSQLFunction("random", StandardBasicTypes.INTEGER));
 		registerFunction("round", new StandardSQLFunction("round"));
 		registerFunction("substr", new StandardSQLFunction("substr", StandardBasicTypes.STRING));
-		registerFunction("trim", new AbstractAnsiTrimEmulationFunction() {
-			protected SQLFunction resolveBothSpaceTrimFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?1)");
-			}
-
-			protected SQLFunction resolveBothSpaceTrimFromFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?2)");
-			}
-
-			protected SQLFunction resolveLeadingSpaceTrimFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "ltrim(?1)");
-			}
-
-			protected SQLFunction resolveTrailingSpaceTrimFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "rtrim(?1)");
-			}
-
-			protected SQLFunction resolveBothTrimFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "trim(?1, ?2)");
-			}
-
-			protected SQLFunction resolveLeadingTrimFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "ltrim(?1, ?2)");
-			}
-
-			protected SQLFunction resolveTrailingTrimFunction() {
-				return new SQLFunctionTemplate(StandardBasicTypes.STRING, "rtrim(?1, ?2)");
-			}
-		});
+		registerFunction("trim", new SQLiteTrimFunction());
 		uniqueDelegate = new SQLiteUniqueDelegate(this);
 	}
 
