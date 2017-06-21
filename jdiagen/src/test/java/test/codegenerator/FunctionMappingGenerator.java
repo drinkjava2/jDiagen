@@ -10,12 +10,15 @@ import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
 import static com.github.drinkjava2.jsqlbox.SqlHelper.q;
 import static test.codegenerator.RefUtils.findFieldObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
@@ -36,14 +39,14 @@ import test.TestBase;
 import util.StrUtily;
 
 /**
- * This is not a unit test class, it's a code generator tool to create source
- * code for jDialects
+ * This is not a unit test, it's a code generator tool to create source code for
+ * jDialects
  *
  * @author Yong Zhu
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
-public class TestFunctionMappingGenerator extends TestBase {
+public class FunctionMappingGenerator extends TestBase {
 
 	private static Dialect buildDialectByName(Class<?> dialect) {
 		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
@@ -58,16 +61,17 @@ public class TestFunctionMappingGenerator extends TestBase {
 
 	@Test
 	public void transferFunctions() {
-//		String createSQL = "create table tb_functions ("//
-//				+ "fn_name varchar(500) default ''  " //
-//				+ ",percentage int" //
-//				+ ", constraint const_fn_name primary key (fn_name)" //
-//				+ ")";
-//		Dao.executeQuiet("drop table tb_functions");
-//		Dao.execute(createSQL);
-//		exportDialectFunctionsToDatabase();
-//		countFunctionPercent();
-		generateFunctionsSourceCode();
+		// String createSQL = "create table tb_functions ("//
+		// + "fn_name varchar(500) default '' " //
+		// + ",percentage int" //
+		// + ", constraint const_fn_name primary key (fn_name)" //
+		// + ")";
+		// Dao.executeQuiet("drop table tb_functions");
+		// Dao.execute(createSQL);
+		// exportDialectFunctionsToDatabase();
+		// countFunctionPercent();
+		// generateFunctionTemplateSourceCode();
+		generateDialectSourceCode();
 	}
 
 	private static List<String> getL(int count) {
@@ -91,7 +95,7 @@ public class TestFunctionMappingGenerator extends TestBase {
 		} catch (Exception e1) {
 		}
 		if (paraCount == 0) {
-			// to mo pi gu for hibernate if used wrong parameters
+			// to fix a Hibernate bug if used wrong quantity parameters
 			if (realValue.length() <= 1 || realValue.startsWith(")") || realValue.startsWith("as ")
 					|| realValue.startsWith(" as "))
 				returnResult = "";
@@ -168,8 +172,9 @@ public class TestFunctionMappingGenerator extends TestBase {
 					}
 				}
 				String templateValue = tryValue;
-				Dao.execute("update tb_functions set " + diaName + "=? where fn_name=?",
-						empty(fun.getClass().getSimpleName() + ">" + templateValue), empty(fn_name));
+				// fun.getClass().getSimpleName() + ">" + templateValue
+				Dao.execute("update tb_functions set " + diaName + "=? where fn_name=?", empty(templateValue),
+						empty(fn_name));
 			}
 		}
 	}
@@ -191,26 +196,76 @@ public class TestFunctionMappingGenerator extends TestBase {
 		}
 	}
 
-	public void generateFunctionsSourceCode() {//TODO here
+	public void generateFunctionTemplateSourceCode() {
 		StringBuilder sb = new StringBuilder();
-		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TestTypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
-			String diaName = d.getClass().getSimpleName();
+		// To avoid 65535 bytes limitation of method
+		int methodCount = 1;
+		sb.append("protected static void initFunctionTemplates" + methodCount + "(Dialect d) {\n");
+		sb.append("switch (d) {\n");
 
-			sb.append("case " + diaName + ": {");
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+		int dialectsCount = 0;
+		for (Class<? extends Dialect> hibDialectClass : dialects) {
+			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
+			String diaName = d.getClass().getSimpleName();
+			sb.append("case " + diaName + ": {\n");
 			List<Map<String, Object>> result = Dao.queryForList(
-					"select fn_name, percentage, " + diaName + " from tb_functions order by percentage desc, fn_name");
+					"select fn_name, " + diaName + " from tb_functions order by percentage desc, fn_name");
 			for (Map<String, Object> map : result) {
 				String fn_name = (String) map.get("fn_name");
 				String template = (String) map.get(diaName);
-				String percentage = "" + map.get("percentage");
-				if (StringUtils.isEmpty(template))
-					template = "";
+				if (!StringUtils.isEmpty(template)) {
+					// d.fun.put("weekday", "weekday($Params)");
+					if (template.equals(fn_name + "($Params)"))
+						sb.append("d.functions.put(\"" + fn_name + "\", \"" + "*" + "\");\n");
+					else
+						sb.append("d.functions.put(\"" + fn_name + "\", \"" + template + "\");\n");
+				}
+			}
+			sb.append("} break;\n");
+
+			dialectsCount++;
+			if (dialectsCount > 15) {
+				dialectsCount = 0;
+				sb.append("default:\n 	}\n	}\n");
+				sb.append("protected static void initFunctionTemplates" + ++methodCount + "(Dialect d) {\n");
+				sb.append("switch (d) {\n");
+			}
+		}
+		sb.append("default:\n 	}\n	}\n");
+		try {
+			FileUtils.writeStringToFile(new File("e:/initFunctionTemplates.txt"), sb.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("initFunctionTemplates function exported to file 'e:/initFunctionTemplates.txt'\n\n");
+	}
+
+	public void generateDialectSourceCode() {
+		StringBuilder sb = new StringBuilder();
+		List<Map<String, Object>> result = Dao
+				.queryForList("select fn_name, percentage from tb_functions order by percentage desc, fn_name");
+		for (Map<String, Object> map : result) {
+			String fn_name = (String) map.get("fn_name");
+			Integer percentage = (Integer) map.get("percentage");
+
+			String underlines = "";
+			if (fn_name.equals("abs") || fn_name.equals("avg") || fn_name.equals("day") || fn_name.equals("max")
+					|| fn_name.equals("min") || fn_name.equals("mod") || fn_name.equals("str") || fn_name.equals("sum")
+					|| fn_name.equals("cast") || fn_name.equals("hour") || fn_name.equals("sqrt")
+					|| fn_name.equals("trim") || fn_name.equals("year") || fn_name.equals("count")
+					|| fn_name.equals("lower") || fn_name.equals("month") || fn_name.equals("upper")
+					|| fn_name.equals("length") || fn_name.equals("locate") || fn_name.equals("minute")
+					|| fn_name.equals("nullif") || fn_name.equals("second")) {
+				underlines = "_";
+			} else {
+				underlines = "__";
+			}
+			if (percentage >= 9) {
 				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ").append(percentage)
-						.append("% dialects support it */").append("\n");
-				sb.append("public String fun_").append(fn_name)
-						.append("abs(Object... args){return FunctionUtils.render(\"").append(template)
+						.append("% dialects support this function */").append("\n");
+				sb.append("public String fn").append(underlines).append(fn_name)
+						.append("(Object... args){return FunctionUtils.render(this, \"").append(fn_name)
 						.append("\", args);}\n");
 			}
 		}

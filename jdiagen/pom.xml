@@ -108,12 +108,12 @@
 	
     <!-- Hibernate is the main collection to build source code for jDialects -->   
  
-    <!--dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>5.2.9.Final</version>
       <scope>test</scope>
-    </dependency--> 
+    </dependency> 
     
     
      <!--=====================================================================-->
@@ -123,6 +123,7 @@
     <!--=====================================================================-->   
 	
     <!--===================hibcore dependencies begin==========================-->
+    <!--
 	<dependency>
 		<groupId>org.apache.ant</groupId>
 		<artifactId>ant</artifactId>
@@ -204,7 +205,8 @@
       <groupId>org.hibernate.common</groupId>
       <artifactId>hibernate-commons-annotations</artifactId>
       <version>5.0.1.Final</version>
-    </dependency>       
+    </dependency>      
+    --> 
     <!--=====================================================================-->
     <!--===================hibcore dependencies end==========================-->
     <!--=====================================================================-->

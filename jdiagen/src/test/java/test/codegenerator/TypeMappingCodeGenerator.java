@@ -44,7 +44,7 @@ import util.StrUtily;
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
-public class TestTypeMappingCodeGenerator {
+public class TypeMappingCodeGenerator {
 	@Before
 	public void setup() {
 		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();

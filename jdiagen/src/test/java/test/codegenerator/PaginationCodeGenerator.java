@@ -41,7 +41,7 @@ import test.TestBase;
  * @author Yong Zhu 
  * @since 1.0.0
  */
-public class TestPaginationCodeGenerator extends TestBase {
+public class PaginationCodeGenerator extends TestBase {
 	private static final String SKIP_ROWS = "$SKIP_ROWS";
 	private static final String PAGESIZE = "$PAGESIZE";
 	private static final String TOTAL_ROWS = "$TOTAL_ROWS";

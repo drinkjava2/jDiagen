@@ -70,7 +70,7 @@ public class DdlFeaturesGenerator {
 		sb.append("switch (dia) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TestTypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
+			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
 			sb.append("case " + diaName + ": {");
 			List<Map<String, Object>> result = Dao
@@ -117,7 +117,7 @@ public class DdlFeaturesGenerator {
 	public void exportOtherFeatures() { 
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TestTypeMappingCodeGenerator.buildDialectByName(hibDialectClass); 
+			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass); 
 			Dao.execute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
 		       String[] _FKS={"_FK1","_FK2"};                                                                                                                		
 		       String[] _REFS={"_REF1","_REF2"}; 
