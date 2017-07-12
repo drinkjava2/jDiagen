@@ -61,16 +61,16 @@ public class FunctionMappingGenerator extends TestBase {
 
 	@Test
 	public void transferFunctions() {
-		// String createSQL = "create table tb_functions ("//
-		// + "fn_name varchar(500) default '' " //
-		// + ",percentage int" //
-		// + ", constraint const_fn_name primary key (fn_name)" //
-		// + ")";
-		// Dao.executeQuiet("drop table tb_functions");
-		// Dao.execute(createSQL);
-		// exportDialectFunctionsToDatabase();
-		// countFunctionPercent();
-		// generateFunctionTemplateSourceCode();
+		String createSQL = "create table tb_functions ("//
+				+ "fn_name varchar(500) default '' " //
+				+ ",percentage int" //
+				+ ", constraint const_fn_name primary key (fn_name)" //
+				+ ")";
+		Dao.executeQuiet("drop table tb_functions");
+		Dao.execute(createSQL);
+		exportDialectFunctionsToDatabase();
+		countFunctionPercent();
+		generateFunctionTemplateSourceCode();
 		generateDialectSourceCode();
 	}
 
@@ -249,22 +249,24 @@ public class FunctionMappingGenerator extends TestBase {
 			String fn_name = (String) map.get("fn_name");
 			Integer percentage = (Integer) map.get("percentage");
 
-			String underlines = "";
+			String functionName = "";
 			if (fn_name.equals("abs") || fn_name.equals("avg") || fn_name.equals("day") || fn_name.equals("max")
 					|| fn_name.equals("min") || fn_name.equals("mod") || fn_name.equals("str") || fn_name.equals("sum")
 					|| fn_name.equals("cast") || fn_name.equals("hour") || fn_name.equals("sqrt")
 					|| fn_name.equals("trim") || fn_name.equals("year") || fn_name.equals("count")
 					|| fn_name.equals("lower") || fn_name.equals("month") || fn_name.equals("upper")
 					|| fn_name.equals("length") || fn_name.equals("locate") || fn_name.equals("minute")
-					|| fn_name.equals("nullif") || fn_name.equals("second")) {
-				underlines = "_";
+					|| fn_name.equals("nullif") || fn_name.equals("second") || fn_name.equals("bit_length")
+					|| fn_name.equals("coalesce") || fn_name.equals("extract") || fn_name.equals("substring")) {
+				functionName = fn_name.toUpperCase();
 			} else {
-				underlines = "__";
+				functionName = fn_name;
 			}
 			if (percentage >= 9) {
 				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ").append(percentage)
 						.append("% dialects support this function */").append("\n");
-				sb.append("public String fn").append(underlines).append(fn_name)
+
+				sb.append("public String fn").append("_").append(functionName)
 						.append("(Object... args){return FunctionUtils.render(this, \"").append(fn_name)
 						.append("\", args);}\n");
 			}
