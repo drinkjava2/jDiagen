@@ -1,8 +1,9 @@
 /*
- * jDialects, a tiny SQL dialect tool 
+ * jDialects, a tiny SQL dialect tool
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later. See
+ * the lgpl.txt file in the root directory or
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 package test.hibernatestudy;
 
@@ -12,11 +13,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -556,6 +559,51 @@ public class HibStudy_DDL_Study {
 			for (Class<? extends Dialect> diaClass : dialects) {
 				ddlExport(diaClass, TableGeneratorSample.class,TableGeneratorSample2.class); 
 			}
+			System.exit(0);
+		}
+
+		
+		@Entity 
+		@Table(name="TheFather",catalog="",schema="")
+		public static class TheFather{
+			@Id
+			@Column(name = "firstname",length=20)
+			private String firstname;
+
+			@Id
+			@Column(name = "lastname",length=20)
+			private String lastname;
+		}
+		
+		@Entity 
+		@Table(name="TheChild",catalog="",schema="")
+		public static class TheChild{ 
+			@Id
+			@Column(name = "id")
+			private Integer id;
+			
+			@Column(name = "firstname",length=20)
+			private String firstname;
+ 
+			@Column(name = "lastname",length=20)
+			private String lastname;
+			
+			@ManyToOne(cascade= {CascadeType.ALL})
+			private TheFather thefather;
+		}
+		
+		@Test
+		public void testManyToOneFKeyDDL() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			for (Class<? extends Dialect> diaClass : dialects) {
+				ddlExport(diaClass, EntitySequencySample.class, EntitySequencySample2.class ); 
+			}
+			ddlExport(MySQL5Dialect.class, TheFather.class, TheChild.class);
+			ddlExport(FirebirdDialect.class, TheFather.class, TheChild.class);
+			ddlExport(DB2390Dialect.class, TheFather.class, TheChild.class);
+			ddlExport(Oracle12cDialect.class, TheFather.class, TheChild.class);
+			ddlExport(RDMSOS2200Dialect.class, TheFather.class, TheChild.class); 
 			System.exit(0);
 		}
 
