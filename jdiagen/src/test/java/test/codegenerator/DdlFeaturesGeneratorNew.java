@@ -64,7 +64,7 @@ public class DdlFeaturesGeneratorNew {
 		Dao.execute("update tb_hibdll set RDMSOS2200Dialect=?", empty("false"), " where feature=?",
 				empty("supportsSequences"));
 		//generateInitDdlFeaturesSourceCodeOld();
-		//generateInitDdlFeaturesSourceCodeNew();
+		generateInitDdlFeaturesSourceCodeNew();
 	}
 
 	public void generateInitDdlFeaturesSourceCodeOld() {
@@ -209,12 +209,13 @@ public class DdlFeaturesGeneratorNew {
 		      
 		       IdentityColumnSupport ics=d.getIdentityColumnSupport(); 
 		       try{dealOneFeature(d,"identityColumnString", ics.getIdentityColumnString(Types.INTEGER));}catch(Exception e){dealOneFeature(d,"identityColumnString", NOT_SUPPORT);}
-		      //try{dealOneFeature(d,"identityColumnStringBigINT", ics.getIdentityColumnString(Types.BIGINT));}catch(Exception e){dealOneFeature(d,"identityColumnStringBigINT", NOT_SUPPORT);}		       
-		       try{dealOneFeature(d,"identityInsertString", ics.getIdentityInsertString());}catch(Exception e){dealOneFeature(d,"identityInsertString",NOT_SUPPORT);}	
-		       try{dealOneFeature(d,"identitySelectString", ics.getIdentitySelectString("_table", "_col", 999));}catch(Exception e){dealOneFeature(d,"identitySelectString", NOT_SUPPORT);}
+		      try{dealOneFeature(d,"identityColumnStringBigINT", ics.getIdentityColumnString(Types.BIGINT));}catch(Exception e){dealOneFeature(d,"identityColumnStringBigINT", NOT_SUPPORT);}		       
+//		       try{dealOneFeature(d,"identityInsertString", ics.getIdentityInsertString());}catch(Exception e){dealOneFeature(d,"identityInsertString",NOT_SUPPORT);}	
+		       try{dealOneFeature(d,"identitySelectString", ics.getIdentitySelectString("_table", "_col", Types.INTEGER));}catch(Exception e){dealOneFeature(d,"identitySelectString", NOT_SUPPORT);}
+		       try{dealOneFeature(d,"identitySelectStringBigINT", ics.getIdentitySelectString("_table", "_col", Types.BIGINT));}catch(Exception e){dealOneFeature(d,"identitySelectStringBigINT", NOT_SUPPORT);}
 		       try{dealOneFeature(d,"hasDataTypeInIdentityColumn", ""+ics.hasDataTypeInIdentityColumn());}catch(Exception e){dealOneFeature(d,"hasDataTypeInIdentityColumn", NOT_SUPPORT);}
 		       try{dealOneFeature(d,"supportsIdentityColumns", ""+ics.supportsIdentityColumns());}catch(Exception e){dealOneFeature(d,"supportsIdentityColumns", NOT_SUPPORT);}
-		       try{dealOneFeature(d,"supportsInsertSelectIdentity", ""+ics.supportsInsertSelectIdentity());}catch(Exception e){dealOneFeature(d,"supportsInsertSelectIdentity", NOT_SUPPORT);}
+//		       try{dealOneFeature(d,"supportsInsertSelectIdentity", ""+ics.supportsInsertSelectIdentity());}catch(Exception e){dealOneFeature(d,"supportsInsertSelectIdentity", NOT_SUPPORT);}
 
 //		       try{dealOneFeature(d,"getUniqueDelegate", ""+d.getUniqueDelegate());}catch(Exception e){dealOneFeature(d,"getUniqueDelegate", e.getMessage());}                                                                                                                
  		       try{dealOneFeature(d,"tableTypeString", ""+d.getTableTypeString());}catch(Exception e){dealOneFeature(d,"tableTypeString", e.getMessage());}                                                                                                                
