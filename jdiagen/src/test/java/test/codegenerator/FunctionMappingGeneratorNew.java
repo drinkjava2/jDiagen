@@ -14,9 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +48,7 @@ import util.StrUtily;
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
-public class FunctionMappingGenerator extends TestBase {
+public class FunctionMappingGeneratorNew extends TestBase {
 
 	private static Dialect buildDialectByName(Class<?> dialect) {
 		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
@@ -63,7 +65,7 @@ public class FunctionMappingGenerator extends TestBase {
 	public void transferFunctions() {
 		String createSQL = "create table tb_functions ("//
 				+ "fn_name varchar(500) default '' " //
-				+ ",percentage int" //
+				+ ",percentage float" //
 				+ ", constraint const_fn_name primary key (fn_name)" //
 				+ ")";
 		Dao.executeQuiet("drop table tb_functions");
@@ -198,41 +200,60 @@ public class FunctionMappingGenerator extends TestBase {
 
 	public void generateFunctionTemplateSourceCode() {
 		StringBuilder sb = new StringBuilder();
-		// To avoid 65535 bytes limitation of method
-		int methodCount = 1;
-		sb.append("protected static void initFunctionTemplates" + methodCount + "(Dialect d) {\n");
-		sb.append("switch (d) {\n");
-
+		sb.append("protected static void initFunctionTemplates() {\n");
+		sb.append("Map<String, String> mp = new HashMap<String, String>();\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-		int dialectsCount = 0;
+		Map<String, String> lastMP = new HashMap<>();
+
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
-			sb.append("case " + diaName + ": {\n");
-			List<Map<String, Object>> result = Dao.queryForList(
-					"select fn_name, " + diaName + " from tb_functions order by percentage desc, fn_name");
+			List<Map<String, Object>> result = Dao.queryForList("select fn_name, " + diaName
+					+ " from tb_functions where percentage>15 order by percentage desc, fn_name");
+
+			Map<String, String> thisMap = new HashMap<>();
 			for (Map<String, Object> map : result) {
 				String fn_name = (String) map.get("fn_name");
 				String template = (String) map.get(diaName);
 				if (!StringUtils.isEmpty(template)) {
 					// d.fun.put("weekday", "weekday($Params)");
 					if (template.equals(fn_name + "($Params)"))
-						sb.append("d.functions.put(\"" + fn_name + "\", \"" + "*" + "\");\n");
+						thisMap.put(fn_name, "*");
 					else
-						sb.append("d.functions.put(\"" + fn_name + "\", \"" + template + "\");\n");
+						thisMap.put(fn_name, template);
 				}
 			}
-			sb.append("} break;\n");
 
-			dialectsCount++;
-			if (dialectsCount > 15) {
-				dialectsCount = 0;
-				sb.append("default:\n 	}\n	}\n");
-				sb.append("protected static void initFunctionTemplates" + ++methodCount + "(Dialect d) {\n");
-				sb.append("switch (d) {\n");
+			Set<String> toDelete = new HashSet<>();
+
+			if (lastMP.size() > 0)
+				for (Entry<String, String> entry : lastMP.entrySet()) {
+					String key = entry.getKey();
+					if (!thisMap.containsKey(key))
+						toDelete.add(key);
+				}
+
+			if (toDelete.size() > 30) {
+				lastMP.clear();
+				sb.append("mp.clear();\n\n//===========A new dialect family=================\n");
+			} else
+				for (String key : toDelete) {
+					lastMP.remove(key);
+					sb.append("mp.remove(\"" + key + "\");\n");
+				}
+
+			for (Entry<String, String> entry : thisMap.entrySet()) {
+				String thisKey = entry.getKey();
+				if (!entry.getValue().equals(lastMP.get(thisKey))) {
+					lastMP.put(thisKey, entry.getValue());
+					sb.append("mp.put(\"" + thisKey + "\", \"" + entry.getValue() + "\");\n");
+				}
 			}
+			sb.append("copyTo(mp, Dialect." + diaName + ");");
 		}
-		sb.append("default:\n 	}\n	}\n");
+
+		sb.append(" }\n");
+
 		try {
 			FileUtils.writeStringToFile(new File("e:/initFunctionTemplates.txt"), sb.toString());
 		} catch (IOException e) {
@@ -247,26 +268,38 @@ public class FunctionMappingGenerator extends TestBase {
 				.queryForList("select fn_name, percentage from tb_functions order by percentage desc, fn_name");
 		for (Map<String, Object> map : result) {
 			String fn_name = (String) map.get("fn_name");
-			Integer percentage = (Integer) map.get("percentage");
+			Double percentage = (Double) map.get("percentage");
 
-			String functionName = "";
-			if (fn_name.equals("abs") || fn_name.equals("avg") || fn_name.equals("day") || fn_name.equals("max")
-					|| fn_name.equals("min") || fn_name.equals("mod") || fn_name.equals("str") || fn_name.equals("sum")
-					|| fn_name.equals("cast") || fn_name.equals("hour") || fn_name.equals("sqrt")
-					|| fn_name.equals("trim") || fn_name.equals("year") || fn_name.equals("count")
-					|| fn_name.equals("lower") || fn_name.equals("month") || fn_name.equals("upper")
-					|| fn_name.equals("length") || fn_name.equals("locate") || fn_name.equals("minute")
-					|| fn_name.equals("nullif") || fn_name.equals("second") || fn_name.equals("bit_length")
-					|| fn_name.equals("coalesce") || fn_name.equals("extract") || fn_name.equals("substring")) {
-				functionName = fn_name.toUpperCase();
-			} else {
-				functionName = fn_name;
-			}
-			if (percentage >= 9) {
-				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ").append(percentage)
-						.append("% dialects support this function */").append("\n");
+			// String underlines = "";
+			// if (fn_name.equals("abs") || fn_name.equals("avg") ||
+			// fn_name.equals("day") || fn_name.equals("max")
+			// || fn_name.equals("min") || fn_name.equals("mod") ||
+			// fn_name.equals("str") || fn_name.equals("sum")
+			// || fn_name.equals("cast") || fn_name.equals("hour") ||
+			// fn_name.equals("sqrt")
+			// || fn_name.equals("trim") || fn_name.equals("year") ||
+			// fn_name.equals("count")
+			// || fn_name.equals("lower") || fn_name.equals("month") ||
+			// fn_name.equals("upper")
+			// || fn_name.equals("length") || fn_name.equals("locate") ||
+			// fn_name.equals("minute")
+			// || fn_name.equals("nullif") || fn_name.equals("second")) {
+			// underlines = "_";
+			// } else {
+			// underlines = "__";
+			// }
+			String funName;
+			if (percentage > 15) {
+				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ");
+				if (percentage > 99) {
+					funName = "fn_" + fn_name.toUpperCase();
+					sb.append("all dialects support this function */").append("\n");
+				} else {
+					funName = "fn_" + fn_name;
+					sb.append(percentage).append("% dialects support this function */").append("\n");
+				}
 
-				sb.append("public String fn").append("_").append(functionName)
+				sb.append("public String ").append(funName)
 						.append("(Object... args){return FunctionUtils.render(this, \"").append(fn_name)
 						.append("\", args);}\n");
 			}
