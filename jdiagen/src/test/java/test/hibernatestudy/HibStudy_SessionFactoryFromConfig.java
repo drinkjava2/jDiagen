@@ -1,8 +1,9 @@
 /*
- * jDialects, a tiny SQL dialect tool 
+ * jDialects, a tiny SQL dialect tool
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later. See
+ * the lgpl.txt file in the root directory or
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 package test.hibernatestudy;
 
@@ -14,15 +15,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.dialect.CUBRIDDialect;
 import org.hibernate.dialect.MySQL55Dialect;
 import org.hibernate.engine.jdbc.spi.JdbcServices;
 import org.hibernate.engine.jdbc.spi.SqlStatementLogger;
 import org.hibernate.query.Query;
+import org.junit.Test;
 
-import com.github.drinkjava2.jsqlbox.Dao;
-
-import test.config.PrepareTestContext;
+import test.TestBase;
 import test.config.po.Customer;
 
 /**
@@ -34,21 +33,20 @@ import test.config.po.Customer;
  * @version 1.0.0
  * @since 1.0.0
  */
-@SuppressWarnings({ "unused", "deprecation", "rawtypes" })
-public class HibStudy_SessionFactoryFromConfig {
+@SuppressWarnings({ "all" })
+public class HibStudy_SessionFactoryFromConfig extends TestBase {
 
-	private static void createTablesByjSqlBox() {
-		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();
-		String innoDB = Dao.getDialect().isMySqlFamily()  ? "ENGINE=InnoDB DEFAULT CHARSET=utf8;" : "";
-		Dao.executeQuiet("drop table customertable");
-		Dao.execute(Customer.CREATE_SQL + innoDB);
+	private void createTablesByjSqlBox() { 
+		String innoDB = dao.getDialect().isMySqlFamily() ? "ENGINE=InnoDB DEFAULT CHARSET=utf8;" : "";
+		dao.iExecuteQuiet("drop table customertable");
+		dao.nExecute(Customer.CREATE_SQL + innoDB);
 	}
 
 	private static void openHibernateLog(SessionFactory sf) {
 		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
 		SqlStatementLogger log = serv.getSqlStatementLogger();
 		org.apache.log4j.Logger.getLogger("org.hibernate").setLevel(Level.TRACE);
-		log.setLogToStdout(true); 
+		log.setLogToStdout(true);
 	}
 
 	private static void insertDataByHibernate() {
@@ -78,14 +76,14 @@ public class HibStudy_SessionFactoryFromConfig {
 		c.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
 		c.setProperty("hibernate.connection.username", "root");
 		c.setProperty("hibernate.connection.password", "root888");
-		//c.addResource("Customer.hbm.xml");
-		//c.addAnnotatedClass(annotatedClass)
+		// c.addResource("Customer.hbm.xml");
+		// c.addAnnotatedClass(annotatedClass)
 		return c;
 	}
 
 	private static void nativeQuery() {
 		Configuration c = buildConfig(MySQL55Dialect.class.getName());
-		SessionFactory sf = c.buildSessionFactory();//old style
+		SessionFactory sf = c.buildSessionFactory();// old style
 
 		Session session = sf.openSession();
 		Query query = session
@@ -105,10 +103,11 @@ public class HibStudy_SessionFactoryFromConfig {
 		sf.close();
 	}
 
-	public static void main(String[] args) {
+	@Test
+	public void doTest() {
 		createTablesByjSqlBox();
 		insertDataByHibernate();
-		nativeQuery(); 
+		nativeQuery();
 	}
 
 }

@@ -1,17 +1,13 @@
 /*
- * jDialects, a tiny SQL dialect tool 
+ * jDialects, a tiny SQL dialect tool
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later. See
+ * the lgpl.txt file in the root directory or
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 package test.config;
 
-import java.util.Properties;
-
 import javax.sql.DataSource;
-
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import com.github.drinkjava2.jbeanbox.BeanBox;
 import com.github.drinkjava2.jsqlbox.SqlBoxContext;
@@ -30,15 +26,14 @@ import com.zaxxer.hikari.HikariDataSource;
 public class JBeanBoxConfig {
 
 	/**
-	 * This is a SqlBoxContext setting, you can set up as many as possible
-	 * contexts in one project, but for most projects usually only use one
-	 * defaultSqlBox context
+	 * This is a SqlBoxContext setting, you can set up as many as possible contexts
+	 * in one project, but for most projects usually only use one defaultSqlBox
+	 * context
 	 * 
 	 */
 	public static class DefaultSqlBoxContextBox extends BeanBox {
 		public SqlBoxContext create() {
-			SqlBoxContext ctx = new SqlBoxContext();
-			ctx.setDataSource((DataSource) BeanBox.getBean(DataSourceBox.class));
+			SqlBoxContext ctx = new SqlBoxContext((DataSource) BeanBox.getBean(DataSourceBox.class));
 			return ctx;
 		}
 	}
@@ -106,30 +101,5 @@ public class JBeanBoxConfig {
 			return ds;
 		}
 	}
-
-	// Spring TxManager
-	static class TxManagerBox extends BeanBox {
-		{
-			setClassOrValue(DataSourceTransactionManager.class);
-			setProperty("dataSource", DataSourceBox.class);
-		}
-	}
-
-	// Spring TransactionInterceptor
-	public static class SpringTxInterceptorBox extends BeanBox {
-		{
-			Properties props = new Properties();
-			props.put("*", "PROPAGATION_REQUIRED");
-			setConstructor(TransactionInterceptor.class, TxManagerBox.class, props);
-		}
-	}
-
-	public static class TxInterceptorBox2 extends BeanBox {
-		{
-			Properties props = new Properties();
-			props.put("do*", "PROPAGATION_REQUIRED");
-			setConstructor(TransactionInterceptor.class, TxManagerBox.class, props);
-		}
-	}
-
+ 
 }

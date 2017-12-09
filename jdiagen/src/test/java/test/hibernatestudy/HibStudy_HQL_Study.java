@@ -28,7 +28,7 @@ import util.TextSupport;
  * @version 1.0.0
  * @since 1.0.0
  */
-
+@SuppressWarnings("all")
 public class HibStudy_HQL_Study {
 	private static String fileName = "f:/export.sql";
 
@@ -57,6 +57,7 @@ public class HibStudy_HQL_Study {
 		SessionFactory sf = buildMySqlSessionFactory();
 		openHibernateLog(sf);
 		Session session = sf.openSession();
+		@SuppressWarnings("rawtypes")
 		List list = session.createQuery("select second(current_date()),c.customerName from Customer c ").list();
 
 		for (Object objects : list) {

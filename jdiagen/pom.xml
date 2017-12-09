@@ -56,15 +56,7 @@
         <version.javadoc-plugin>2.10.3</version.javadoc-plugin>
         <version.gpg-plugin>1.6</version.gpg-plugin>
     </properties>
-
-   <repositories>
-	 <!-- To download snapshot version jars from Maven site, it's necessary to add this repository  -->
-     <repository>
-       <id>oss</id>
-       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-     </repository>
-   </repositories>
-
+ 
  <dependencies>   
  
  
@@ -93,7 +85,7 @@
 	<dependency>
       <groupId>com.github.drinkjava2</groupId>
       <artifactId>jsqlbox</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>	  
 

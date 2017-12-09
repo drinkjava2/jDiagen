@@ -1,14 +1,16 @@
 /*
- * jDialects, a tiny SQL dialect tool 
+ * jDialects, a tiny SQL dialect tool
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later. See
+ * the lgpl.txt file in the root directory or
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.questions;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.q;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.param;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.param0;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.question0;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.valuesQuesions;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -30,34 +33,22 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.TypeNames;
 import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.github.drinkjava2.jbeanbox.springsrc.ReflectionUtils;
-import com.github.drinkjava2.jsqlbox.Dao;
 
-import test.config.PrepareTestContext;
+import test.TestBase;
 import util.StrUtily;
 
 /**
  * This is not a unit test class, it's a code generator tool to create source
  * code for jDialects
  *
- * @author Yong Zhu 
+ * @author Yong Zhu
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
-public class TypeMappingCodeGeneratorNew {
-	@Before
-	public void setup() {
-		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();
-	}
-
-	@After
-	public void cleanUp() {
-		PrepareTestContext.closeDatasource_closeDefaultSqlBoxConetxt();
-	}
+public class TypeMappingCodeGeneratorNew extends TestBase {
 
 	public static Dialect buildDialectByName(Class<?> dialect) {
 		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
@@ -106,8 +97,9 @@ public class TypeMappingCodeGeneratorNew {
 				+ "t_VARBINARY varchar(300),"//
 				+ "t_VARCHAR varchar(300)"//
 				+ ")";
-		Dao.executeQuiet("drop table tb_typeNames");
-		Dao.execute(createSQL);
+		System.out.println("dao=" + dao);
+		dao.iExecuteQuiet("drop table tb_typeNames");
+		dao.nExecute(createSQL);
 		exportDialectTypeNamesNew();
 	}
 
@@ -119,46 +111,46 @@ public class TypeMappingCodeGeneratorNew {
 			Dialect dia = buildDialectByName(class1);
 			TypeNames t = (TypeNames) findFieldObject(dia, "typeNames");
 			String insertSQL = "insert into tb_typeNames ("//
-					+ "line," + empty(++line)//
-					+ "dialect," + empty(dia.getClass().getSimpleName())//
-					+ "t_BIGINT," + empty(getTypeNameDefString(t, (Types.BIGINT)))//
-					+ "t_BINARY," + empty(getTypeNameDefString(t, (Types.BINARY)))//
-					+ "t_BIT," + empty(getTypeNameDefString(t, (Types.BIT)))//
-					+ "t_BLOB," + empty(getTypeNameDefString(t, (Types.BLOB)))//
-					+ "t_BOOLEAN," + empty(getTypeNameDefString(t, (Types.BOOLEAN)))//
-					+ "t_CHAR," + empty(getTypeNameDefString(t, (Types.CHAR)))//
-					+ "t_CLOB," + empty(getTypeNameDefString(t, (Types.CLOB)))//
-					+ "t_DATE," + empty(getTypeNameDefString(t, (Types.DATE)))//
-					+ "t_DECIMAL," + empty(getTypeNameDefString(t, (Types.DECIMAL)))//
-					+ "t_DOUBLE," + empty(getTypeNameDefString(t, (Types.DOUBLE)))//
-					+ "t_FLOAT," + empty(getTypeNameDefString(t, (Types.FLOAT)))//
-					+ "t_INTEGER," + empty(getTypeNameDefString(t, (Types.INTEGER)))//
-					+ "t_JAVA_OBJECT," + empty(getTypeNameDefString(t, (Types.JAVA_OBJECT)))//
-					+ "t_LONGNVARCHAR," + empty(getTypeNameDefString(t, (Types.LONGNVARCHAR)))//
-					+ "t_LONGVARBINARY," + empty(getTypeNameDefString(t, (Types.LONGVARBINARY)))//
-					+ "t_LONGVARCHAR," + empty(getTypeNameDefString(t, (Types.LONGVARCHAR)))//
-					+ "t_NCHAR," + empty(getTypeNameDefString(t, (Types.NCHAR)))//
-					+ "t_NCLOB," + empty(getTypeNameDefString(t, (Types.NCLOB)))//
-					+ "t_NUMERIC," + empty(getTypeNameDefString(t, (Types.NUMERIC)))//
-					+ "t_NVARCHAR," + empty(getTypeNameDefString(t, (Types.NVARCHAR)))//
-					+ "t_OTHER," + empty(getTypeNameDefString(t, (Types.OTHER)))//
-					+ "t_REAL," + empty(getTypeNameDefString(t, (Types.REAL)))//
-					+ "t_SMALLINT," + empty(getTypeNameDefString(t, (Types.SMALLINT)))//
-					+ "t_TIME," + empty(getTypeNameDefString(t, (Types.TIME)))//
-					+ "t_TIMESTAMP," + empty(getTypeNameDefString(t, (Types.TIMESTAMP)))//
-					+ "t_TINYINT," + empty(getTypeNameDefString(t, (Types.TINYINT)))//
-					+ "t_VARBINARY," + empty(getTypeNameDefString(t, (Types.VARBINARY)))//
-					+ "t_VARCHAR" + empty(getTypeNameDefString(t, (Types.VARCHAR)))//
+					+ "line," + param(++line)//
+					+ "dialect," + param(dia.getClass().getSimpleName())//
+					+ "t_BIGINT," + param(getTypeNameDefString(t, (Types.BIGINT)))//
+					+ "t_BINARY," + param(getTypeNameDefString(t, (Types.BINARY)))//
+					+ "t_BIT," + param(getTypeNameDefString(t, (Types.BIT)))//
+					+ "t_BLOB," + param(getTypeNameDefString(t, (Types.BLOB)))//
+					+ "t_BOOLEAN," + param(getTypeNameDefString(t, (Types.BOOLEAN)))//
+					+ "t_CHAR," + param(getTypeNameDefString(t, (Types.CHAR)))//
+					+ "t_CLOB," + param(getTypeNameDefString(t, (Types.CLOB)))//
+					+ "t_DATE," + param(getTypeNameDefString(t, (Types.DATE)))//
+					+ "t_DECIMAL," + param(getTypeNameDefString(t, (Types.DECIMAL)))//
+					+ "t_DOUBLE," + param(getTypeNameDefString(t, (Types.DOUBLE)))//
+					+ "t_FLOAT," + param(getTypeNameDefString(t, (Types.FLOAT)))//
+					+ "t_INTEGER," + param(getTypeNameDefString(t, (Types.INTEGER)))//
+					+ "t_JAVA_OBJECT," + param(getTypeNameDefString(t, (Types.JAVA_OBJECT)))//
+					+ "t_LONGNVARCHAR," + param(getTypeNameDefString(t, (Types.LONGNVARCHAR)))//
+					+ "t_LONGVARBINARY," + param(getTypeNameDefString(t, (Types.LONGVARBINARY)))//
+					+ "t_LONGVARCHAR," + param(getTypeNameDefString(t, (Types.LONGVARCHAR)))//
+					+ "t_NCHAR," + param(getTypeNameDefString(t, (Types.NCHAR)))//
+					+ "t_NCLOB," + param(getTypeNameDefString(t, (Types.NCLOB)))//
+					+ "t_NUMERIC," + param(getTypeNameDefString(t, (Types.NUMERIC)))//
+					+ "t_NVARCHAR," + param(getTypeNameDefString(t, (Types.NVARCHAR)))//
+					+ "t_OTHER," + param(getTypeNameDefString(t, (Types.OTHER)))//
+					+ "t_REAL," + param(getTypeNameDefString(t, (Types.REAL)))//
+					+ "t_SMALLINT," + param(getTypeNameDefString(t, (Types.SMALLINT)))//
+					+ "t_TIME," + param(getTypeNameDefString(t, (Types.TIME)))//
+					+ "t_TIMESTAMP," + param(getTypeNameDefString(t, (Types.TIMESTAMP)))//
+					+ "t_TINYINT," + param(getTypeNameDefString(t, (Types.TINYINT)))//
+					+ "t_VARBINARY," + param(getTypeNameDefString(t, (Types.VARBINARY)))//
+					+ "t_VARCHAR" + param(getTypeNameDefString(t, (Types.VARCHAR)))//
 					+ ")" //
-					+ "values" + questions();
-			Dao.executeInsert(insertSQL);
+					+ "values" + valuesQuesions();
+			dao.nExecute(insertSQL);
 		}
 
 		// ============now start generate source code=======
 		StringBuilder sb = new StringBuilder();
 		sb.append("private void initializeTypeMappings() {").append("\n");
 		sb.append("switch (this) {\n");
-		List<Map<String, Object>> lst = Dao.queryForList("select * from tb_typeNames");
+		List<Map<String, Object>> lst = dao.nQuery(new MapListHandler(), "select * from tb_typeNames");
 		for (Map<String, Object> map : lst) {
 			String dialect = (String) map.get("dialect");
 			sb.append("case " + dialect + ": {\n");
@@ -184,7 +176,7 @@ public class TypeMappingCodeGeneratorNew {
 		sb.append("}\n");
 		System.out.println(sb.toString());
 	}
-	
+
 	public void exportDialectTypeNamesNew() {
 		int line = 0;
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
@@ -192,68 +184,68 @@ public class TypeMappingCodeGeneratorNew {
 			Dialect dia = buildDialectByName(class1);
 			TypeNames t = (TypeNames) findFieldObject(dia, "typeNames");
 			String insertSQL = "insert into tb_typeNames ("//
-					+ "line," + empty(++line)//
-					+ "dialect," + empty(dia.getClass().getSimpleName())//
-					+ "t_BIGINT," + empty(getTypeNameDefString(t, (Types.BIGINT)))//
-					+ "t_BINARY," + empty(getTypeNameDefString(t, (Types.BINARY)))//
-					+ "t_BIT," + empty(getTypeNameDefString(t, (Types.BIT)))//
-					+ "t_BLOB," + empty(getTypeNameDefString(t, (Types.BLOB)))//
-					+ "t_BOOLEAN," + empty(getTypeNameDefString(t, (Types.BOOLEAN)))//
-					+ "t_CHAR," + empty(getTypeNameDefString(t, (Types.CHAR)))//
-					+ "t_CLOB," + empty(getTypeNameDefString(t, (Types.CLOB)))//
-					+ "t_DATE," + empty(getTypeNameDefString(t, (Types.DATE)))//
-					+ "t_DECIMAL," + empty(getTypeNameDefString(t, (Types.DECIMAL)))//
-					+ "t_DOUBLE," + empty(getTypeNameDefString(t, (Types.DOUBLE)))//
-					+ "t_FLOAT," + empty(getTypeNameDefString(t, (Types.FLOAT)))//
-					+ "t_INTEGER," + empty(getTypeNameDefString(t, (Types.INTEGER)))//
-					+ "t_JAVA_OBJECT," + empty(getTypeNameDefString(t, (Types.JAVA_OBJECT)))//
-					+ "t_LONGNVARCHAR," + empty(getTypeNameDefString(t, (Types.LONGNVARCHAR)))//
-					+ "t_LONGVARBINARY," + empty(getTypeNameDefString(t, (Types.LONGVARBINARY)))//
-					+ "t_LONGVARCHAR," + empty(getTypeNameDefString(t, (Types.LONGVARCHAR)))//
-					+ "t_NCHAR," + empty(getTypeNameDefString(t, (Types.NCHAR)))//
-					+ "t_NCLOB," + empty(getTypeNameDefString(t, (Types.NCLOB)))//
-					+ "t_NUMERIC," + empty(getTypeNameDefString(t, (Types.NUMERIC)))//
-					+ "t_NVARCHAR," + empty(getTypeNameDefString(t, (Types.NVARCHAR)))//
-					+ "t_OTHER," + empty(getTypeNameDefString(t, (Types.OTHER)))//
-					+ "t_REAL," + empty(getTypeNameDefString(t, (Types.REAL)))//
-					+ "t_SMALLINT," + empty(getTypeNameDefString(t, (Types.SMALLINT)))//
-					+ "t_TIME," + empty(getTypeNameDefString(t, (Types.TIME)))//
-					+ "t_TIMESTAMP," + empty(getTypeNameDefString(t, (Types.TIMESTAMP)))//
-					+ "t_TINYINT," + empty(getTypeNameDefString(t, (Types.TINYINT)))//
-					+ "t_VARBINARY," + empty(getTypeNameDefString(t, (Types.VARBINARY)))//
-					+ "t_VARCHAR" + empty(getTypeNameDefString(t, (Types.VARCHAR)))//
-					+ ")" //
-					+ "values" + questions();
-			Dao.executeInsert(insertSQL);
+					+ "line," + param0(++line)//
+					+ "dialect," + param(dia.getClass().getSimpleName())//
+					+ "t_BIGINT," + param(getTypeNameDefString(t, (Types.BIGINT)))//
+					+ "t_BINARY," + param(getTypeNameDefString(t, (Types.BINARY)))//
+					+ "t_BIT," + param(getTypeNameDefString(t, (Types.BIT)))//
+					+ "t_BLOB," + param(getTypeNameDefString(t, (Types.BLOB)))//
+					+ "t_BOOLEAN," + param(getTypeNameDefString(t, (Types.BOOLEAN)))//
+					+ "t_CHAR," + param(getTypeNameDefString(t, (Types.CHAR)))//
+					+ "t_CLOB," + param(getTypeNameDefString(t, (Types.CLOB)))//
+					+ "t_DATE," + param(getTypeNameDefString(t, (Types.DATE)))//
+					+ "t_DECIMAL," + param(getTypeNameDefString(t, (Types.DECIMAL)))//
+					+ "t_DOUBLE," + param(getTypeNameDefString(t, (Types.DOUBLE)))//
+					+ "t_FLOAT," + param(getTypeNameDefString(t, (Types.FLOAT)))//
+					+ "t_INTEGER," + param(getTypeNameDefString(t, (Types.INTEGER)))//
+					+ "t_JAVA_OBJECT," + param(getTypeNameDefString(t, (Types.JAVA_OBJECT)))//
+					+ "t_LONGNVARCHAR," + param(getTypeNameDefString(t, (Types.LONGNVARCHAR)))//
+					+ "t_LONGVARBINARY," + param(getTypeNameDefString(t, (Types.LONGVARBINARY)))//
+					+ "t_LONGVARCHAR," + param(getTypeNameDefString(t, (Types.LONGVARCHAR)))//
+					+ "t_NCHAR," + param(getTypeNameDefString(t, (Types.NCHAR)))//
+					+ "t_NCLOB," + param(getTypeNameDefString(t, (Types.NCLOB)))//
+					+ "t_NUMERIC," + param(getTypeNameDefString(t, (Types.NUMERIC)))//
+					+ "t_NVARCHAR," + param(getTypeNameDefString(t, (Types.NVARCHAR)))//
+					+ "t_OTHER," + param(getTypeNameDefString(t, (Types.OTHER)))//
+					+ "t_REAL," + param(getTypeNameDefString(t, (Types.REAL)))//
+					+ "t_SMALLINT," + param(getTypeNameDefString(t, (Types.SMALLINT)))//
+					+ "t_TIME," + param(getTypeNameDefString(t, (Types.TIME)))//
+					+ "t_TIMESTAMP," + param(getTypeNameDefString(t, (Types.TIMESTAMP)))//
+					+ "t_TINYINT," + param(getTypeNameDefString(t, (Types.TINYINT)))//
+					+ "t_VARBINARY," + param(getTypeNameDefString(t, (Types.VARBINARY)))//
+					+ "t_VARCHAR" + param(getTypeNameDefString(t, (Types.VARCHAR)))//
+					+ ") " //
+					+ valuesQuesions();
+			dao.iExecute(insertSQL);
 		}
-		
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("protected static void initTypeMappings() {\n");
-		sb.append("Map<Type, String> mp = new HashMap<Type, String>();\n"); 
+		sb.append("Map<Type, String> mp = new HashMap<Type, String>();\n");
 		Map<String, String> lastMP = new HashMap<>();
 
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
-			String diaName = d.getClass().getSimpleName(); 
-			List<Map<String, Object>> result = Dao.queryForList("select * from tb_typeNames where dialect=", q(diaName)); 
-			
-			
-			Map<String, String> thisMap = new HashMap<>(); 
-			for (Map<String, Object> map : result) { 
-				
+			String diaName = d.getClass().getSimpleName();
+			List<Map<String, Object>> result = dao.iQuery(new MapListHandler(),
+					"select * from tb_typeNames where dialect=", question0(diaName));
+
+			Map<String, String> thisMap = new HashMap<>();
+			for (Map<String, Object> map : result) {
+
 				for (Entry<String, Object> entry : map.entrySet()) {
 					String key = entry.getKey();
 					key = StrUtily.replace(key, "T_", "");
 					key = StrUtily.replace(key, "t_", "");
 					String value = "" + entry.getValue();
-					if (!"LINE".equals(key) && !"line".equals(key) && !"DIALECT".equals(key) && !"dialect".equals(key)) { 
+					if (!"LINE".equals(key) && !"line".equals(key) && !"DIALECT".equals(key)
+							&& !"dialect".equals(key)) {
 						thisMap.put(key, value);
-						if(!value.equals(lastMP.get(key))) {
-							sb.append("mp.put(Type." + key + ", \"" + value + "\");\n");   
+						if (!value.equals(lastMP.get(key))) {
+							sb.append("mp.put(Type." + key + ", \"" + value + "\");\n");
 						}
 					}
-				} 
+				}
 			}
 			lastMP.clear();
 			lastMP.putAll(thisMap);
@@ -269,7 +261,6 @@ public class TypeMappingCodeGeneratorNew {
 		}
 		System.out.println("initTypeMappings function exported to file 'e:/initTypeMappings.txt'\n\n");
 	}
-	
 
 	private static String getTypeNameDefString(TypeNames t, int typeCode) {
 		String s = "";

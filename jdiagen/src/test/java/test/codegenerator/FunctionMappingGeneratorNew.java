@@ -1,13 +1,13 @@
 /*
- * jDialects, a tiny SQL dialect tool 
+ * jDialects, a tiny SQL dialect tool
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later. See
+ * the lgpl.txt file in the root directory or
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.q;
+import static com.github.drinkjava2.jsqlbox.SqlBoxContext.*;
 import static test.codegenerator.RefUtils.findFieldObject;
 
 import java.io.File;
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
@@ -34,8 +35,6 @@ import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.IntegerType;
 import org.junit.Test;
-
-import com.github.drinkjava2.jsqlbox.Dao;
 
 import test.TestBase;
 import util.StrUtily;
@@ -68,8 +67,8 @@ public class FunctionMappingGeneratorNew extends TestBase {
 				+ ",percentage float" //
 				+ ", constraint const_fn_name primary key (fn_name)" //
 				+ ")";
-		Dao.executeQuiet("drop table tb_functions");
-		Dao.execute(createSQL);
+		dao.iExecuteQuiet("drop table tb_functions");
+		dao.nExecute(createSQL);
 		exportDialectFunctionsToDatabase();
 		countFunctionPercent();
 		generateFunctionTemplateSourceCode();
@@ -112,15 +111,15 @@ public class FunctionMappingGeneratorNew extends TestBase {
 			System.out.println("Analyze dialect " + class1 + "...");
 			Dialect dia = buildDialectByName(class1);
 			String diaName = dia.getClass().getSimpleName();
-			Dao.execute("alter table tb_functions add  " + diaName + " varchar(200)");
-			Dao.executeQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", empty(diaName),
-					empty("FUNCTIONS"));
+			dao.nExecute("alter table tb_functions add  " + diaName + " varchar(200)");
+			dao.iExecuteQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", param(diaName),
+					param("FUNCTIONS"));
 			Map<String, SQLFunction> sqlFunctions = (Map<String, SQLFunction>) findFieldObject(dia, "sqlFunctions");
 
 			for (Entry<String, SQLFunction> entry : sqlFunctions.entrySet()) {
 				String fn_name = entry.getKey();
-				Dao.executeQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", empty("---"),
-						empty(fn_name));
+				dao.iExecuteQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", param("---"),
+						param(fn_name));
 
 				SQLFunction fun = entry.getValue();
 
@@ -175,14 +174,14 @@ public class FunctionMappingGeneratorNew extends TestBase {
 				}
 				String templateValue = tryValue;
 				// fun.getClass().getSimpleName() + ">" + templateValue
-				Dao.execute("update tb_functions set " + diaName + "=? where fn_name=?", empty(templateValue),
-						empty(fn_name));
+				dao.nExecute("update tb_functions set " + diaName + "=? where fn_name=?", param(templateValue),
+						param(fn_name));
 			}
 		}
 	}
 
 	public void countFunctionPercent() {
-		List<Map<String, Object>> l = Dao.queryForList("select * from tb_functions");
+		List<Map<String, Object>> l = dao.nQuery(new MapListHandler(), "select * from tb_functions");
 		for (Map<String, Object> map : l) {
 			String fn_name = (String) map.get("fn_name");
 			int percentage = 0;
@@ -193,8 +192,9 @@ public class FunctionMappingGeneratorNew extends TestBase {
 					percentage++;
 				}
 			}
-			Dao.execute("update tb_functions set percentage=" + q("" + Math.rint(1.0 * percentage * 100.0 / total))
-					+ " where fn_name=" + q(fn_name));
+			dao.iExecute(
+					"update tb_functions set percentage=" + question0("" + Math.rint(1.0 * percentage * 100.0 / total))
+							+ " where fn_name=" + question(fn_name));
 		}
 	}
 
@@ -208,7 +208,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
-			List<Map<String, Object>> result = Dao.queryForList("select fn_name, " + diaName
+			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(), "select fn_name, " + diaName
 					+ " from tb_functions where percentage>15 order by percentage desc, fn_name");
 
 			Map<String, String> thisMap = new HashMap<>();
@@ -264,8 +264,8 @@ public class FunctionMappingGeneratorNew extends TestBase {
 
 	public void generateDialectSourceCode() {
 		StringBuilder sb = new StringBuilder();
-		List<Map<String, Object>> result = Dao
-				.queryForList("select fn_name, percentage from tb_functions order by percentage desc, fn_name");
+		List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
+				"select fn_name, percentage from tb_functions order by percentage desc, fn_name");
 		for (Map<String, Object> map : result) {
 			String fn_name = (String) map.get("fn_name");
 			Double percentage = (Double) map.get("percentage");

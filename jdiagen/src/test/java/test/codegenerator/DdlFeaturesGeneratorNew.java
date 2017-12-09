@@ -7,24 +7,22 @@
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.q;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.*;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.question;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.question0;
 
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import com.github.drinkjava2.jsqlbox.Dao;
-
-import test.config.PrepareTestContext;
+import test.TestBase;
 
 /**
  * This is to collect Hibernate's Dialect.class features, only collect what I
@@ -33,20 +31,8 @@ import test.config.PrepareTestContext;
  * @author Yong Zhu
  * @since 1.0.0
  */
-public class DdlFeaturesGeneratorNew {
+public class DdlFeaturesGeneratorNew extends TestBase {
 	private static final String NOT_SUPPORT = "NOT_SUPPORT";
-
-	@Before
-	public void setup() {
-		PrepareTestContext.prepareDatasource_setDefaultSqlBoxConetxt_recreateTables();
-		// Dao.getDefaultContext().setShowSql(true);
-	}
-
-	// Clean up, close DataSource pool, close default SqlBoxContext
-	@After
-	public void cleanUp() {
-		PrepareTestContext.closeDatasource_closeDefaultSqlBoxConetxt();
-	}
 
 	@Test
 	public void collectDDLFeatures() {
@@ -54,16 +40,16 @@ public class DdlFeaturesGeneratorNew {
 				+ "feature varchar(100)  " //
 				+ ", constraint const_other_feature primary key (feature)" //
 				+ ")";
-		Dao.executeQuiet("drop table tb_hibdll");
-		Dao.execute(createSQL);
-		Dao.refreshMetaData();
-		exportOtherFeatures();  
+		dao.iExecuteQuiet("drop table tb_hibdll");
+		dao.nExecute(createSQL);
+		dao.refreshMetaData();
+		exportOtherFeatures();
 		// a quick bug fix of RDMSOS2200Dialect
-		Dao.execute("update tb_hibdll set RDMSOS2200Dialect=?", empty(NOT_SUPPORT), " where feature=?",
-				empty("createSequenceStrings"));
-		Dao.execute("update tb_hibdll set RDMSOS2200Dialect=?", empty("false"), " where feature=?",
-				empty("supportsSequences"));
-		//generateInitDdlFeaturesSourceCodeOld();
+		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param0(NOT_SUPPORT), " where feature=?",
+				param("createSequenceStrings"));
+		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param0("false"), " where feature=?",
+				param("supportsSequences"));
+		// generateInitDdlFeaturesSourceCodeOld();
 		generateInitDdlFeaturesSourceCodeNew();
 	}
 
@@ -76,8 +62,8 @@ public class DdlFeaturesGeneratorNew {
 			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
 			sb.append("case " + diaName + ": {");
-			List<Map<String, Object>> result = Dao
-					.queryForList("select feature, " + diaName + " from tb_hibdll order by feature");
+			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
+					"select feature, " + diaName + " from tb_hibdll order by feature");
 			for (Map<String, Object> map : result) {
 				String value = (String) map.get(diaName);
 				sb.append("ddl.").append(map.get("feature")).append("=");
@@ -94,12 +80,13 @@ public class DdlFeaturesGeneratorNew {
 		sb.append("}}");
 		System.out.println(sb.toString());
 	}
+
 	public void generateInitDdlFeaturesSourceCodeNew() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("protected static void initDDLFeatures(Dialect dia, DDLFeatures ddl) {\n");
 
-		List<Map<String, Object>> OracleList = Dao // use OracleDialect as a default template
-				.queryForList("select feature, OracleDialect from tb_hibdll order by feature");
+		List<Map<String, Object>> OracleList = dao // use OracleDialect as a default template
+				.nQuery(new MapListHandler(), "select feature, OracleDialect from tb_hibdll order by feature"); 
 		Map<String, String> oracleMap = new HashMap<>();
 		for (Map<String, Object> map : OracleList) {
 			String key = (String) map.get("feature");
@@ -110,7 +97,7 @@ public class DdlFeaturesGeneratorNew {
 			sb.append(value);
 			if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
 				sb.append("\"");
-			sb.append(";\n");
+			sb.append(";\n"); 
 			value = value.trim();
 			oracleMap.put(key, value);// store OracleList value
 		}
@@ -121,17 +108,18 @@ public class DdlFeaturesGeneratorNew {
 			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
 			sb.append("case " + diaName + ": {");
-			List<Map<String, Object>> result = Dao
-					.queryForList("select feature, " + diaName + " from tb_hibdll order by feature");
+			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
+					"select feature, " + diaName + " from tb_hibdll order by feature");
 			for (Map<String, Object> map : result) {
-				//System.out.println("key=" + map.get("feature"));
+				// System.out.println("key=" + map.get("feature"));
 				String value = (String) map.get(diaName);
-				//System.out.println("value=" + value);
+				// System.out.println("value=" + value);
 
-				 String oracleValue = oracleMap.get(map.get("feature"));
-				//System.out.println("mysqlValue=" + mysqlValue);
-				if(value==null)value=NOT_SUPPORT;
-				
+				String oracleValue = oracleMap.get(map.get("feature"));
+				// System.out.println("mysqlValue=" + mysqlValue);
+				if (value == null)
+					value = NOT_SUPPORT;
+
 				if (!oracleValue.equals(value.trim())) {
 					sb.append("ddl.").append(map.get("feature")).append("=");
 					if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value)
@@ -141,7 +129,7 @@ public class DdlFeaturesGeneratorNew {
 					if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value)
 							&& !"true".equalsIgnoreCase(value))
 						sb.append("\"");
-					sb.append(";\n"); 
+					sb.append(";\n");
 				}
 			}
 			sb.append("} break;\n");
@@ -151,8 +139,8 @@ public class DdlFeaturesGeneratorNew {
 		System.out.println(sb.toString());
 	}
 
-	public void dealOneFeature(Dialect d, String feature, String... featureValue) {
-		Dao.executeQuiet("insert into tb_hibdll (feature) values(?)", empty(feature));
+	public void dealOneFeature(Dialect d, String feature, String... featureValue) { 
+		dao.iExecuteQuiet("insert into tb_hibdll (feature) values(?)",  param0(feature));
 
 		StringBuilder sb = new StringBuilder();
 		for (String str : featureValue) {
@@ -167,8 +155,8 @@ public class DdlFeaturesGeneratorNew {
 		if (StringUtils.containsIgnoreCase(writeValue, "not support"))
 			writeValue = NOT_SUPPORT;
 
-		Dao.execute("update tb_hibdll set "//
-				, d.getClass().getSimpleName(), "=", q(writeValue), " where feature=", q(feature));
+		dao.iExecute("update tb_hibdll set "//
+				, d.getClass().getSimpleName(), "=", question0(writeValue), " where feature=", question(feature));
 	}
 
 	//@formatter:off  close Eclipse formatter 
@@ -177,7 +165,7 @@ public class DdlFeaturesGeneratorNew {
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass); 
-			Dao.execute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
+			dao.nExecute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
 		       String[] _FKS={"_FK1","_FK2"};                                                                                                                		
 		       String[] _REFS={"_REF1","_REF2"}; 
 		       try{dealOneFeature(d,"addColumnString", ""+d.getAddColumnString());}catch(Exception e){dealOneFeature(d,"addColumnString", NOT_SUPPORT);}                                                                                                                

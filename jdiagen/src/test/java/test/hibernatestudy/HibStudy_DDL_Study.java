@@ -59,6 +59,7 @@ import util.TextSupport;
  * @since 1.0.0
  */
 //@formatter:off
+@SuppressWarnings("all")
 public class HibStudy_DDL_Study {
 	private static String fileName = "f:/export.sql";
 

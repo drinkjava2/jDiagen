@@ -1,15 +1,15 @@
 /*
- * jDialects, a tiny SQL dialect tool 
+ * jDialects, a tiny SQL dialect tool
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later.
- * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * License: GNU Lesser General Public License (LGPL), version 2.1 or later. See
+ * the lgpl.txt file in the root directory or
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jsqlbox.SqlHelper.empty;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.from;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.select;
-import static com.github.drinkjava2.jsqlbox.SqlHelper.questions;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.param;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.param0;
+import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.valuesQuesions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +29,8 @@ import org.hibernate.engine.spi.RowSelection;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.junit.Test;
 
-import com.github.drinkjava2.jsqlbox.Dao;
-import com.github.drinkjava2.jsqlbox.Entity;
+import com.github.drinkjava2.jdialects.annotation.jpa.Id;
+import com.github.drinkjava2.jsqlbox.ActiveRecord;
 
 import test.TestBase;
 
@@ -38,7 +38,7 @@ import test.TestBase;
  * This is not a unit test class, it's a code generator tool to create source
  * code for jDialects
  *
- * @author Yong Zhu 
+ * @author Yong Zhu
  * @since 1.0.0
  */
 public class PaginationCodeGenerator extends TestBase {
@@ -68,9 +68,9 @@ public class PaginationCodeGenerator extends TestBase {
 				+ "forceLimitUsage varchar(10),"//
 				+ "firstRowValue varchar(10)"//
 				+ ")";
-		Dao.executeQuiet("drop table tb_pagination");
-		Dao.execute(createSQL);
-		Dao.refreshMetaData();
+		dao.iExecuteQuiet("drop table tb_pagination");
+		dao.nExecute(createSQL);
+		dao.refreshMetaData();
 		exportHibernateDialectPaginations();
 		exportHibernateDialectPaginationFirstOnly();
 
@@ -95,16 +95,13 @@ public class PaginationCodeGenerator extends TestBase {
 		return dialectFactory.buildDialect(configValues, null);
 	}
 
-	public static class TB_pagination implements Entity {
+	public static class TB_pagination extends ActiveRecord {
+		@Id
 		private String dialect;
 		private String pagination;
 		private String paginationFirstOnly;
 		private Integer sortorder;
 		private Integer sortorder2;
-
-		{
-			this.box().configEntityIDs("dialect");
-		}
 
 		public String getDialect() {
 			return dialect;
@@ -177,27 +174,27 @@ public class PaginationCodeGenerator extends TestBase {
 			}
 
 			if (l2 != null)
-				Dao.executeInsert("insert into tb_pagination (" //
-						, "dialect ," + empty(dialect)//
-						, "supportsLimit ," + empty(l.supportsLimit())//
-						, "supportLimitOffset ," + empty(l.supportsLimitOffset())//
-						, "supportsVariableLimit ," + empty(l2.supportsVariableLimit())//
-						, "bindLimitParametersInReverseOrder ," + empty(l2.bindLimitParametersInReverseOrder())//
-						, "bindLimitParametersFirst ," + empty(l2.bindLimitParametersFirst())//
-						, "useMaxForLimit ," + empty(l2.useMaxForLimit())//
-						, "forceLimitUsage ," + empty(l2.forceLimitUsage())//
-						, "firstRowValue ," + empty(l2.convertToFirstRowValue(0))//
-						, "limits ," + empty(limits)//
-						, "pagination )" + empty(pagination)//
-						, "values", questions());
+				dao.iExecute("insert into tb_pagination (" //
+						, "dialect ," + param0(dialect)//
+						, "supportsLimit ," + param(l.supportsLimit())//
+						, "supportLimitOffset ," + param(l.supportsLimitOffset())//
+						, "supportsVariableLimit ," + param(l2.supportsVariableLimit())//
+						, "bindLimitParametersInReverseOrder ," + param(l2.bindLimitParametersInReverseOrder())//
+						, "bindLimitParametersFirst ," + param(l2.bindLimitParametersFirst())//
+						, "useMaxForLimit ," + param(l2.useMaxForLimit())//
+						, "forceLimitUsage ," + param(l2.forceLimitUsage())//
+						, "firstRowValue ," + param(l2.convertToFirstRowValue(0))//
+						, "limits ," + param(limits)//
+						, "pagination ) " + param(pagination)//
+						, valuesQuesions());
 			else
-				Dao.executeInsert("insert into tb_pagination (" //
-						, "dialect ," + empty(dialect)//
-						, "supportsLimit ," + empty(l.supportsLimit())//
-						, "supportLimitOffset ," + empty(l.supportsLimitOffset())//
-						, "limits ," + empty(limits)//
-						, "pagination )" + empty(pagination)//
-						, "values", questions());
+				dao.iExecute("insert into tb_pagination (" //
+						, "dialect ," + param0(dialect)//
+						, "supportsLimit ," + param(l.supportsLimit())//
+						, "supportLimitOffset ," + param(l.supportsLimitOffset())//
+						, "limits ," + param(limits)//
+						, "pagination )" + param(pagination)//
+						, valuesQuesions());
 		}
 	}
 
@@ -224,10 +221,10 @@ public class PaginationCodeGenerator extends TestBase {
 				pagination = replaceOffsetAndLimit(dialect, pagination, baitSqlBody, limits2);
 			} catch (Exception e) {
 			}
-			Dao.execute("update tb_pagination  " //
-					, " set paginationFirstOnly=?" + empty(pagination)//
-					, ", limits2 =?" + empty(limits2)//
-					, " where dialect=? " + empty(dialect)//
+			dao.iExecute("update tb_pagination  " //
+					, " set paginationFirstOnly=?" + param0(pagination)//
+					, ", limits2 =?" + param(limits2)//
+					, " where dialect=? " + param(dialect)//
 			);
 		}
 
@@ -312,9 +309,8 @@ public class PaginationCodeGenerator extends TestBase {
 	private void generatePaginationSourceCode() {
 		// Dao.getDefaultContext().setShowSql(true);
 		// Now delete repeat pagination
-		TB_pagination tp = new TB_pagination();
-		List<TB_pagination> l = Dao.queryForEntityList(TB_pagination.class, select(), tp.all(), from(), tp.table(),
-				" order by pagination, dialect ");
+		List<TB_pagination> l = dao.queryForEntityList(TB_pagination.class,
+				"select t.** from tb_pagination t order by t.pagination, t.dialect ");
 
 		// Delete repeat pagination test
 		TB_pagination lastLine = null;
@@ -337,7 +333,8 @@ public class PaginationCodeGenerator extends TestBase {
 		sb.append(" */\n");
 		sb.append("private String initializePaginSQLTemplate() { // NOSONAR\n");
 		sb.append("switch (this) {// NOSONAR\n");
-		l = Dao.queryForEntityList(TB_pagination.class, select(), tp.all(), from(), tp.table(), " order by sortorder");
+		l = dao.queryForEntityList(TB_pagination.class, "select t.** from tb_pagination t order by t.sortorder");
+
 		for (TB_pagination t : l) {
 			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPagination())) {
@@ -359,9 +356,8 @@ public class PaginationCodeGenerator extends TestBase {
 	private void generatePaginationFirstOnlySourceCode() {
 		// Dao.getDefaultContext().setShowSql(true);
 		// Now delete repeat pagination
-		TB_pagination tp = new TB_pagination();
-		List<TB_pagination> l = Dao.queryForEntityList(TB_pagination.class, select(), tp.all(), from(), tp.table(),
-				" order by paginationFirstOnly, dialect ");
+		List<TB_pagination> l = dao.queryForEntityList(TB_pagination.class,
+				" select t.** from tb_pagination t order by t.paginationFirstOnly, t.dialect ");
 
 		// Delete repeat pagination test
 		TB_pagination lastLine = null;
@@ -384,7 +380,8 @@ public class PaginationCodeGenerator extends TestBase {
 		sb.append(" */\n");
 		sb.append("private String initializeTopLimitSqlTemplate() {// NOSONAR\n");
 		sb.append("switch (this) {// NOSONAR\n");
-		l = Dao.queryForEntityList(TB_pagination.class, select(), tp.all(), from(), tp.table(), " order by sortorder2");
+		l = dao.queryForEntityList(TB_pagination.class, " select t.** from tb_pagination t order by t.sortorder2 ");
+
 		for (TB_pagination t : l) {
 			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPaginationFirstOnly())) {
