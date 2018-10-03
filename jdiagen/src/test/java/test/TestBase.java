@@ -7,18 +7,14 @@
  */
 package test;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
-import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.junit.After;
 import org.junit.Before;
 
 import com.github.drinkjava2.jbeanbox.BeanBox;
+import com.github.drinkjava2.jbeanbox.JBEANBOX;
 import com.github.drinkjava2.jsqlbox.SqlBoxContext;
-import com.github.drinkjava2.jtinynet.TinyNet;
 
 import test.config.JBeanBoxConfig.DataSourceBox;
 
@@ -40,19 +36,12 @@ public class TestBase {
 			super(ds);
 		}
 
-		public void iExecuteQuiet(String... sqls) {
+		public void iExecuteQuiet(Object... sqls) {
 			try {
 				super.iExecute(sqls);
 			} catch (Exception e) {
 			}
-		}
-
-		public <T> List<T> queryForEntityList(Class<T> clazz, String... sqls) {
-			List<Map<String, Object>> mapList1 = this.iQuery(new MapListHandler(netProcessor(clazz)), sqls);
-			TinyNet net = this.netCreate(mapList1);
-			return net.getAllEntityList(clazz);
-		}
-
+		} 
 	}
 
 	/**
@@ -60,10 +49,10 @@ public class TestBase {
 	 */
 	@Before
 	public void setup() {
-		BeanBox.defaultContext.close();
+		JBEANBOX.close();
 		dao = new DaoCtx(BeanBox.getBean(DataSourceBox.class));
 		System.out.println("=============Testing " + this.getClass().getName() + "================"); 
-		SqlBoxContext.setDefaultContext(dao);
+		SqlBoxContext.setGlobalSqlBoxContext(dao);
 	}
 
 	/**
@@ -71,7 +60,7 @@ public class TestBase {
 	 */
 	@After
 	public void cleanUp() {
-		BeanBox.defaultContext.close();
+		JBEANBOX.close();
 	}
 
 }

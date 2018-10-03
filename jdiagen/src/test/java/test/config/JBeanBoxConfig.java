@@ -97,7 +97,7 @@ public class JBeanBoxConfig {
 			ds.addDataSourceProperty("useServerPrepStmts", true);
 			ds.setMaximumPoolSize(3);
 			ds.setConnectionTimeout(5000);
-			this.setPreDestory("close");// jBeanBox will close pool
+			this.setPreDestroy("close");// jBeanBox will close pool
 			return ds;
 		}
 	}

@@ -51,7 +51,7 @@ import util.StrUtily;
 import util.TextSupport;
 
 /**
- * This is for study Hibernate how to build create table ddl
+ * This is not unit test. Can not pass unit because it used exit(0)
  *
  * @author Yong Zhu
  *

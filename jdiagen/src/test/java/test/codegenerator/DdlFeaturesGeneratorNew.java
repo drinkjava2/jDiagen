@@ -7,9 +7,8 @@
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.*;
-import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.question;
-import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.question0;
+import static com.github.drinkjava2.jdbpro.JDBPRO.param;
+import static com.github.drinkjava2.jdbpro.JDBPRO.question;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -25,8 +24,8 @@ import org.junit.Test;
 import test.TestBase;
 
 /**
- * This is to collect Hibernate's Dialect.class features, only collect what I
- * understand DDL features
+ * This is to collect Hibernate's Dialect.class features to build jDialect's
+ * DDLFeatures.java. Only collect what I understand DDL features
  *
  * @author Yong Zhu
  * @since 1.0.0
@@ -42,12 +41,11 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 				+ ")";
 		dao.iExecuteQuiet("drop table tb_hibdll");
 		dao.nExecute(createSQL);
-		dao.refreshMetaData();
 		exportOtherFeatures();
 		// a quick bug fix of RDMSOS2200Dialect
-		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param0(NOT_SUPPORT), " where feature=?",
+		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param(NOT_SUPPORT), " where feature=?",
 				param("createSequenceStrings"));
-		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param0("false"), " where feature=?",
+		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param("false"), " where feature=?",
 				param("supportsSequences"));
 		// generateInitDdlFeaturesSourceCodeOld();
 		generateInitDdlFeaturesSourceCodeNew();
@@ -59,7 +57,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		sb.append("switch (dia) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
+			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
 			sb.append("case " + diaName + ": {");
 			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
@@ -86,7 +84,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		sb.append("protected static void initDDLFeatures(Dialect dia, DDLFeatures ddl) {\n");
 
 		List<Map<String, Object>> OracleList = dao // use OracleDialect as a default template
-				.nQuery(new MapListHandler(), "select feature, OracleDialect from tb_hibdll order by feature"); 
+				.nQuery(new MapListHandler(), "select feature, OracleDialect from tb_hibdll order by feature");
 		Map<String, String> oracleMap = new HashMap<>();
 		for (Map<String, Object> map : OracleList) {
 			String key = (String) map.get("feature");
@@ -97,7 +95,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 			sb.append(value);
 			if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
 				sb.append("\"");
-			sb.append(";\n"); 
+			sb.append(";\n");
 			value = value.trim();
 			oracleMap.put(key, value);// store OracleList value
 		}
@@ -105,7 +103,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		sb.append("switch (dia) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
+			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
 			sb.append("case " + diaName + ": {");
 			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
@@ -139,8 +137,8 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		System.out.println(sb.toString());
 	}
 
-	public void dealOneFeature(Dialect d, String feature, String... featureValue) { 
-		dao.iExecuteQuiet("insert into tb_hibdll (feature) values(?)",  param0(feature));
+	public void dealOneFeature(Dialect d, String feature, String... featureValue) {
+		dao.quiteExecute("insert into tb_hibdll (feature) values(?)", feature);
 
 		StringBuilder sb = new StringBuilder();
 		for (String str : featureValue) {
@@ -156,7 +154,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 			writeValue = NOT_SUPPORT;
 
 		dao.iExecute("update tb_hibdll set "//
-				, d.getClass().getSimpleName(), "=", question0(writeValue), " where feature=", question(feature));
+				, d.getClass().getSimpleName(), "=", question(writeValue), " where feature=", question(feature));
 	}
 
 	//@formatter:off  close Eclipse formatter 
@@ -164,7 +162,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 	public void exportOtherFeatures() { 
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass); 
+			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass); 
 			dao.nExecute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
 		       String[] _FKS={"_FK1","_FK2"};                                                                                                                		
 		       String[] _REFS={"_REF1","_REF2"}; 

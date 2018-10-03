@@ -8,7 +8,7 @@ package test.codegenerator;
 
 import java.lang.reflect.Field;
 
-import com.github.drinkjava2.jbeanbox.springsrc.ReflectionUtils;
+import com.github.drinkjava2.jbeanbox.ReflectionUtils;
 
 /**
  * Reflecct utils

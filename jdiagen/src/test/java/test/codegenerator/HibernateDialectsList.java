@@ -7,8 +7,15 @@
 package test.codegenerator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hibernate.boot.registry.BootstrapServiceRegistry;
+import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.CUBRIDDialect;
 import org.hibernate.dialect.Cache71Dialect;
 import org.hibernate.dialect.DB2390Dialect;
@@ -77,6 +84,8 @@ import org.hibernate.dialect.SybaseDialect;
 import org.hibernate.dialect.Teradata14Dialect;
 import org.hibernate.dialect.TeradataDialect;
 import org.hibernate.dialect.TimesTenDialect;
+import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
+import org.hibernate.service.spi.ServiceRegistryImplementor;
 
 import dialects_collection.SQLiteDialect;
 import dialects_collection.hxtt_dialects.AccessDialect;
@@ -96,6 +105,18 @@ import dialects_collection.hxtt_dialects.XMLDialect;
  */
 @SuppressWarnings("deprecation")
 public class HibernateDialectsList {
+	
+	public static Dialect buildDialectByName(Class<?> dialect) {
+		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
+				.applyClassLoader(HibernateDialectsList.class.getClassLoader()).build();
+		StandardServiceRegistry registry = new StandardServiceRegistryBuilder(bootReg).build();
+		DialectFactoryImpl dialectFactory = new DialectFactoryImpl();
+		dialectFactory.injectServices((ServiceRegistryImplementor) registry);
+		final Map<String, String> configValues = new HashMap<String, String>();
+		configValues.put(Environment.DIALECT, dialect.getName());
+		return dialectFactory.buildDialect(configValues, null);
+	}  
+	
 	public static List<Class<? extends Dialect>> SUPPORTED_DIALECTS = new ArrayList<Class<? extends Dialect>>();
 	static {
 		// above are found from internet

@@ -7,9 +7,7 @@
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.param;
-import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.param0;
-import static com.github.drinkjava2.jdbpro.inline.InlineQueryRunner.valuesQuesions;
+import static com.github.drinkjava2.jsqlbox.JSQLBOX.*; 
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +67,7 @@ public class PaginationCodeGenerator extends TestBase {
 				+ "firstRowValue varchar(10)"//
 				+ ")";
 		dao.iExecuteQuiet("drop table tb_pagination");
-		dao.nExecute(createSQL);
-		dao.refreshMetaData();
+		dao.nExecute(createSQL); 
 		exportHibernateDialectPaginations();
 		exportHibernateDialectPaginationFirstOnly();
 
@@ -175,26 +172,26 @@ public class PaginationCodeGenerator extends TestBase {
 
 			if (l2 != null)
 				dao.iExecute("insert into tb_pagination (" //
-						, "dialect ," + param0(dialect)//
-						, "supportsLimit ," + param(l.supportsLimit())//
-						, "supportLimitOffset ," + param(l.supportsLimitOffset())//
-						, "supportsVariableLimit ," + param(l2.supportsVariableLimit())//
-						, "bindLimitParametersInReverseOrder ," + param(l2.bindLimitParametersInReverseOrder())//
-						, "bindLimitParametersFirst ," + param(l2.bindLimitParametersFirst())//
-						, "useMaxForLimit ," + param(l2.useMaxForLimit())//
-						, "forceLimitUsage ," + param(l2.forceLimitUsage())//
-						, "firstRowValue ," + param(l2.convertToFirstRowValue(0))//
-						, "limits ," + param(limits)//
-						, "pagination ) " + param(pagination)//
-						, valuesQuesions());
+						, "dialect ," , param(dialect)//
+						, "supportsLimit ," , param(l.supportsLimit())//
+						, "supportLimitOffset ," , param(l.supportsLimitOffset())//
+						, "supportsVariableLimit ," , param(l2.supportsVariableLimit())//
+						, "bindLimitParametersInReverseOrder ," , param(l2.bindLimitParametersInReverseOrder())//
+						, "bindLimitParametersFirst ," , param(l2.bindLimitParametersFirst())//
+						, "useMaxForLimit ," , param(l2.useMaxForLimit())//
+						, "forceLimitUsage ," , param(l2.forceLimitUsage())//
+						, "firstRowValue ," , param(l2.convertToFirstRowValue(0))//
+						, "limits ," , param(limits)//
+						, "pagination ) " , param(pagination)//
+						, valuesQuestions());
 			else
 				dao.iExecute("insert into tb_pagination (" //
-						, "dialect ," + param0(dialect)//
-						, "supportsLimit ," + param(l.supportsLimit())//
-						, "supportLimitOffset ," + param(l.supportsLimitOffset())//
-						, "limits ," + param(limits)//
-						, "pagination )" + param(pagination)//
-						, valuesQuesions());
+						, "dialect ," , param(dialect)//
+						, "supportsLimit ," , param(l.supportsLimit())//
+						, "supportLimitOffset ," , param(l.supportsLimitOffset())//
+						, "limits ," , param(limits)//
+						, "pagination )" , param(pagination)//
+						, valuesQuestions());
 		}
 	}
 
@@ -222,9 +219,9 @@ public class PaginationCodeGenerator extends TestBase {
 			} catch (Exception e) {
 			}
 			dao.iExecute("update tb_pagination  " //
-					, " set paginationFirstOnly=?" + param0(pagination)//
-					, ", limits2 =?" + param(limits2)//
-					, " where dialect=? " + param(dialect)//
+					, " set paginationFirstOnly=?" , param(pagination)//
+					, ", limits2 =?" , param(limits2)//
+					, " where dialect=? " , param(dialect)//
 			);
 		}
 
@@ -309,8 +306,8 @@ public class PaginationCodeGenerator extends TestBase {
 	private void generatePaginationSourceCode() {
 		// Dao.getDefaultContext().setShowSql(true);
 		// Now delete repeat pagination
-		List<TB_pagination> l = dao.queryForEntityList(TB_pagination.class,
-				"select t.** from tb_pagination t order by t.pagination, t.dialect ");
+		List<TB_pagination> l = dao.iQueryForEntityList(TB_pagination.class,
+				"select t.* from tb_pagination t order by t.pagination, t.dialect ");
 
 		// Delete repeat pagination test
 		TB_pagination lastLine = null;
@@ -327,24 +324,24 @@ public class PaginationCodeGenerator extends TestBase {
 
 		// Now generate Java source code to console
 		StringBuilder sb = new StringBuilder();
-
+ 
 		sb.append("/**\n");
-		sb.append("* Return sql template\n");
-		sb.append(" */\n");
-		sb.append("private String initializePaginSQLTemplate() { // NOSONAR\n");
-		sb.append("switch (this) {// NOSONAR\n");
-		l = dao.queryForEntityList(TB_pagination.class, "select t.** from tb_pagination t order by t.sortorder");
+		sb.append("* Return pagination template of this Dialect\n");
+		sb.append("*/\n");
+		sb.append("protected static String initializePaginSQLTemplate(Dialect d) {\n");
+		sb.append("switch (d) {\n");
+		l = dao.iQueryForEntityList(TB_pagination.class, "select t.* from tb_pagination t order by t.sortorder");
 
 		for (TB_pagination t : l) {
 			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPagination())) {
 				sb.append("return ").append(
-						"NOT_SUPPORT".equals(t.getPagination()) ? "NOT_SUPPORT" : "\"" + t.getPagination() + "\"")
+						"NOT_SUPPORT".equals(t.getPagination()) ? "Dialect.NOT_SUPPORT" : "\"" + t.getPagination() + "\"")
 						.append(";\n");
 			}
 		}
 		sb.append("default:  \n");
-		sb.append("	return NOT_SUPPORT;\n");
+		sb.append("	return Dialect.NOT_SUPPORT;\n");
 		sb.append("}\n");
 		sb.append("}\n");
 
@@ -356,8 +353,8 @@ public class PaginationCodeGenerator extends TestBase {
 	private void generatePaginationFirstOnlySourceCode() {
 		// Dao.getDefaultContext().setShowSql(true);
 		// Now delete repeat pagination
-		List<TB_pagination> l = dao.queryForEntityList(TB_pagination.class,
-				" select t.** from tb_pagination t order by t.paginationFirstOnly, t.dialect ");
+		List<TB_pagination> l = dao.iQueryForEntityList(TB_pagination.class,
+				" select t.* from tb_pagination t order by t.paginationFirstOnly, t.dialect ");
 
 		// Delete repeat pagination test
 		TB_pagination lastLine = null;
@@ -375,22 +372,22 @@ public class PaginationCodeGenerator extends TestBase {
 		// Now generate Java source code to console
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("/**\n");
-		sb.append("* return top limit sql template\n");
-		sb.append(" */\n");
-		sb.append("private String initializeTopLimitSqlTemplate() {// NOSONAR\n");
-		sb.append("switch (this) {// NOSONAR\n");
-		l = dao.queryForEntityList(TB_pagination.class, " select t.** from tb_pagination t order by t.sortorder2 ");
+ 		sb.append("/**\n");
+		sb.append(" * Return top limit sql template of this Dialect\n");
+		sb.append("*/\n");
+		sb.append("protected static String initializeTopLimitSqlTemplate(Dialect d) {\n");
+		sb.append("switch (d) {\n");
+		l = dao.iQueryForEntityList(TB_pagination.class, " select t.* from tb_pagination t order by t.sortorder2 ");
 
 		for (TB_pagination t : l) {
 			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPaginationFirstOnly())) {
-				sb.append("return ").append("NOT_SUPPORT".equals(t.getPaginationFirstOnly()) ? "NOT_SUPPORT"
+				sb.append("return ").append("NOT_SUPPORT".equals(t.getPaginationFirstOnly()) ? "Dialect.NOT_SUPPORT"
 						: "\"" + t.getPaginationFirstOnly() + "\"").append(";\n");
 			}
 		}
 		sb.append("default:  \n");
-		sb.append("	return NOT_SUPPORT;\n");
+		sb.append("	return Dialect.NOT_SUPPORT;\n");
 		sb.append("}\n");
 		sb.append("}\n");
 

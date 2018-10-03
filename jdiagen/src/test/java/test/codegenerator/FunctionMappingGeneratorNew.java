@@ -7,7 +7,8 @@
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jsqlbox.SqlBoxContext.*;
+import static com.github.drinkjava2.jdbpro.JDBPRO.param;
+import static com.github.drinkjava2.jdbpro.JDBPRO.question;
 import static test.codegenerator.RefUtils.findFieldObject;
 
 import java.io.File;
@@ -23,16 +24,9 @@ import java.util.Set;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.boot.registry.BootstrapServiceRegistry;
-import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.CastFunction;
 import org.hibernate.dialect.function.SQLFunction;
-import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
-import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.IntegerType;
 import org.junit.Test;
 
@@ -41,24 +35,13 @@ import util.StrUtily;
 
 /**
  * This is not a unit test, it's a code generator tool to create source code for
- * jDialects
+ * jDialects's DialectFunctionTemplate.java
  *
  * @author Yong Zhu
  * @since 1.0.0
  */
 @SuppressWarnings({ "unchecked" })
 public class FunctionMappingGeneratorNew extends TestBase {
-
-	private static Dialect buildDialectByName(Class<?> dialect) {
-		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
-				.applyClassLoader(HibernateDialectsList.class.getClassLoader()).build();
-		StandardServiceRegistry registry = new StandardServiceRegistryBuilder(bootReg).build();
-		DialectFactoryImpl dialectFactory = new DialectFactoryImpl();
-		dialectFactory.injectServices((ServiceRegistryImplementor) registry);
-		final Map<String, String> configValues = new HashMap<String, String>();
-		configValues.put(Environment.DIALECT, dialect.getName());
-		return dialectFactory.buildDialect(configValues, null);
-	}
 
 	@Test
 	public void transferFunctions() {
@@ -72,7 +55,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		exportDialectFunctionsToDatabase();
 		countFunctionPercent();
 		generateFunctionTemplateSourceCode();
-		generateDialectSourceCode();
+		//generateDialectSourceCode();
 	}
 
 	private static List<String> getL(int count) {
@@ -109,7 +92,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> class1 : dialects) {
 			System.out.println("Analyze dialect " + class1 + "...");
-			Dialect dia = buildDialectByName(class1);
+			Dialect dia = HibernateDialectsList.buildDialectByName(class1);
 			String diaName = dia.getClass().getSimpleName();
 			dao.nExecute("alter table tb_functions add  " + diaName + " varchar(200)");
 			dao.iExecuteQuiet("insert into tb_functions (" + diaName + ", fn_name) values(?,?)", param(diaName),
@@ -174,7 +157,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 				}
 				String templateValue = tryValue;
 				// fun.getClass().getSimpleName() + ">" + templateValue
-				dao.nExecute("update tb_functions set " + diaName + "=? where fn_name=?", param(templateValue),
+				dao.iExecute("update tb_functions set " + diaName + "=? where fn_name=?", param(templateValue),
 						param(fn_name));
 			}
 		}
@@ -192,9 +175,8 @@ public class FunctionMappingGeneratorNew extends TestBase {
 					percentage++;
 				}
 			}
-			dao.iExecute(
-					"update tb_functions set percentage=" + question0("" + Math.rint(1.0 * percentage * 100.0 / total))
-							+ " where fn_name=" + question(fn_name));
+			dao.iExecute("update tb_functions set percentage=",
+					question("" + Math.rint(1.0 * percentage * 100.0 / total)), " where fn_name=", question(fn_name));
 		}
 	}
 
@@ -206,10 +188,10 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		Map<String, String> lastMP = new HashMap<>();
 
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = TypeMappingCodeGenerator.buildDialectByName(hibDialectClass);
+			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
 			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(), "select fn_name, " + diaName
-					+ " from tb_functions where percentage>15 order by percentage desc, fn_name");
+					+ " from tb_functions where percentage>16 order by percentage desc, fn_name");
 
 			Map<String, String> thisMap = new HashMap<>();
 			for (Map<String, Object> map : result) {
@@ -262,32 +244,14 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		System.out.println("initFunctionTemplates function exported to file 'e:/initFunctionTemplates.txt'\n\n");
 	}
 
+	@Deprecated
 	public void generateDialectSourceCode() {
 		StringBuilder sb = new StringBuilder();
 		List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
 				"select fn_name, percentage from tb_functions order by percentage desc, fn_name");
 		for (Map<String, Object> map : result) {
 			String fn_name = (String) map.get("fn_name");
-			Double percentage = (Double) map.get("percentage");
-
-			// String underlines = "";
-			// if (fn_name.equals("abs") || fn_name.equals("avg") ||
-			// fn_name.equals("day") || fn_name.equals("max")
-			// || fn_name.equals("min") || fn_name.equals("mod") ||
-			// fn_name.equals("str") || fn_name.equals("sum")
-			// || fn_name.equals("cast") || fn_name.equals("hour") ||
-			// fn_name.equals("sqrt")
-			// || fn_name.equals("trim") || fn_name.equals("year") ||
-			// fn_name.equals("count")
-			// || fn_name.equals("lower") || fn_name.equals("month") ||
-			// fn_name.equals("upper")
-			// || fn_name.equals("length") || fn_name.equals("locate") ||
-			// fn_name.equals("minute")
-			// || fn_name.equals("nullif") || fn_name.equals("second")) {
-			// underlines = "_";
-			// } else {
-			// underlines = "__";
-			// }
+			Double percentage =  Double.parseDouble(""+ map.get("percentage"));
 			String funName;
 			if (percentage > 15) {
 				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ");
