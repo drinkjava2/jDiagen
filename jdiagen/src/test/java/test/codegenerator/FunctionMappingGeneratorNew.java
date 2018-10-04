@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.dialect.DataDirectOracle9Dialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.CastFunction;
 import org.hibernate.dialect.function.SQLFunction;
@@ -55,7 +56,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		exportDialectFunctionsToDatabase();
 		countFunctionPercent();
 		generateFunctionTemplateSourceCode();
-		//generateDialectSourceCode();
+		// generateDialectSourceCode();
 	}
 
 	private static List<String> getL(int count) {
@@ -123,6 +124,10 @@ public class FunctionMappingGeneratorNew extends TestBase {
 					}
 				}
 
+	 
+
+				if (DataDirectOracle9Dialect.class.equals(class1)) { }
+
 				if (CastFunction.class.equals(fun.getClass())) {
 					try {
 						tryValue = "2=cast($P1, $P2)";
@@ -155,6 +160,14 @@ public class FunctionMappingGeneratorNew extends TestBase {
 						tryValue = "*ERROR";
 					}
 				}
+				
+				// fix a bug for oracle locate function
+				if ("1=,$P1)|2=instr($P2,$P1)".equals(tryValue))
+					tryValue = "2=instr($P2,$P1)";
+				else if ("1=, $P1)|2=locate($P2, $P1)|3=locate($P2, $P1, $P3)".equals(tryValue))
+					tryValue = "2=locate($P2, $P1)|3=locate($P2, $P1, $P3)";
+				
+				
 				String templateValue = tryValue;
 				// fun.getClass().getSimpleName() + ">" + templateValue
 				dao.iExecute("update tb_functions set " + diaName + "=? where fn_name=?", param(templateValue),
@@ -251,7 +264,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 				"select fn_name, percentage from tb_functions order by percentage desc, fn_name");
 		for (Map<String, Object> map : result) {
 			String fn_name = (String) map.get("fn_name");
-			Double percentage =  Double.parseDouble(""+ map.get("percentage"));
+			Double percentage = Double.parseDouble("" + map.get("percentage"));
 			String funName;
 			if (percentage > 15) {
 				sb.append("/** ").append(fn_name.toUpperCase()).append("() function, ");

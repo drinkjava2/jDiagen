@@ -92,7 +92,7 @@ public class PaginationCodeGenerator extends TestBase {
 		return dialectFactory.buildDialect(configValues, null);
 	}
 
-	public static class TB_pagination extends ActiveRecord {
+	public static class TB_pagination extends ActiveRecord<TB_pagination> {
 		@Id
 		private String dialect;
 		private String pagination;

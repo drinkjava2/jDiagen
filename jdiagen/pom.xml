@@ -68,11 +68,10 @@
 	
 	<!-- apache common FileUtils -->
 	<dependency>
-		<groupId>org.apache.commons</groupId>
+		<groupId>commons-io</groupId>
 		<artifactId>commons-io</artifactId>
 		<version>1.3.2</version> 
-	</dependency> 
-	
+	</dependency>
 	
 	<!-- jdiagen depends on jSqlBox to access database -->
 	<dependency>
@@ -81,108 +80,22 @@
       <version>2.0.3</version> 
     </dependency>	  
   
-    <!-- Hibernate is the main collection to build source code for jDialects --> 
+    <!-- Hibernate is the main resource to build source code for jDialects --> 
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>5.2.9.Final</version>
-    </dependency> 
+      <version>5.3.6.Final</version>
+    </dependency>  
     
-    
-     <!--=====================================================================-->
+    <!--=====================================================================-->
     <!--  If want debug hibernate, use hibcore dependencies and disable above 
-	      hibernate-core 5.2.9.final dependency and add hibcore project in 
+	      hibernate-core 5.3.6.final dependency and add hibcore project in 
 		  Eclipse manually-->
     <!--=====================================================================-->   
 	
     <!--===================hibcore dependencies begin==========================-->
-    <!--
-	<dependency>
-		<groupId>org.apache.ant</groupId>
-		<artifactId>ant</artifactId>
-		<version>1.10.1</version>
-	</dependency> 	 
-	 <dependency>
-		<groupId>javax.security.jacc</groupId>
-		<artifactId>javax.security.jacc-api</artifactId>
-		<version>1.5</version>
-	</dependency>	 
-	 <dependency>
-		<groupId>javax.enterprise</groupId>
-		<artifactId>cdi-api</artifactId>
-		<version>2.0-PFD2</version>
-	</dependency>
-	 <dependency>
-		<groupId>org.jboss.logging</groupId>
-		<artifactId>jboss-logging-annotations</artifactId>
-		<version>2.0.2.Final</version>
-	</dependency>
-	 <dependency>
-		<groupId>javax.validation</groupId>
-		<artifactId>validation-api</artifactId>
-		<version>1.1.0.Final</version>
-	</dependency>
-	  
-	 <dependency>
-		<groupId>net.bytebuddy</groupId>
-		<artifactId>byte-buddy</artifactId>
-		<version>1.6.14</version>
-	</dependency> 
-     <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-      <version>3.3.0.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.1-api</artifactId>
-      <version>1.0.0.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.javassist</groupId>
-      <artifactId>javassist</artifactId>
-      <version>3.20.0-GA</version>
-    </dependency>
-    <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.spec.javax.transaction</groupId>
-      <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-      <version>1.0.1.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jandex</artifactId>
-      <version>2.0.3.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml</groupId>
-      <artifactId>classmate</artifactId>
-      <version>1.3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>5.0.1.Final</version>
-    </dependency>      
-    --> 
-    <!--=====================================================================-->
-    <!--===================hibcore dependencies end==========================-->
-    <!--=====================================================================-->
+     
+    <!--===================hibcore dependencies end=========================-->
 	
 	
     <dependency>

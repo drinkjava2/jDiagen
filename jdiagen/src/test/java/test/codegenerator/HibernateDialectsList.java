@@ -19,7 +19,9 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.CUBRIDDialect;
 import org.hibernate.dialect.Cache71Dialect;
 import org.hibernate.dialect.DB2390Dialect;
+import org.hibernate.dialect.DB2390V8Dialect;
 import org.hibernate.dialect.DB2400Dialect;
+import org.hibernate.dialect.DB297Dialect;
 import org.hibernate.dialect.DB2Dialect;
 import org.hibernate.dialect.DataDirectOracle9Dialect;
 import org.hibernate.dialect.DerbyDialect;
@@ -40,6 +42,9 @@ import org.hibernate.dialect.Ingres9Dialect;
 import org.hibernate.dialect.IngresDialect;
 import org.hibernate.dialect.InterbaseDialect;
 import org.hibernate.dialect.JDataStoreDialect;
+import org.hibernate.dialect.MariaDB102Dialect;
+import org.hibernate.dialect.MariaDB103Dialect;
+import org.hibernate.dialect.MariaDB10Dialect;
 import org.hibernate.dialect.MariaDB53Dialect;
 import org.hibernate.dialect.MariaDBDialect;
 import org.hibernate.dialect.MckoiDialect;
@@ -49,6 +54,7 @@ import org.hibernate.dialect.MySQL57Dialect;
 import org.hibernate.dialect.MySQL57InnoDBDialect;
 import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.MySQL5InnoDBDialect;
+import org.hibernate.dialect.MySQL8Dialect;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.MySQLInnoDBDialect;
 import org.hibernate.dialect.MySQLMyISAMDialect;
@@ -136,7 +142,9 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(DataDirectOracle9Dialect.class);
 		SUPPORTED_DIALECTS.add(DB2Dialect.class);
 		SUPPORTED_DIALECTS.add(DB2390Dialect.class);
+		SUPPORTED_DIALECTS.add(DB2390V8Dialect.class);//added from 5.3.6.final 
 		SUPPORTED_DIALECTS.add(DB2400Dialect.class);
+		SUPPORTED_DIALECTS.add(DB297Dialect.class);//added from 5.3.6.final 
 		SUPPORTED_DIALECTS.add(DerbyDialect.class);
 		SUPPORTED_DIALECTS.add(DerbyTenFiveDialect.class);
 		SUPPORTED_DIALECTS.add(DerbyTenSevenDialect.class);
@@ -156,6 +164,9 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(JDataStoreDialect.class);
 		SUPPORTED_DIALECTS.add(MariaDBDialect.class);
 		SUPPORTED_DIALECTS.add(MariaDB53Dialect.class);
+		SUPPORTED_DIALECTS.add(MariaDB102Dialect.class);//added from 5.3.6.final 
+		SUPPORTED_DIALECTS.add(MariaDB103Dialect.class);//added from 5.3.6.final 
+		SUPPORTED_DIALECTS.add(MariaDB10Dialect.class);//added from 5.3.6.final 
 		SUPPORTED_DIALECTS.add(MckoiDialect.class);
 		SUPPORTED_DIALECTS.add(MimerSQLDialect.class);
 		SUPPORTED_DIALECTS.add(MySQLDialect.class);
@@ -166,6 +177,7 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(MySQL5InnoDBDialect.class);
 		SUPPORTED_DIALECTS.add(MySQLInnoDBDialect.class);
 		SUPPORTED_DIALECTS.add(MySQLMyISAMDialect.class);
+		SUPPORTED_DIALECTS.add(MySQL8Dialect.class);//added from 5.3.6.final 
 		SUPPORTED_DIALECTS.add(OracleDialect.class);
 		SUPPORTED_DIALECTS.add(Oracle10gDialect.class);
 		SUPPORTED_DIALECTS.add(Oracle12cDialect.class);
