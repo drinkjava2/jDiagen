@@ -9,7 +9,6 @@ package test.hibernatestudy;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,7 +35,7 @@ import test.config.po.Customer;
 @SuppressWarnings({ "all" })
 public class HibStudy_SessionFactoryFromConfig extends TestBase {
 
-	private void createTablesByjSqlBox() { 
+	private void createTablesByjSqlBox() {
 		String innoDB = dao.getDialect().isMySqlFamily() ? "ENGINE=InnoDB DEFAULT CHARSET=utf8;" : "";
 		dao.iExecuteQuiet("drop table customertable");
 		dao.nExecute(Customer.CREATE_SQL + innoDB);
@@ -45,7 +44,6 @@ public class HibStudy_SessionFactoryFromConfig extends TestBase {
 	private static void openHibernateLog(SessionFactory sf) {
 		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
 		SqlStatementLogger log = serv.getSqlStatementLogger();
-		org.apache.log4j.Logger.getLogger("org.hibernate").setLevel(Level.TRACE);
 		log.setLogToStdout(true);
 	}
 

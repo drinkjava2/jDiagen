@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.TypeNames;
 import org.junit.Test;
@@ -42,13 +41,9 @@ import util.StrUtily;
 @SuppressWarnings({ "unchecked" })
 public class TypeMappingCodeGeneratorNew extends TestBase {
 
- 
-
 	@Test
 	public void transferTypeNames() {
-		org.apache.log4j.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
-		String createSQL = "create table tb_typeNames ("// Save TypeNames into
-														// DB
+		String createSQL = "create table tb_typeNames ("// Save TypeNames into DB
 				+ "line integer,"//
 				+ "dialect varchar(100),"//
 				+ "t_BIGINT varchar(300),"//
@@ -83,45 +78,45 @@ public class TypeMappingCodeGeneratorNew extends TestBase {
 		dao.iExecuteQuiet("drop table tb_typeNames");
 		dao.nExecute(createSQL);
 		exportDialectTypeNamesNew();
-	} 
+	}
 
 	public void exportDialectTypeNamesNew() {
 		int line = 0;
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> class1 : dialects) {
 			Dialect dia = HibernateDialectsList.buildDialectByName(class1);
-			TypeNames t = (TypeNames) findFieldObject(dia, "typeNames"); 
+			TypeNames t = (TypeNames) findFieldObject(dia, "typeNames");
 			dao.iExecute("insert into tb_typeNames ("//
-					, "line," , param(++line)//
-					, "dialect," , param(dia.getClass().getSimpleName())//
-					, "t_BIGINT," , param(getTypeNameDefString(t, (Types.BIGINT)))//
-					, "t_BINARY," , param(getTypeNameDefString(t, (Types.BINARY)))//
-					, "t_BIT," , param(getTypeNameDefString(t, (Types.BIT)))//
-					, "t_BLOB," , param(getTypeNameDefString(t, (Types.BLOB)))//
-					, "t_BOOLEAN," , param(getTypeNameDefString(t, (Types.BOOLEAN)))//
-					, "t_CHAR," , param(getTypeNameDefString(t, (Types.CHAR)))//
-					, "t_CLOB," , param(getTypeNameDefString(t, (Types.CLOB)))//
-					, "t_DATE," , param(getTypeNameDefString(t, (Types.DATE)))//
-					, "t_DECIMAL," , param(getTypeNameDefString(t, (Types.DECIMAL)))//
-					, "t_DOUBLE," , param(getTypeNameDefString(t, (Types.DOUBLE)))//
-					, "t_FLOAT," , param(getTypeNameDefString(t, (Types.FLOAT)))//
-					, "t_INTEGER," , param(getTypeNameDefString(t, (Types.INTEGER)))//
-					, "t_JAVA_OBJECT," , param(getTypeNameDefString(t, (Types.JAVA_OBJECT)))//
-					, "t_LONGNVARCHAR," , param(getTypeNameDefString(t, (Types.LONGNVARCHAR)))//
-					, "t_LONGVARBINARY," , param(getTypeNameDefString(t, (Types.LONGVARBINARY)))//
-					, "t_LONGVARCHAR," , param(getTypeNameDefString(t, (Types.LONGVARCHAR)))//
-					, "t_NCHAR," , param(getTypeNameDefString(t, (Types.NCHAR)))//
-					, "t_NCLOB," , param(getTypeNameDefString(t, (Types.NCLOB)))//
-					, "t_NUMERIC," , param(getTypeNameDefString(t, (Types.NUMERIC)))//
-					, "t_NVARCHAR," , param(getTypeNameDefString(t, (Types.NVARCHAR)))//
-					, "t_OTHER," , param(getTypeNameDefString(t, (Types.OTHER)))//
-					, "t_REAL," , param(getTypeNameDefString(t, (Types.REAL)))//
-					, "t_SMALLINT," , param(getTypeNameDefString(t, (Types.SMALLINT)))//
-					, "t_TIME," , param(getTypeNameDefString(t, (Types.TIME)))//
-					, "t_TIMESTAMP," , param(getTypeNameDefString(t, (Types.TIMESTAMP)))//
-					, "t_TINYINT," , param(getTypeNameDefString(t, (Types.TINYINT)))//
-					, "t_VARBINARY," , param(getTypeNameDefString(t, (Types.VARBINARY)))//
-					, "t_VARCHAR" , param(getTypeNameDefString(t, (Types.VARCHAR)))//
+					, "line,", param(++line)//
+					, "dialect,", param(dia.getClass().getSimpleName())//
+					, "t_BIGINT,", param(getTypeNameDefString(t, (Types.BIGINT)))//
+					, "t_BINARY,", param(getTypeNameDefString(t, (Types.BINARY)))//
+					, "t_BIT,", param(getTypeNameDefString(t, (Types.BIT)))//
+					, "t_BLOB,", param(getTypeNameDefString(t, (Types.BLOB)))//
+					, "t_BOOLEAN,", param(getTypeNameDefString(t, (Types.BOOLEAN)))//
+					, "t_CHAR,", param(getTypeNameDefString(t, (Types.CHAR)))//
+					, "t_CLOB,", param(getTypeNameDefString(t, (Types.CLOB)))//
+					, "t_DATE,", param(getTypeNameDefString(t, (Types.DATE)))//
+					, "t_DECIMAL,", param(getTypeNameDefString(t, (Types.DECIMAL)))//
+					, "t_DOUBLE,", param(getTypeNameDefString(t, (Types.DOUBLE)))//
+					, "t_FLOAT,", param(getTypeNameDefString(t, (Types.FLOAT)))//
+					, "t_INTEGER,", param(getTypeNameDefString(t, (Types.INTEGER)))//
+					, "t_JAVA_OBJECT,", param(getTypeNameDefString(t, (Types.JAVA_OBJECT)))//
+					, "t_LONGNVARCHAR,", param(getTypeNameDefString(t, (Types.LONGNVARCHAR)))//
+					, "t_LONGVARBINARY,", param(getTypeNameDefString(t, (Types.LONGVARBINARY)))//
+					, "t_LONGVARCHAR,", param(getTypeNameDefString(t, (Types.LONGVARCHAR)))//
+					, "t_NCHAR,", param(getTypeNameDefString(t, (Types.NCHAR)))//
+					, "t_NCLOB,", param(getTypeNameDefString(t, (Types.NCLOB)))//
+					, "t_NUMERIC,", param(getTypeNameDefString(t, (Types.NUMERIC)))//
+					, "t_NVARCHAR,", param(getTypeNameDefString(t, (Types.NVARCHAR)))//
+					, "t_OTHER,", param(getTypeNameDefString(t, (Types.OTHER)))//
+					, "t_REAL,", param(getTypeNameDefString(t, (Types.REAL)))//
+					, "t_SMALLINT,", param(getTypeNameDefString(t, (Types.SMALLINT)))//
+					, "t_TIME,", param(getTypeNameDefString(t, (Types.TIME)))//
+					, "t_TIMESTAMP,", param(getTypeNameDefString(t, (Types.TIMESTAMP)))//
+					, "t_TINYINT,", param(getTypeNameDefString(t, (Types.TINYINT)))//
+					, "t_VARBINARY,", param(getTypeNameDefString(t, (Types.VARBINARY)))//
+					, "t_VARCHAR", param(getTypeNameDefString(t, (Types.VARCHAR)))//
 					, ") " //
 					, valuesQuestions());
 		}

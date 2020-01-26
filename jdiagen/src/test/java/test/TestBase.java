@@ -12,9 +12,8 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 
-import com.github.drinkjava2.jbeanbox.BeanBox;
 import com.github.drinkjava2.jbeanbox.JBEANBOX;
-import com.github.drinkjava2.jsqlbox.SqlBoxContext;
+import com.github.drinkjava2.jsqlbox.DbContext;
 
 import test.config.JBeanBoxConfig.DataSourceBox;
 
@@ -31,7 +30,7 @@ import test.config.JBeanBoxConfig.DataSourceBox;
 public class TestBase {
 	public DaoCtx dao;
 
-	public static class DaoCtx extends SqlBoxContext {
+	public static class DaoCtx extends DbContext {
 		public DaoCtx(DataSource ds) {
 			super(ds);
 		}
@@ -50,9 +49,9 @@ public class TestBase {
 	@Before
 	public void setup() {
 		JBEANBOX.close();
-		dao = new DaoCtx(BeanBox.getBean(DataSourceBox.class));
+		dao = new DaoCtx(JBEANBOX.getBean(DataSourceBox.class));
 		System.out.println("=============Testing " + this.getClass().getName() + "================"); 
-		SqlBoxContext.setGlobalSqlBoxContext(dao);
+		DbContext.setGlobalDbContext(dao);
 	}
 
 	/**

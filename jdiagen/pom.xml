@@ -61,9 +61,9 @@
     
 	<!-- apache common StringUtils -->	
 	<dependency>
-    	<groupId>commons-lang</groupId>
-    	<artifactId>commons-lang</artifactId>
-    	<version>2.6</version> 
+		<groupId>commons-lang</groupId>
+		<artifactId>commons-lang</artifactId>
+		<version>2.6</version> 
 	</dependency>
 	
 	<!-- apache common FileUtils -->
@@ -75,17 +75,17 @@
 	
 	<!-- jdiagen depends on jSqlBox to access database -->
 	<dependency>
-      <groupId>com.github.drinkjava2</groupId>
-      <artifactId>jsqlbox-java8</artifactId>
-      <version>2.0.3</version> 
-    </dependency>	  
+		<groupId>com.github.drinkjava2</groupId>
+		<artifactId>jsqlbox</artifactId>
+		<version>4.0</version> 
+	</dependency>	  
   
-    <!-- Hibernate is the main resource to build source code for jDialects --> 
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>5.3.6.Final</version>
-    </dependency>  
+        <!-- Hibernate is the main resource to build source code for jDialects --> 
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>5.3.6.Final</version>
+	</dependency>  
     
     <!--=====================================================================-->
     <!--  If want debug hibernate, use hibcore dependencies and disable above 
@@ -103,29 +103,8 @@
       <artifactId>junit</artifactId>
       <version>4.11</version>
       <scope>test</scope>
-    </dependency>
-    
-    <dependency>  
-      <groupId>log4j</groupId>  
-      <artifactId>log4j</artifactId>  
-      <version>1.2.17</version> 
-      <scope>test</scope> 
     </dependency> 
-    
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.22</version>
-      <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.22</version>
-      <scope>test</scope> 
-    </dependency>
-       
+
    <!-- HikariCP is a dataSource pool quicker than c3p0 -->
    <dependency>
      <groupId>com.zaxxer</groupId>

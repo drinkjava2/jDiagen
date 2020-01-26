@@ -8,7 +8,6 @@ package test.hibernatestudy;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -35,9 +34,6 @@ public class HibStudy_HQL_Study {
 	public static void openHibernateLog(SessionFactory sf) {
 		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
 		SqlStatementLogger log = serv.getSqlStatementLogger();
-		org.apache.log4j.Logger.getLogger("org.hibernate").setLevel(Level.TRACE);
-		org.apache.log4j.Logger.getLogger("log4j.logger.org.hibernate.SQL").setLevel(Level.DEBUG);
-		org.apache.log4j.Logger.getLogger("log4j.logger.org.hibernate.hql").setLevel(Level.DEBUG);
 		log.setLogToStdout(true);
 	}
 

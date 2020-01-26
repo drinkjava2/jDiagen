@@ -17,7 +17,7 @@ import com.github.drinkjava2.jsqlbox.ActiveRecord;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class Customer extends ActiveRecord {
+public class Customer extends ActiveRecord<Customer> {
 	public static final String CREATE_SQL = "create table customertable("//
 			+ "id varchar(36),"//
 			+ "customer_name varchar(50),"//
@@ -41,5 +41,5 @@ public class Customer extends ActiveRecord {
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
 	}
- 
+
 }

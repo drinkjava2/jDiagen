@@ -10,7 +10,8 @@ package test.config;
 import javax.sql.DataSource;
 
 import com.github.drinkjava2.jbeanbox.BeanBox;
-import com.github.drinkjava2.jsqlbox.SqlBoxContext;
+import com.github.drinkjava2.jbeanbox.JBEANBOX;
+import com.github.drinkjava2.jsqlbox.DbContext;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
@@ -31,10 +32,9 @@ public class JBeanBoxConfig {
 	 * context
 	 * 
 	 */
-	public static class DefaultSqlBoxContextBox extends BeanBox {
-		public SqlBoxContext create() {
-			SqlBoxContext ctx = new SqlBoxContext((DataSource) BeanBox.getBean(DataSourceBox.class));
-			return ctx;
+	public static class DefaultDbContextBox extends BeanBox {
+		public DbContext create() {
+			return new DbContext((DataSource) JBEANBOX.getBean(DataSourceBox.class));
 		}
 	}
 
@@ -101,5 +101,5 @@ public class JBeanBoxConfig {
 			return ds;
 		}
 	}
- 
+
 }

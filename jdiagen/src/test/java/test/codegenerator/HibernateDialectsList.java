@@ -93,6 +93,8 @@ import org.hibernate.dialect.TimesTenDialect;
 import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 
+import dialects_collection.DamengDialect;
+import dialects_collection.GBaseDialect;
 import dialects_collection.SQLiteDialect;
 import dialects_collection.hxtt_dialects.AccessDialect;
 import dialects_collection.hxtt_dialects.CobolDialect;
@@ -106,12 +108,12 @@ import dialects_collection.hxtt_dialects.XMLDialect;
  * This is not a unit test class, it's a code generator tool to create source
  * code for jDialects
  *
- * @author Yong Zhu 
+ * @author Yong Zhu
  * @since 1.0.0
  */
 @SuppressWarnings("deprecation")
 public class HibernateDialectsList {
-	
+
 	public static Dialect buildDialectByName(Class<?> dialect) {
 		BootstrapServiceRegistry bootReg = new BootstrapServiceRegistryBuilder()
 				.applyClassLoader(HibernateDialectsList.class.getClassLoader()).build();
@@ -121,8 +123,8 @@ public class HibernateDialectsList {
 		final Map<String, String> configValues = new HashMap<String, String>();
 		configValues.put(Environment.DIALECT, dialect.getName());
 		return dialectFactory.buildDialect(configValues, null);
-	}  
-	
+	}
+
 	public static List<Class<? extends Dialect>> SUPPORTED_DIALECTS = new ArrayList<Class<? extends Dialect>>();
 	static {
 		// above are found from internet
@@ -136,15 +138,19 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(XMLDialect.class);
 		SUPPORTED_DIALECTS.add(DbfDialect.class);
 
+		// below 2 dialect are for China databases
+		SUPPORTED_DIALECTS.add(DamengDialect.class);
+		SUPPORTED_DIALECTS.add(GBaseDialect.class);
+
 		// below are supported by Hibernate
 		SUPPORTED_DIALECTS.add(Cache71Dialect.class);
 		SUPPORTED_DIALECTS.add(CUBRIDDialect.class);
 		SUPPORTED_DIALECTS.add(DataDirectOracle9Dialect.class);
 		SUPPORTED_DIALECTS.add(DB2Dialect.class);
 		SUPPORTED_DIALECTS.add(DB2390Dialect.class);
-		SUPPORTED_DIALECTS.add(DB2390V8Dialect.class);//added from 5.3.6.final 
+		SUPPORTED_DIALECTS.add(DB2390V8Dialect.class);// added from 5.3.6.final
 		SUPPORTED_DIALECTS.add(DB2400Dialect.class);
-		SUPPORTED_DIALECTS.add(DB297Dialect.class);//added from 5.3.6.final 
+		SUPPORTED_DIALECTS.add(DB297Dialect.class);// added from 5.3.6.final
 		SUPPORTED_DIALECTS.add(DerbyDialect.class);
 		SUPPORTED_DIALECTS.add(DerbyTenFiveDialect.class);
 		SUPPORTED_DIALECTS.add(DerbyTenSevenDialect.class);
@@ -164,9 +170,9 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(JDataStoreDialect.class);
 		SUPPORTED_DIALECTS.add(MariaDBDialect.class);
 		SUPPORTED_DIALECTS.add(MariaDB53Dialect.class);
-		SUPPORTED_DIALECTS.add(MariaDB102Dialect.class);//added from 5.3.6.final 
-		SUPPORTED_DIALECTS.add(MariaDB103Dialect.class);//added from 5.3.6.final 
-		SUPPORTED_DIALECTS.add(MariaDB10Dialect.class);//added from 5.3.6.final 
+		SUPPORTED_DIALECTS.add(MariaDB102Dialect.class);// added from 5.3.6.final
+		SUPPORTED_DIALECTS.add(MariaDB103Dialect.class);// added from 5.3.6.final
+		SUPPORTED_DIALECTS.add(MariaDB10Dialect.class);// added from 5.3.6.final
 		SUPPORTED_DIALECTS.add(MckoiDialect.class);
 		SUPPORTED_DIALECTS.add(MimerSQLDialect.class);
 		SUPPORTED_DIALECTS.add(MySQLDialect.class);
@@ -177,7 +183,7 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(MySQL5InnoDBDialect.class);
 		SUPPORTED_DIALECTS.add(MySQLInnoDBDialect.class);
 		SUPPORTED_DIALECTS.add(MySQLMyISAMDialect.class);
-		SUPPORTED_DIALECTS.add(MySQL8Dialect.class);//added from 5.3.6.final 
+		SUPPORTED_DIALECTS.add(MySQL8Dialect.class);// added from 5.3.6.final
 		SUPPORTED_DIALECTS.add(OracleDialect.class);
 		SUPPORTED_DIALECTS.add(Oracle10gDialect.class);
 		SUPPORTED_DIALECTS.add(Oracle12cDialect.class);
