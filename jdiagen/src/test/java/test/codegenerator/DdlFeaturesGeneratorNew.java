@@ -51,10 +51,11 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		generateInitDdlFeaturesSourceCodeNew();
 	}
 
+	@Deprecated
 	public void generateInitDdlFeaturesSourceCodeOld() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("protected static void initDDLFeatures(Dialect dia, DDLFeatures ddl) {\n");
-		sb.append("switch (dia) {\n");
+		sb.append("switch (dia.name) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
@@ -100,12 +101,12 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 			oracleMap.put(key, value);// store OracleList value
 		}
 
-		sb.append("switch (dia) {\n");
+		sb.append("switch (dia.name) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
-			sb.append("case " + diaName + ": {");
+			sb.append("case \"" + diaName + "\": {");
 			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
 					"select feature, " + diaName + " from tb_hibdll order by feature");
 			for (Map<String, Object> map : result) {
