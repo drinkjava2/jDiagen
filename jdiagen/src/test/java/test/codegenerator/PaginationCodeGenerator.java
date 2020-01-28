@@ -7,7 +7,7 @@
  */
 package test.codegenerator;
 
-import static com.github.drinkjava2.jsqlbox.JSQLBOX.*; 
+import static com.github.drinkjava2.jsqlbox.JSQLBOX.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,8 +43,8 @@ public class PaginationCodeGenerator extends TestBase {
 	private static final String SKIP_ROWS = "$SKIP_ROWS";
 	private static final String PAGESIZE = "$PAGESIZE";
 	private static final String TOTAL_ROWS = "$TOTAL_ROWS";
-	private static final String SKIP_ROWS_PLUS1 = "$SKIP_ROWS_PLUS1";
-	private static final String TOTAL_ROWS_PLUS1 = "$TOTAL_ROWS_PLUS1";
+	private static final String SKIP_ROWS_PLUS1 = "$SKIPROWS_PLUS1";
+	private static final String TOTAL_ROWS_PLUS1 = "$TOTALROWS_PLUS1";
 	private static final String DISTINCT_TAG = "($DISTINCT)";
 
 	@Test
@@ -67,7 +67,7 @@ public class PaginationCodeGenerator extends TestBase {
 				+ "firstRowValue varchar(10)"//
 				+ ")";
 		dao.iExecuteQuiet("drop table tb_pagination");
-		dao.nExecute(createSQL); 
+		dao.nExecute(createSQL);
 		exportHibernateDialectPaginations();
 		exportHibernateDialectPaginationFirstOnly();
 
@@ -170,27 +170,32 @@ public class PaginationCodeGenerator extends TestBase {
 			} catch (Exception e) {
 			}
 
+			//============hard patch for SqlServer2005 and 2008
+			if ("SQLServer2005Dialect".equals(dialect) || "SQLServer2008Dialect".equals(dialect))
+				pagination="WITH query AS (SELECT TMP_.*, ROW_NUMBER() OVER (ORDER BY CURRENT_TIMESTAMP) as ROW_NUM_ FROM ( select ($DISTINCT) TOP($TOTAL_ROWS) $BODY ) TMP_ ) SELECT * FROM query WHERE ROW_NUM_ >$SKIP_ROWS AND ROW_NUM_ <= $TOTAL_ROWS";
+
+			
 			if (l2 != null)
 				dao.iExecute("insert into tb_pagination (" //
-						, "dialect ," , param(dialect)//
-						, "supportsLimit ," , param(l.supportsLimit())//
-						, "supportLimitOffset ," , param(l.supportsLimitOffset())//
-						, "supportsVariableLimit ," , param(l2.supportsVariableLimit())//
-						, "bindLimitParametersInReverseOrder ," , param(l2.bindLimitParametersInReverseOrder())//
-						, "bindLimitParametersFirst ," , param(l2.bindLimitParametersFirst())//
-						, "useMaxForLimit ," , param(l2.useMaxForLimit())//
-						, "forceLimitUsage ," , param(l2.forceLimitUsage())//
-						, "firstRowValue ," , param(l2.convertToFirstRowValue(0))//
-						, "limits ," , param(limits)//
-						, "pagination ) " , param(pagination)//
+						, "dialect ,", param(dialect)//
+						, "supportsLimit ,", param(l.supportsLimit())//
+						, "supportLimitOffset ,", param(l.supportsLimitOffset())//
+						, "supportsVariableLimit ,", param(l2.supportsVariableLimit())//
+						, "bindLimitParametersInReverseOrder ,", param(l2.bindLimitParametersInReverseOrder())//
+						, "bindLimitParametersFirst ,", param(l2.bindLimitParametersFirst())//
+						, "useMaxForLimit ,", param(l2.useMaxForLimit())//
+						, "forceLimitUsage ,", param(l2.forceLimitUsage())//
+						, "firstRowValue ,", param(l2.convertToFirstRowValue(0))//
+						, "limits ,", param(limits)//
+						, "pagination ) ", param(pagination)//
 						, valuesQuestions());
 			else
 				dao.iExecute("insert into tb_pagination (" //
-						, "dialect ," , param(dialect)//
-						, "supportsLimit ," , param(l.supportsLimit())//
-						, "supportLimitOffset ," , param(l.supportsLimitOffset())//
-						, "limits ," , param(limits)//
-						, "pagination )" , param(pagination)//
+						, "dialect ,", param(dialect)//
+						, "supportsLimit ,", param(l.supportsLimit())//
+						, "supportLimitOffset ,", param(l.supportsLimitOffset())//
+						, "limits ,", param(limits)//
+						, "pagination )", param(pagination)//
 						, valuesQuestions());
 		}
 	}
@@ -219,9 +224,9 @@ public class PaginationCodeGenerator extends TestBase {
 			} catch (Exception e) {
 			}
 			dao.iExecute("update tb_pagination  " //
-					, " set paginationFirstOnly=?" , param(pagination)//
-					, ", limits2 =?" , param(limits2)//
-					, " where dialect=? " , param(dialect)//
+					, " set paginationFirstOnly=?", param(pagination)//
+					, ", limits2 =?", param(limits2)//
+					, " where dialect=? ", param(dialect)//
 			);
 		}
 
@@ -298,8 +303,7 @@ public class PaginationCodeGenerator extends TestBase {
 			String v = mp.get("" + i);
 			if (!StringUtils.isEmpty(v))
 				sql = StringUtils.replaceOnce(sql, "?", rep.get(v));
-		}
-
+		} 
 		return sql;
 	}
 
@@ -324,7 +328,7 @@ public class PaginationCodeGenerator extends TestBase {
 
 		// Now generate Java source code to console
 		StringBuilder sb = new StringBuilder();
- 
+
 		sb.append("/**\n");
 		sb.append("* Return pagination template of this Dialect\n");
 		sb.append("*/\n");
@@ -333,11 +337,11 @@ public class PaginationCodeGenerator extends TestBase {
 		l = dao.iQueryForEntityList(TB_pagination.class, "select t.* from tb_pagination t order by t.sortorder");
 
 		for (TB_pagination t : l) {
+			String	pagin=t.getPagination(); 
 			sb.append("case \"").append(t.getDialect()).append("\":\n");
-			if (!StringUtils.isEmpty(t.getPagination())) {
-				sb.append("return ").append(
-						"NOT_SUPPORT".equals(t.getPagination()) ? "Dialect.NOT_SUPPORT" : "\"" + t.getPagination() + "\"")
-						.append(";\n");
+			if (!StringUtils.isEmpty(pagin )) {
+				sb.append("return ").append("NOT_SUPPORT".equals(pagin) ? "Dialect.NOT_SUPPORT"
+						: "\"" + pagin + "\"").append(";\n");
 			}
 		}
 		sb.append("default:  \n");
@@ -372,7 +376,7 @@ public class PaginationCodeGenerator extends TestBase {
 		// Now generate Java source code to console
 		StringBuilder sb = new StringBuilder();
 
- 		sb.append("/**\n");
+		sb.append("/**\n");
 		sb.append(" * Return top limit sql template of this Dialect\n");
 		sb.append("*/\n");
 		sb.append("protected static String initializeTopLimitSqlTemplate(Dialect d) {\n");

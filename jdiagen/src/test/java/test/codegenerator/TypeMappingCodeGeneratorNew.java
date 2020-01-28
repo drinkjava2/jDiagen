@@ -65,8 +65,7 @@ public class TypeMappingCodeGeneratorNew extends TestBase {
 				+ "t_NCHAR varchar(300),"//
 				+ "t_NCLOB varchar(300),"//
 				+ "t_NUMERIC varchar(300),"//
-				+ "t_NVARCHAR varchar(300),"//
-				+ "t_OTHER varchar(300),"//
+				+ "t_NVARCHAR varchar(300),"// 
 				+ "t_REAL varchar(300),"//
 				+ "t_SMALLINT varchar(300),"//
 				+ "t_TIME varchar(300),"//
@@ -108,8 +107,7 @@ public class TypeMappingCodeGeneratorNew extends TestBase {
 					, "t_NCHAR,", param(getTypeNameDefString(t, (Types.NCHAR)))//
 					, "t_NCLOB,", param(getTypeNameDefString(t, (Types.NCLOB)))//
 					, "t_NUMERIC,", param(getTypeNameDefString(t, (Types.NUMERIC)))//
-					, "t_NVARCHAR,", param(getTypeNameDefString(t, (Types.NVARCHAR)))//
-					, "t_OTHER,", param(getTypeNameDefString(t, (Types.OTHER)))//
+					, "t_NVARCHAR,", param(getTypeNameDefString(t, (Types.NVARCHAR)))// 
 					, "t_REAL,", param(getTypeNameDefString(t, (Types.REAL)))//
 					, "t_SMALLINT,", param(getTypeNameDefString(t, (Types.SMALLINT)))//
 					, "t_TIME,", param(getTypeNameDefString(t, (Types.TIME)))//

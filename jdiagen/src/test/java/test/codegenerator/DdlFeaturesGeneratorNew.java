@@ -54,7 +54,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 	@Deprecated
 	public void generateInitDdlFeaturesSourceCodeOld() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("protected static void initDDLFeatures(Dialect dia, DDLFeatures ddl) {\n");
+		sb.append("protected static void initDDLFeatures(Dialect dia) {\n");
 		sb.append("switch (dia.name) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
@@ -82,8 +82,8 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 
 	public void generateInitDdlFeaturesSourceCodeNew() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("protected static void initDDLFeatures(Dialect dia, DDLFeatures ddl) {\n");
-
+		sb.append("protected static void initDDLFeatures(Dialect dia) {\n");  
+		sb.append("DDLFeatures ddl=dia.ddlFeatures;\n"); 
 		List<Map<String, Object>> OracleList = dao // use OracleDialect as a default template
 				.nQuery(new MapListHandler(), "select feature, OracleDialect from tb_hibdll order by feature");
 		Map<String, String> oracleMap = new HashMap<>();
