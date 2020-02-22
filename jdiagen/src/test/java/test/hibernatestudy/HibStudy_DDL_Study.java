@@ -23,8 +23,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.io.FileUtils;
+import org.hibernate.annotations.Type;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -35,7 +38,9 @@ import org.hibernate.dialect.FirebirdDialect;
 import org.hibernate.dialect.HANAColumnStoreDialect;
 import org.hibernate.dialect.MariaDBDialect;
 import org.hibernate.dialect.MySQL55Dialect;
+import org.hibernate.dialect.MySQL57Dialect;
 import org.hibernate.dialect.MySQL5Dialect;
+import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.Oracle12cDialect;
 import org.hibernate.dialect.PostgresPlusDialect;
 import org.hibernate.dialect.RDMSOS2200Dialect;
@@ -393,6 +398,8 @@ public class HibStudy_DDL_Study {
 		public void testSequency() throws IOException {  
 			FileUtils.writeStringToFile(new File(fileName), "");
 			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+			ddlExport(MySQL57Dialect.class, getConfigXML(new SequencyString()));
+			System.exit(0);
 			for (Class<? extends Dialect> diaClass : dialects) {
 				ddlExport(diaClass, getConfigXML(new SequencyString()));
 			}
@@ -605,6 +612,30 @@ public class HibStudy_DDL_Study {
 			ddlExport(DB2390Dialect.class, TheFather.class, TheChild.class);
 			ddlExport(Oracle12cDialect.class, TheFather.class, TheChild.class);
 			ddlExport(RDMSOS2200Dialect.class, TheFather.class, TheChild.class); 
+			System.exit(0);
+		}
+		
+		@Entity  
+		public static class MySqlDateTime{ 
+			@Id 
+			private Integer id;  
+			
+			@Temporal(TemporalType.TIMESTAMP )
+//			@Column(columnDefinition="timestamp")
+			private java.util.Date d1;
+			
+			private java.sql.Date d2;
+			
+			private java.sql.Time d3;
+			 
+			private java.sql.Timestamp d4;
+		}
+		 
+		@Test
+		public void testMySqlDateTime() throws IOException {  
+			FileUtils.writeStringToFile(new File(fileName), "");
+			List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS; 
+			ddlExport(MySQL57Dialect.class, MySqlDateTime.class );  
 			System.exit(0);
 		}
 

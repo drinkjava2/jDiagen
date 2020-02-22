@@ -77,7 +77,7 @@
 	<dependency>
 		<groupId>com.github.drinkjava2</groupId>
 		<artifactId>jsqlbox</artifactId>
-		<version>4.0</version> 
+		<version>4.0.1.jre8</version> 
 	</dependency>	  
   
         <!-- Hibernate is the main resource to build source code for jDialects --> 

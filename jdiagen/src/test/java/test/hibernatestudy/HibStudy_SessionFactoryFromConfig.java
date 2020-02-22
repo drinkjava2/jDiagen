@@ -36,16 +36,15 @@ import test.config.po.Customer;
 public class HibStudy_SessionFactoryFromConfig extends TestBase {
 
 	private void createTablesByjSqlBox() {
-		String innoDB = dao.getDialect().isMySqlFamily() ? "ENGINE=InnoDB DEFAULT CHARSET=utf8;" : "";
-		dao.iExecuteQuiet("drop table customertable");
-		dao.nExecute(Customer.CREATE_SQL + innoDB);
-	}
-
-	private static void openHibernateLog(SessionFactory sf) {
-		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
-		SqlStatementLogger log = serv.getSqlStatementLogger();
-		log.setLogToStdout(true);
-	}
+		dao.setAllowShowSQL(true); 
+		dao.quiteExecute(dao.toDropAndCreateDDL(Customer.class));
+		for (int i = 0; i < 5; i++) {
+			Customer customer = new Customer();
+			customer.setId("jbeanbox"+i);
+			customer.setCustomerName("Tom"); 
+			customer.insert();
+		}
+	} 
 
 	private static void insertDataByHibernate() {
 		try {
@@ -85,8 +84,8 @@ public class HibStudy_SessionFactoryFromConfig extends TestBase {
 
 		Session session = sf.openSession();
 		Query query = session
-				.createNativeQuery("select a.* from customertable a, customertable b where a.id=b.id order by a.id");
-		query.setFirstResult(7);
+				.createNativeQuery("select a.* from customertb a, customertb b where a.id=b.id order by a.id");
+		query.setFirstResult(2);
 		query.setMaxResults(3);
 		openHibernateLog(sf);
 		List l = query.list();

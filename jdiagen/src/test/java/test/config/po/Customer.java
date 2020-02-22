@@ -6,6 +6,9 @@
  */
 package test.config.po;
 
+import com.github.drinkjava2.jdialects.annotation.jpa.Column;
+import com.github.drinkjava2.jdialects.annotation.jpa.Id;
+import com.github.drinkjava2.jdialects.annotation.jpa.Table;
 import com.github.drinkjava2.jsqlbox.ActiveRecord;
 
 /**
@@ -17,13 +20,12 @@ import com.github.drinkjava2.jsqlbox.ActiveRecord;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class Customer extends ActiveRecord<Customer> {
-	public static final String CREATE_SQL = "create table customertable("//
-			+ "id varchar(36),"//
-			+ "customer_name varchar(50),"//
-			+ "constraint customer_pk primary key (id)" //
-			+ ")";//
+@Table(name="CustomerTB")
+public class Customer extends ActiveRecord<Customer> { 
+	@Id
 	private String id;
+	
+	@Column(name="customer_name")
 	private String customerName;
 
 	public String getId() {

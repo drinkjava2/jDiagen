@@ -9,6 +9,9 @@ package test;
 
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.engine.jdbc.spi.JdbcServices;
+import org.hibernate.engine.jdbc.spi.SqlStatementLogger;
 import org.junit.After;
 import org.junit.Before;
 
@@ -30,12 +33,19 @@ import test.config.JBeanBoxConfig.DataSourceBox;
 public class TestBase {
 	public DaoCtx dao;
 
+	public static void openHibernateLog(SessionFactory sf) {
+		@SuppressWarnings("deprecation")
+		JdbcServices serv = sf.getSessionFactory().getJdbcServices(); 
+		SqlStatementLogger log = serv.getSqlStatementLogger();
+		log.setLogToStdout(true); 
+	}
+	
 	public static class DaoCtx extends DbContext {
 		public DaoCtx(DataSource ds) {
 			super(ds);
 		}
 
-		public void iExecuteQuiet(Object... sqls) {
+		public void iExecuteQuiet(Object... sqls) { 
 			try {
 				super.iExecute(sqls);
 			} catch (Exception e) {
