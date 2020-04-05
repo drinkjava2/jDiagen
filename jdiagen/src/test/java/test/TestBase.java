@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.github.drinkjava2.jbeanbox.JBEANBOX;
+import com.github.drinkjava2.jlogs.ConsoleLog;
 import com.github.drinkjava2.jsqlbox.DbContext;
 
 import test.config.JBeanBoxConfig.DataSourceBox;
@@ -35,22 +36,22 @@ public class TestBase {
 
 	public static void openHibernateLog(SessionFactory sf) {
 		@SuppressWarnings("deprecation")
-		JdbcServices serv = sf.getSessionFactory().getJdbcServices(); 
+		JdbcServices serv = sf.getSessionFactory().getJdbcServices();
 		SqlStatementLogger log = serv.getSqlStatementLogger();
-		log.setLogToStdout(true); 
+		log.setLogToStdout(true);
 	}
-	
+
 	public static class DaoCtx extends DbContext {
 		public DaoCtx(DataSource ds) {
 			super(ds);
 		}
 
-		public void iExecuteQuiet(Object... sqls) { 
+		public void iExecuteQuiet(Object... params) {
 			try {
-				super.iExecute(sqls);
+				super.iExecute(params);
 			} catch (Exception e) {
 			}
-		} 
+		}
 	}
 
 	/**
@@ -60,7 +61,9 @@ public class TestBase {
 	public void setup() {
 		JBEANBOX.close();
 		dao = new DaoCtx(JBEANBOX.getBean(DataSourceBox.class));
-		System.out.println("=============Testing " + this.getClass().getName() + "================"); 
+		//dao.setAllowShowSQL(true);
+		//ConsoleLog.setLogLevel(ConsoleLog.INFO);
+		System.out.println("=============Testing " + this.getClass().getName() + "================");
 		DbContext.setGlobalDbContext(dao);
 	}
 

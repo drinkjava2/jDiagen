@@ -51,45 +51,17 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		generateInitDdlFeaturesSourceCodeNew();
 	}
 
-	@Deprecated
-	public void generateInitDdlFeaturesSourceCodeOld() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("protected static void initDDLFeatures(Dialect dia) {\n");
-		sb.append("switch (dia.name) {\n");
-		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
-			String diaName = d.getClass().getSimpleName();
-			sb.append("case " + diaName + ": {");
-			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
-					"select feature, " + diaName + " from tb_hibdll order by feature");
-			for (Map<String, Object> map : result) {
-				String value = (String) map.get(diaName);
-				sb.append("ddl.").append(map.get("feature")).append("=");
-				if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
-					sb.append("\"");
-				sb.append(value);
-				if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
-					sb.append("\"");
-				sb.append(";\n");
-			}
-			sb.append("} break;\n");
-		}
-		sb.append("default:\n");
-		sb.append("}}");
-		System.out.println(sb.toString());
-	}
-
 	public void generateInitDdlFeaturesSourceCodeNew() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("protected static void initDDLFeatures(Dialect dia) {\n");  
-		sb.append("DDLFeatures ddl=dia.ddlFeatures;\n"); 
+		sb.append("protected static void initDDLFeatures(Dialect dia) {\n");
+		sb.append("DDLFeatures ddl=dia.ddlFeatures;\n");
 		List<Map<String, Object>> OracleList = dao // use OracleDialect as a default template
 				.nQuery(new MapListHandler(), "select feature, OracleDialect from tb_hibdll order by feature");
 		Map<String, String> oracleMap = new HashMap<>();
 		for (Map<String, Object> map : OracleList) {
 			String key = (String) map.get("feature");
 			String value = (String) map.get("OracleDialect");
+			if("\"".equals(value) )value="\\\"";
 			sb.append("ddl.").append(key).append("=");
 			if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
 				sb.append("\"");
@@ -101,23 +73,22 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 			oracleMap.put(key, value);// store OracleList value
 		}
 
-		sb.append("switch (dia.name) {\n");
+		sb.append("switch (dia.type) {\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
 			String diaName = d.getClass().getSimpleName();
-			sb.append("case \"" + diaName + "\": {");
+			sb.append("case  " + diaName + ": {");
 			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(),
 					"select feature, " + diaName + " from tb_hibdll order by feature");
 			for (Map<String, Object> map : result) {
-				// System.out.println("key=" + map.get("feature"));
 				String value = (String) map.get(diaName);
-				// System.out.println("value=" + value);
 
 				String oracleValue = oracleMap.get(map.get("feature"));
 				// System.out.println("mysqlValue=" + mysqlValue);
 				if (value == null)
 					value = NOT_SUPPORT;
+				if("\"".equals(value) )value="\\\"";
 
 				if (!oracleValue.equals(value.trim())) {
 					sb.append("ddl.").append(map.get("feature")).append("=");
@@ -139,7 +110,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 	}
 
 	public void dealOneFeature(Dialect d, String feature, String... featureValue) {
-		dao.quiteExecute("insert into tb_hibdll (feature) values(?)", feature);
+		dao.iExecuteQuiet("insert into tb_hibdll (feature) values(?)", param(feature));
 
 		StringBuilder sb = new StringBuilder();
 		for (String str : featureValue) {
@@ -166,7 +137,7 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass); 
 			dao.nExecute("alter table tb_hibdll add  " + d.getClass().getSimpleName() + " varchar(500)");
 		       String[] _FKS={"_FK1","_FK2"};                                                                                                                		
-		       String[] _REFS={"_REF1","_REF2"}; 
+		       String[] _REFS={"_REF1","_REF2"};  
 		       try{dealOneFeature(d,"addColumnString", ""+d.getAddColumnString());}catch(Exception e){dealOneFeature(d,"addColumnString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"addColumnSuffixString", ""+d.getAddColumnSuffixString());}catch(Exception e){dealOneFeature(d,"addColumnSuffixString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"addForeignKeyConstraintString", ""+d.getAddForeignKeyConstraintString("_FKEYNAME", _FKS, "_REFTABLE", _REFS, false));}catch(Exception e){dealOneFeature(d,"addForeignKeyConstraintString", NOT_SUPPORT);}                                                                                                                
@@ -215,7 +186,15 @@ public class DdlFeaturesGeneratorNew extends TestBase {
  		       try{dealOneFeature(d,"sequenceNextValString", ""+d.getSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"sequenceNextValString", e.getMessage());}                                                                                                                
 
  		       try{dealOneFeature(d,"requiresParensForTupleDistinctCounts", ""+d.requiresParensForTupleDistinctCounts());}catch(Exception e){dealOneFeature(d,"requiresParensForTupleDistinctCounts", e.getMessage());}                                                                                                                
- 		       
+ 		       String openQuote=""+d.openQuote();
+ 		       if("\""==openQuote)
+ 		    	  openQuote="\\\"";
+ 		      String closeQuote=""+d.closeQuote();
+		       if("\""==closeQuote)
+		    	   closeQuote="\\\"";
+ 		       try{dealOneFeature(d,"openQuote", openQuote );}catch(Exception e){dealOneFeature(d,"openQuote", e.getMessage());}   
+ 
+ 		       try{dealOneFeature(d,"closeQuote", closeQuote);}catch(Exception e){dealOneFeature(d,"closeQuote", e.getMessage());}         
 		       
 //		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
 //	           try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
