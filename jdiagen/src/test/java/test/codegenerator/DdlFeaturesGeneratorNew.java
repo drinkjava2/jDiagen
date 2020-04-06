@@ -47,10 +47,21 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 				param("createSequenceStrings"));
 		dao.iExecute("update tb_hibdll set RDMSOS2200Dialect=?", param("false"), " where feature=?",
 				param("supportsSequences"));
-		// generateInitDdlFeaturesSourceCodeOld();
+		
+		// a quick bug fix of H2
+		dao.iExecute("update tb_hibdll set H2Dialect=?", param("`"), " where feature=?",
+				param("closeQuote"));
+		dao.iExecute("update tb_hibdll set H2Dialect=?", param("`"), " where feature=?",
+				param("openQuote"));		 
 		generateInitDdlFeaturesSourceCodeNew();
 	}
 
+	private static String correct(String s) {
+		if ("\"".equals(s))
+			return "\\\"";
+		return s;
+	}
+	
 	public void generateInitDdlFeaturesSourceCodeNew() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("protected static void initDDLFeatures(Dialect dia) {\n");
@@ -60,12 +71,11 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		Map<String, String> oracleMap = new HashMap<>();
 		for (Map<String, Object> map : OracleList) {
 			String key = (String) map.get("feature");
-			String value = (String) map.get("OracleDialect");
-			if("\"".equals(value) )value="\\\"";
+			String value = (String) map.get("OracleDialect"); 
 			sb.append("ddl.").append(key).append("=");
 			if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
 				sb.append("\"");
-			sb.append(value);
+			sb.append(correct(value));
 			if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value) && !"true".equalsIgnoreCase(value))
 				sb.append("\"");
 			sb.append(";\n");
@@ -87,15 +97,14 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 				String oracleValue = oracleMap.get(map.get("feature"));
 				// System.out.println("mysqlValue=" + mysqlValue);
 				if (value == null)
-					value = NOT_SUPPORT;
-				if("\"".equals(value) )value="\\\"";
+					value = NOT_SUPPORT; 
 
 				if (!oracleValue.equals(value.trim())) {
 					sb.append("ddl.").append(map.get("feature")).append("=");
 					if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value)
 							&& !"true".equalsIgnoreCase(value))
 						sb.append("\"");
-					sb.append(value);
+					sb.append(correct(value));
 					if (!NOT_SUPPORT.equals(value) && !"false".equalsIgnoreCase(value)
 							&& !"true".equalsIgnoreCase(value))
 						sb.append("\"");
@@ -186,15 +195,10 @@ public class DdlFeaturesGeneratorNew extends TestBase {
  		       try{dealOneFeature(d,"sequenceNextValString", ""+d.getSequenceNextValString("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"sequenceNextValString", e.getMessage());}                                                                                                                
 
  		       try{dealOneFeature(d,"requiresParensForTupleDistinctCounts", ""+d.requiresParensForTupleDistinctCounts());}catch(Exception e){dealOneFeature(d,"requiresParensForTupleDistinctCounts", e.getMessage());}                                                                                                                
- 		       String openQuote=""+d.openQuote();
- 		       if("\""==openQuote)
- 		    	  openQuote="\\\"";
- 		      String closeQuote=""+d.closeQuote();
-		       if("\""==closeQuote)
-		    	   closeQuote="\\\"";
+ 		       String openQuote=""+d.openQuote(); 
+ 		      String closeQuote=""+d.closeQuote(); 
  		       try{dealOneFeature(d,"openQuote", openQuote );}catch(Exception e){dealOneFeature(d,"openQuote", e.getMessage());}   
- 
- 		       try{dealOneFeature(d,"closeQuote", closeQuote);}catch(Exception e){dealOneFeature(d,"closeQuote", e.getMessage());}         
+  		       try{dealOneFeature(d,"closeQuote", closeQuote);}catch(Exception e){dealOneFeature(d,"closeQuote", e.getMessage());}         
 		       
 //		       try{dealOneFeature(d,"getAddUniqueConstraintString(String)", ""+d.getAddUniqueConstraintString("UNIQUECONS"));}catch(Exception e){dealOneFeature(d,"getAddUniqueConstraintString(String)", e.getMessage());}                                                                                                                		
 //	           try{dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", ""+d.supportsUniqueConstraintInCreateAlterTable());}catch(Exception e){dealOneFeature(d,"supportsUniqueConstraintInCreateAlterTable", e.getMessage());}                                                                                                                		
