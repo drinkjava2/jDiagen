@@ -333,12 +333,12 @@ public class PaginationCodeGenerator extends TestBase {
 		sb.append("* Return pagination template of this Dialect\n");
 		sb.append("*/\n");
 		sb.append("protected static String initializePaginSQLTemplate(Dialect d) {\n");
-		sb.append("switch (d.name) {\n");
+		sb.append("switch (d.type) {\n");
 		l = dao.iQueryForEntityList(TB_pagination.class, "select t.* from tb_pagination t order by t.sortorder");
 
 		for (TB_pagination t : l) {
 			String	pagin=t.getPagination(); 
-			sb.append("case \"").append(t.getDialect()).append("\":\n");
+			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(pagin )) {
 				sb.append("return ").append("NOT_SUPPORT".equals(pagin) ? "Dialect.NOT_SUPPORT"
 						: "\"" + pagin + "\"").append(";\n");
@@ -380,11 +380,11 @@ public class PaginationCodeGenerator extends TestBase {
 		sb.append(" * Return top limit sql template of this Dialect\n");
 		sb.append("*/\n");
 		sb.append("protected static String initializeTopLimitSqlTemplate(Dialect d) {\n");
-		sb.append("switch (d.name) {\n");
+		sb.append("switch (d.type) {\n");
 		l = dao.iQueryForEntityList(TB_pagination.class, " select t.* from tb_pagination t order by t.sortorder2 ");
 
 		for (TB_pagination t : l) {
-			sb.append("case \"").append(t.getDialect()).append("\":\n");
+			sb.append("case ").append(t.getDialect()).append(":\n");
 			if (!StringUtils.isEmpty(t.getPaginationFirstOnly())) {
 				sb.append("return ").append("NOT_SUPPORT".equals(t.getPaginationFirstOnly()) ? "Dialect.NOT_SUPPORT"
 						: "\"" + t.getPaginationFirstOnly() + "\"").append(";\n");

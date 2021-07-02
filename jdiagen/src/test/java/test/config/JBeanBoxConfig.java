@@ -44,7 +44,7 @@ public class JBeanBoxConfig {
 	 * =================================<br/>
 	 */
 	// change here to run on different database
-	public static class DataSourceBox extends H2DataSourceBox {
+	public static class DataSourceBox extends MySqlDataSourceBox {
 	}
 
 	// H2Database memory database connection URL
@@ -60,7 +60,7 @@ public class JBeanBoxConfig {
 	// MySql connection URL
 	public static class MySqlDataSourceBox extends HikariCPBox {
 		{
-			setProperty("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&useSSL=false");
+			setProperty("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&useSSL=false&serverTimezone=UTC");
 			setProperty("driverClassName", "com.mysql.jdbc.Driver");
 			setProperty("username", "root");// change to your user & password
 			setProperty("password", "root888");
