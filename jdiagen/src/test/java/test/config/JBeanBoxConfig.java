@@ -44,7 +44,7 @@ public class JBeanBoxConfig {
 	 * =================================<br/>
 	 */
 	// change here to run on different database
-	public static class DataSourceBox extends MySqlDataSourceBox {
+	public static class DataSourceBox extends H2DataSourceBox {
 	}
 
 	// H2Database memory database connection URL

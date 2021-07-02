@@ -4,7 +4,7 @@
  
  <groupId>com.github.drinkjava2</groupId>
  <artifactId>jdiagen</artifactId>
- <version>2.0.4</version>
+ <version>2.0.5</version>
  <packaging>jar</packaging> 
  
  <name>jdiagen</name>
@@ -86,6 +86,14 @@
 		<artifactId>hibernate-core</artifactId>
 		<version>5.3.6.Final</version>
 	</dependency>  
+
+	<!-- https://mvnrepository.com/artifact/com.dameng/DmDialect-for-hibernate5.3 -->
+	<dependency>
+    		<groupId>com.dameng</groupId>
+    		<artifactId>DmDialect-for-hibernate5.3</artifactId>
+    		<version>8.1.1.49</version>
+	</dependency>
+
     
     <!--=====================================================================-->
     <!--  If want debug hibernate, use hibcore dependencies and disable above 
