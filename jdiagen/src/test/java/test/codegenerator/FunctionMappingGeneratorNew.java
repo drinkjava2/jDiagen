@@ -128,12 +128,8 @@ public class FunctionMappingGeneratorNew extends TestBase {
 
 				if (DataDirectOracle9Dialect.class.equals(class1)) { }
 
-				if (CastFunction.class.equals(fun.getClass())) {
-					try {
-						tryValue = "2=cast($P1 as $P2)";
-					} catch (Exception e5) {
-						tryValue = "Exception";
-					}
+				if (CastFunction.class.equals(fun.getClass())) { 
+						tryValue = "1=cast($P1)|2=cast($P1 as $P2)"; 
 				} else {
 					// change result to templates
 					tryValue = StrUtily.replace(tryValue, "1111, 2222, 3333, 4444, 5555, 6666", "$Params");
