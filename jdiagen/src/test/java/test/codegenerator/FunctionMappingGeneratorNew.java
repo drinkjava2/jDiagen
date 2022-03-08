@@ -130,7 +130,7 @@ public class FunctionMappingGeneratorNew extends TestBase {
 
 				if (CastFunction.class.equals(fun.getClass())) {
 					try {
-						tryValue = "2=cast($P1, $P2)";
+						tryValue = "2=cast($P1 as $P2)";
 					} catch (Exception e5) {
 						tryValue = "Exception";
 					}
