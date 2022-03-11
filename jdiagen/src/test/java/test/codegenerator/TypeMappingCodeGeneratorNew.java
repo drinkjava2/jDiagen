@@ -121,7 +121,7 @@ public class TypeMappingCodeGeneratorNew extends TestBase {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("    protected static void initTypeMappings() {\n");
+        sb.append("    protected static void initTypeMappingTemplates() {\n");
 
         Map<String, String> baseDialetMap = new HashMap<>();
         String baseDiaName = null;

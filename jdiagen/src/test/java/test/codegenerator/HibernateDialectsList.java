@@ -191,8 +191,8 @@ public class HibernateDialectsList {
 		SUPPORTED_DIALECTS.add(Oracle9Dialect.class);
 		SUPPORTED_DIALECTS.add(Oracle9iDialect.class);
 		SUPPORTED_DIALECTS.add(PointbaseDialect.class);
+        SUPPORTED_DIALECTS.add(PostgreSQLDialect.class);
 		SUPPORTED_DIALECTS.add(PostgresPlusDialect.class);
-		SUPPORTED_DIALECTS.add(PostgreSQLDialect.class);
 		SUPPORTED_DIALECTS.add(PostgreSQL81Dialect.class);
 		SUPPORTED_DIALECTS.add(PostgreSQL82Dialect.class);
 		SUPPORTED_DIALECTS.add(PostgreSQL9Dialect.class);

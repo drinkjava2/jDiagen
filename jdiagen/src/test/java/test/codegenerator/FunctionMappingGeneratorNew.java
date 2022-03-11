@@ -192,69 +192,50 @@ public class FunctionMappingGeneratorNew extends TestBase {
 	public void generateFunctionTemplateSourceCode() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("protected static void initFunctionTemplates() {\n");
-		sb.append("Map<String, String> mp = new HashMap<String, String>();\n");
 		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS; 
 
 		
         Map<String, String> baseDialetMap = new HashMap<>();
         String baseDiaName = null;
-		for (Class<? extends Dialect> hibDialectClass : dialects) {
-			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
-			String diaName = d.getClass().getSimpleName();  
-			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(), "select fn_name, " + diaName
-					+ " from tb_functions where percentage>16 order by fn_name");
-			 Map<String, Object> map = result.get(0); //only have 1 line 
-	  
+        for (Class<? extends Dialect> hibDialectClass : dialects) {
+            Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
+            String diaName = d.getClass().getSimpleName();
+            List<Map<String, Object>> result = dao.nQuery(new MapListHandler(), "select fn_name, " + diaName + " from tb_functions where percentage>16 order by fn_name");
+
             if (baseDiaName == null || !baseDiaName.substring(0, 3).equalsIgnoreCase(diaName.substring(0, 3))) {
                 //如果是方言基类名为空，或基类名与当前类前3字不同，表示当前行是基类
-                baseDialetMap.clear(); 
+                baseDialetMap.clear();
                 sb.append("\n\n\n//================" + diaName + " family===============\n");
                 if (baseDiaName == null)
                     sb.append("Map<String, String> ");
                 sb.append("m = Dialect." + diaName + ".functions;\n");
-                for (Entry<String, Object> entry : map.entrySet()) {
-                    String key = entry.getKey();
-                    key = StrUtily.replace(key, "T_", "");
-                    key = StrUtily.replace(key, "t_", "");
-                    String value = "" + entry.getValue();
-                    if (!"LINE".equals(key) && !"line".equals(key) && !"DIALECT".equals(key) && !"dialect".equals(key)) {
-                        baseDialetMap.put(key, value);
-                        if ("DECIMAL".equalsIgnoreCase(key) && "N/A".equalsIgnoreCase(value))
-                            sb.append("m.put(" + key + ", \"" + map.get("t_NUMERIC") + "\");\n");
-                        else
-                            sb.append("m.put(" + key + ", \"" + value + "\");\n");
-                    }
+                for (Map<String, Object> map : result) {
+                    String key = (String) map.get("fn_name");
+                    String value = (String) map.get(diaName);
+                    if (value != null && (value.equals(key + "($Params)") || value.equals(key + "($Compact_Params)")) )
+                        value = "*";
+                    baseDialetMap.put(key, value);
+                    if (!StringUtils.isEmpty(value))
+                        sb.append(" m.put(\"" + key + "\", \"" + value + "\");\n");
                 }
                 baseDiaName = diaName;
             } else { //子类与基类比较，只加入与基类不同的
                 sb.append("\n");
-                sb.append("m = Dialect." + diaName + ".typeMappings;\n");
-                sb.append("m.putAll(Dialect." + baseDiaName + ".typeMappings);//extends from " + baseDiaName + "\n");
-                for (Entry<String, Object> entry : map.entrySet()) {
-                    String key = entry.getKey();
-                    key = StrUtily.replace(key, "T_", "");
-                    key = StrUtily.replace(key, "t_", "");
-                    String value = "" + entry.getValue();
-                    if (!"LINE".equals(key) && !"line".equals(key) && !"DIALECT".equals(key) && !"dialect".equals(key))
-                        if (!value.equals(baseDialetMap.get(key))) {
-                            if ("DECIMAL".equalsIgnoreCase(key) && "N/A".equalsIgnoreCase(value))
-                                sb.append("m.put(" + key + ", \"" + map.get("t_NUMERIC") + "\");\n");
-                            else
-                                sb.append("m.put(" + key + ", \"" + value + "\");\n");
-                        }
+                sb.append("m = Dialect." + diaName + ".functions;\n");
+                sb.append("m.putAll(Dialect." + baseDiaName + ".functions);//extends from " + baseDiaName + "\n");
+                for (Map<String, Object> map : result) {
+                    String key = (String) map.get("fn_name");
+                    String value = (String) map.get(diaName);
+                    if (value != null && (value.equals(key + "($Params)") || value.equals(key + "($Compact_Params)")) )
+                        value = "*";
+                    String baseValue = (String) baseDialetMap.get(key);
+                    if (StringUtils.isEmpty(value) && !StringUtils.isEmpty(baseValue))
+                        sb.append(" m.remove(\"" + key + "\");\n");
+                    if (!StringUtils.isEmpty(value) && !value.equals(baseValue))
+                        sb.append(" m.put(\"" + key + "\", \"" + value + "\");\n");
                 }
             }
-			
-			
-			
-			
-			
-			
-			
-			
-  
-  
-		}
+        }
 
 		sb.append(" }\n");
 
