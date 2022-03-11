@@ -188,59 +188,72 @@ public class FunctionMappingGeneratorNew extends TestBase {
 					question("" + Math.rint(1.0 * percentage * 100.0 / total)), " where fn_name=", question(fn_name));
 		}
 	}
-
+	 
 	public void generateFunctionTemplateSourceCode() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("protected static void initFunctionTemplates() {\n");
 		sb.append("Map<String, String> mp = new HashMap<String, String>();\n");
-		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
-		Map<String, String> lastMP = new HashMap<>();
+		List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS; 
 
+		
+        Map<String, String> baseDialetMap = new HashMap<>();
+        String baseDiaName = null;
 		for (Class<? extends Dialect> hibDialectClass : dialects) {
 			Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
-			String diaName = d.getClass().getSimpleName();
+			String diaName = d.getClass().getSimpleName();  
 			List<Map<String, Object>> result = dao.nQuery(new MapListHandler(), "select fn_name, " + diaName
-					+ " from tb_functions where percentage>16 order by percentage desc, fn_name");
-
-			Map<String, String> thisMap = new HashMap<>();
-			for (Map<String, Object> map : result) {
-				String fn_name = (String) map.get("fn_name");
-				String template = (String) map.get(diaName);
-				if (!StringUtils.isEmpty(template)) {
-					// d.fun.put("weekday", "weekday($Params)");
-					if (template.equals(fn_name + "($Params)"))
-						thisMap.put(fn_name, "*");
-					else
-						thisMap.put(fn_name, template);
-				}
-			}
-
-			Set<String> toDelete = new HashSet<>();
-
-			if (lastMP.size() > 0)
-				for (Entry<String, String> entry : lastMP.entrySet()) {
-					String key = entry.getKey();
-					if (!thisMap.containsKey(key))
-						toDelete.add(key);
-				}
-
-			if (toDelete.size() > 30) {
-				lastMP.clear();
-				sb.append("mp.clear();\n\n//===========A new dialect family=================\n");
-			} else
-				for (String key : toDelete) {
-					lastMP.remove(key);
-					sb.append("mp.remove(\"" + key + "\");\n");
-				}
-
-			for (Entry<String, String> entry : thisMap.entrySet()) {
-				String thisKey = entry.getKey();
-				if (!entry.getValue().equals(lastMP.get(thisKey))) {
-					lastMP.put(thisKey, entry.getValue());
-					sb.append("mp.put(\"" + thisKey + "\", \"" + entry.getValue() + "\");\n");
-				}
-			}
-			sb.append("copyTo(mp, Dialect." + diaName + ");");
+					+ " from tb_functions where percentage>16 order by fn_name");
+			 Map<String, Object> map = result.get(0); //only have 1 line 
+	  
+            if (baseDiaName == null || !baseDiaName.substring(0, 3).equalsIgnoreCase(diaName.substring(0, 3))) {
+                //如果是方言基类名为空，或基类名与当前类前3字不同，表示当前行是基类
+                baseDialetMap.clear(); 
+                sb.append("\n\n\n//================" + diaName + " family===============\n");
+                if (baseDiaName == null)
+                    sb.append("Map<String, String> ");
+                sb.append("m = Dialect." + diaName + ".functions;\n");
+                for (Entry<String, Object> entry : map.entrySet()) {
+                    String key = entry.getKey();
+                    key = StrUtily.replace(key, "T_", "");
+                    key = StrUtily.replace(key, "t_", "");
+                    String value = "" + entry.getValue();
+                    if (!"LINE".equals(key) && !"line".equals(key) && !"DIALECT".equals(key) && !"dialect".equals(key)) {
+                        baseDialetMap.put(key, value);
+                        if ("DECIMAL".equalsIgnoreCase(key) && "N/A".equalsIgnoreCase(value))
+                            sb.append("m.put(" + key + ", \"" + map.get("t_NUMERIC") + "\");\n");
+                        else
+                            sb.append("m.put(" + key + ", \"" + value + "\");\n");
+                    }
+                }
+                baseDiaName = diaName;
+            } else { //子类与基类比较，只加入与基类不同的
+                sb.append("\n");
+                sb.append("m = Dialect." + diaName + ".typeMappings;\n");
+                sb.append("m.putAll(Dialect." + baseDiaName + ".typeMappings);//extends from " + baseDiaName + "\n");
+                for (Entry<String, Object> entry : map.entrySet()) {
+                    String key = entry.getKey();
+                    key = StrUtily.replace(key, "T_", "");
+                    key = StrUtily.replace(key, "t_", "");
+                    String value = "" + entry.getValue();
+                    if (!"LINE".equals(key) && !"line".equals(key) && !"DIALECT".equals(key) && !"dialect".equals(key))
+                        if (!value.equals(baseDialetMap.get(key))) {
+                            if ("DECIMAL".equalsIgnoreCase(key) && "N/A".equalsIgnoreCase(value))
+                                sb.append("m.put(" + key + ", \"" + map.get("t_NUMERIC") + "\");\n");
+                            else
+                                sb.append("m.put(" + key + ", \"" + value + "\");\n");
+                        }
+                }
+            }
+			
+			
+			
+			
+			
+			
+			
+			
+  
+  
 		}
 
 		sb.append(" }\n");
@@ -252,6 +265,71 @@ public class FunctionMappingGeneratorNew extends TestBase {
 		}
 		System.out.println("initFunctionTemplates function exported to file 'e:/initFunctionTemplates.txt'\n\n");
 	}
+	
+	@Deprecated
+    public void generateFunctionTemplateSourceCodeOld() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("protected static void initFunctionTemplates() {\n");
+        sb.append("Map<String, String> mp = new HashMap<String, String>();\n");
+        List<Class<? extends Dialect>> dialects = HibernateDialectsList.SUPPORTED_DIALECTS;
+        Map<String, String> lastMP = new HashMap<>();
+
+        for (Class<? extends Dialect> hibDialectClass : dialects) {
+            Dialect d = HibernateDialectsList.buildDialectByName(hibDialectClass);
+            String diaName = d.getClass().getSimpleName();
+            List<Map<String, Object>> result = dao.nQuery(new MapListHandler(), "select fn_name, " + diaName
+                    + " from tb_functions where percentage>16 order by percentage desc, fn_name");
+
+            Map<String, String> thisMap = new HashMap<>();
+            for (Map<String, Object> map : result) {
+                String fn_name = (String) map.get("fn_name");
+                String template = (String) map.get(diaName);
+                if (!StringUtils.isEmpty(template)) {
+                    // d.fun.put("weekday", "weekday($Params)");
+                    if (template.equals(fn_name + "($Params)"))
+                        thisMap.put(fn_name, "*");
+                    else
+                        thisMap.put(fn_name, template);
+                }
+            }
+
+            Set<String> toDelete = new HashSet<>();
+
+            if (lastMP.size() > 0)
+                for (Entry<String, String> entry : lastMP.entrySet()) {
+                    String key = entry.getKey();
+                    if (!thisMap.containsKey(key))
+                        toDelete.add(key);
+                }
+
+            if (toDelete.size() > 30) {
+                lastMP.clear();
+                sb.append("mp.clear();\n\n//===========A new dialect family=================\n");
+            } else
+                for (String key : toDelete) {
+                    lastMP.remove(key);
+                    sb.append("mp.remove(\"" + key + "\");\n");
+                }
+
+            for (Entry<String, String> entry : thisMap.entrySet()) {
+                String thisKey = entry.getKey();
+                if (!entry.getValue().equals(lastMP.get(thisKey))) {
+                    lastMP.put(thisKey, entry.getValue());
+                    sb.append("mp.put(\"" + thisKey + "\", \"" + entry.getValue() + "\");\n");
+                }
+            }
+            sb.append("copyTo(mp, Dialect." + diaName + ");");
+        }
+
+        sb.append(" }\n");
+
+        try {
+            FileUtils.writeStringToFile(new File("e:/initFunctionTemplates.txt"), sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("initFunctionTemplates function exported to file 'e:/initFunctionTemplates.txt'\n\n");
+    }
 
 	@Deprecated
 	public void generateDialectSourceCode() {
