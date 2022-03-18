@@ -137,6 +137,15 @@ public class DdlFeaturesGeneratorNew extends TestBase {
 		dao.iExecute("update tb_hibdll set "//
 				, d.getClass().getSimpleName(), "=", question(writeValue), " where feature=", question(feature));
 	}
+	
+	public String dropColumnStr(Dialect d){
+	   String dname= d.getClass().getSimpleName().toLowerCase();
+	    if(dname.startsWith("firebird")) return "";
+	    if(dname.startsWith("interbase")) return "";
+	    if(dname.startsWith("sap")) return "";
+	    if(dname.startsWith("sybase")) return "";
+	    return "column";
+	}
 
 	//@formatter:off  close Eclipse formatter 
 	@SuppressWarnings("deprecation")
@@ -158,7 +167,9 @@ public class DdlFeaturesGeneratorNew extends TestBase {
  		       try{dealOneFeature(d,"createSequenceStrings",  d.getCreateSequenceStrings("_SEQ"));}catch(Exception e){dealOneFeature(d,"createSequenceStrings", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"createTableString", ""+d.getCreateTableString());}catch(Exception e){dealOneFeature(d,"createTableString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"currentSchemaCommand", ""+d.getCurrentSchemaCommand());}catch(Exception e){dealOneFeature(d,"currentSchemaCommand", NOT_SUPPORT);}                                                                                                                
-		       try{dealOneFeature(d,"dropCatalogCommand", d.getDropCatalogCommand("_CATALOGNAME"));}catch(Exception e){dealOneFeature(d,"dropCatalogCommand", NOT_SUPPORT);}                                                                                                                
+		       try{dealOneFeature(d,"dropCatalogCommand", d.getDropCatalogCommand("_CATALOGNAME"));}catch(Exception e){dealOneFeature(d,"dropCatalogCommand", NOT_SUPPORT);}
+		       try{dealOneFeature(d,"dropColumnString", dropColumnStr(d));} catch(Exception e){dealOneFeature(d,"dropTableString", NOT_SUPPORT);}
+		       
 		       try{dealOneFeature(d,"dropForeignKeyString", ""+d.getDropForeignKeyString());}catch(Exception e){dealOneFeature(d,"dropForeignKeyString", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"dropSchemaCommand",  d.getDropSchemaCommand("_SCHEMANAME"));}catch(Exception e){dealOneFeature(d,"dropSchemaCommand", NOT_SUPPORT);}                                                                                                                
 		       try{dealOneFeature(d,"dropSequenceStrings",  d.getDropSequenceStrings("_SEQNAME"));}catch(Exception e){dealOneFeature(d,"dropSequenceStrings", NOT_SUPPORT);}                                                                                                                
